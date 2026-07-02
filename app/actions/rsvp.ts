@@ -26,7 +26,7 @@ export async function sendRSVPToTelegram(data: RSVPData): Promise<{ ok: boolean 
     `💌 *Новый ответ RSVP*`,
     ``,
     `📝 Приглашение: *${data.projectTitle}*`,
-    `🔗 zefir.kz/${data.projectSlug}`,
+    `🔗 wedify.kz/${data.projectSlug}`,
     ``,
     `👤 Имя: *${data.name}*`,
     `${emoji} Статус: *${statusText}*`,

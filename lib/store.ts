@@ -33,7 +33,7 @@ export const useAppStore = create<AppStore>()(
       setIsDirty: (v) => set({ isDirty: v }),
     }),
     {
-      name: 'wedding-app-store',
+      name: 'wedify-store',
       partialize: (state) => ({ language: state.language }),
     }
   )

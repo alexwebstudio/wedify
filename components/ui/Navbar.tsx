@@ -43,7 +43,7 @@ export function Navbar({ dark = false }: NavbarProps) {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`} style={{ height: 58 }}>
         <div className="max-w-6xl mx-auto px-5 h-full flex items-center justify-between">
-          {/* Logo — Zefir */}
+          {/* Logo — Wedify */}
           <Link href="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)' }}>

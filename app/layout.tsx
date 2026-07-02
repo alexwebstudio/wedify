@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
   title: 'Wedify — Конструктор свадебных сайтов',
   description: 'Создайте красивый свадебный сайт-приглашение. Выберите шаблон, заполните данные и получите готовую ссылку.',
-  keywords: 'свадебный сайт, приглашение, wedding website, той сайты, zefir',
+  keywords: 'свадебный сайт, приглашение, wedding website, той сайты, wedify',
 }
 
 export default function RootLayout({
