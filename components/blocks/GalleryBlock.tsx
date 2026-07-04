@@ -76,7 +76,20 @@ export function GalleryBlock({ block, colors, fonts, isEditing, onChange, userId
               }`}
               style={{ aspectRatio: idx === 0 ? '1/1' : '3/4' }}
             >
-              <img src={img} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <img
+                src={img}
+                alt=""
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                onError={(e) => {
+                  const el = e.currentTarget
+                  // не даём показывать «вопросик» от битой ссылки —
+                  // подменяем на нейтральное фото, а не на broken-icon
+                  if (!el.dataset.fallback) {
+                    el.dataset.fallback = '1'
+                    el.src = 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80'
+                  }
+                }}
+              />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
 
               {isEditing && (

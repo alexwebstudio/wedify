@@ -124,7 +124,7 @@ export function HeroBlock({ block, colors, fonts, isEditing, onChange, userId, p
           className="my-8 flex items-center justify-center gap-4"
         >
           <div className="w-12 h-px" style={{ background: colors.primary }} />
-          <div style={{ color: colors.primary, fontSize: 18 }}>✦</div>
+          <div style={{ color: colors.primary, fontSize: 18 }}>♥</div>
           <div className="w-12 h-px" style={{ background: colors.primary }} />
         </motion.div>
 

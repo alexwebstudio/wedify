@@ -47,7 +47,7 @@ export function Navbar({ dark = false }: NavbarProps) {
           <Link href="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
             <div className="w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)' }}>
-              <span style={{ color: 'white', fontSize: 14, lineHeight: 1 }}>✦</span>
+              <span style={{ color: 'white', fontSize: 14, lineHeight: 1 }}>♥</span>
             </div>
             <span className={`font-medium tracking-wide transition-colors ${textColor}`}
               style={{ fontFamily: 'Comfortaa, cursive', fontSize: 18, letterSpacing: '0.02em' }}>
@@ -57,6 +57,18 @@ export function Navbar({ dark = false }: NavbarProps) {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-3">
+            <Link href="/pricing"
+              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
+              }`}>
+              Тарифы
+            </Link>
+            <Link href="/blog"
+              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
+              }`}>
+              Полезные советы
+            </Link>
             <LanguageSwitcher dark={dark} />
             {user ? (
               <>
@@ -131,16 +143,46 @@ export function Navbar({ dark = false }: NavbarProps) {
                   </button>
                 </div>
 
+                {/* Общие ссылки (доступны всем) */}
+                <Link href="/pricing" onClick={() => setMobileOpen(false)}
+                  className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
+                  ♥ Тарифы
+                </Link>
+                <Link href="/blog" onClick={() => setMobileOpen(false)}
+                  className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
+                  📖 Полезные советы
+                </Link>
+
                 {user ? (
                   <>
                     <Link href="/dashboard" onClick={() => setMobileOpen(false)}
                       className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
                       📋 {t('nav_dashboard')}
                     </Link>
+
+                    {/* Настройки личного кабинета */}
+                    <div className="mt-2 mb-1 px-4 text-[11px] uppercase tracking-widest text-white/25">Настройки</div>
+                    <Link href="/dashboard/settings#defaults" onClick={() => setMobileOpen(false)}
+                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
+                      ⚙️ Настройки сайта по умолчанию
+                    </Link>
+                    <Link href="/dashboard/settings#security" onClick={() => setMobileOpen(false)}
+                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
+                      🔒 Безопасность и доступ
+                    </Link>
+                    <Link href="/dashboard/settings#messages" onClick={() => setMobileOpen(false)}
+                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
+                      ✉️ Сообщения с форм
+                    </Link>
+                    <Link href="/dashboard/settings#help" onClick={() => setMobileOpen(false)}
+                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
+                      💡 Помощь и инструкция
+                    </Link>
+
                     <Link href="/dashboard/new" onClick={() => setMobileOpen(false)}
-                      className="py-4 px-4 rounded-2xl text-base font-medium text-center"
+                      className="mt-2 py-4 px-4 rounded-2xl text-base font-medium text-center"
                       style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      ✦ Создать сайт
+                      ♥ Создать сайт
                     </Link>
                     <button onClick={handleSignOut}
                       className="py-3 px-4 rounded-2xl text-white/40 text-sm text-left">
@@ -157,7 +199,7 @@ export function Navbar({ dark = false }: NavbarProps) {
                     <Link href="/auth/register" onClick={() => setMobileOpen(false)}
                       className="py-4 px-4 rounded-2xl text-base font-medium text-center"
                       style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      ✦ Начать бесплатно
+                      ♥ Начать бесплатно
                     </Link>
                   </>
                 )}

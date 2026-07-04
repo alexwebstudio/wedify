@@ -7,6 +7,10 @@ import { TimerBlock } from '@/components/blocks/TimerBlock'
 import { LocationBlock } from '@/components/blocks/LocationBlock'
 import { RsvpBlock } from '@/components/blocks/RsvpBlock'
 import { FinalBlock } from '@/components/blocks/FinalBlock'
+import { ScheduleBlock } from '@/components/blocks/ScheduleBlock'
+import { InfoCardBlock } from '@/components/blocks/InfoCardBlock'
+import { VideoBlock } from '@/components/blocks/VideoBlock'
+import { FooterBlock } from '@/components/blocks/FooterBlock'
 import { BlockWrapper } from '@/components/editor/BlockWrapper'
 import { MusicPlayer } from '@/components/ui/MusicPlayer'
 import type { BlockData } from '@/types'
@@ -53,6 +57,10 @@ export function WeddingSite({
         case 'location': return <LocationBlock {...sharedProps} />
         case 'rsvp': return <RsvpBlock {...sharedProps} projectTitle={project.title} projectSlug={project.slug} projectId={project.id} />
         case 'final': return <FinalBlock {...sharedProps} />
+        case 'schedule': return <ScheduleBlock {...sharedProps} />
+        case 'infocard': return <InfoCardBlock {...sharedProps} />
+        case 'video': return <VideoBlock {...sharedProps} />
+        case 'footer': return <FooterBlock {...sharedProps} />
         default: return null
       }
     })()

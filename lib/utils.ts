@@ -79,7 +79,7 @@ export function getTemplateDefaults(templateId: TemplateId): {
   return templates[templateId] || templates['classic-luxury']
 }
 
-export function getDefaultBlocks(bride = 'Айгерим', groom = 'Дамир', date = ''): BlockData[] {
+export function getDefaultBlocks(bride = 'Александр', groom = 'Мария', date = ''): BlockData[] {
   const weddingDate = date || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   return [
@@ -94,7 +94,7 @@ export function getDefaultBlocks(bride = 'Айгерим', groom = 'Дамир',
         date: weddingDate,
         time: '16:00',
         tagline: 'Приглашаем вас разделить с нами этот особенный день',
-        backgroundImage: '/images/hero-default.jpg',
+        backgroundImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80',
       },
     },
     {
@@ -105,7 +105,7 @@ export function getDefaultBlocks(bride = 'Айгерим', groom = 'Дамир',
       content: {
         title: 'Наша история',
         text: 'Мы встретились случайно, но поняли — это судьба. С тех пор каждый день с тобой — это подарок.',
-        image: '/images/story-default.jpg',
+        image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&q=80',
         meetDate: '12 мая 2022',
         proposeDate: '14 февраля 2024',
       },
@@ -118,10 +118,10 @@ export function getDefaultBlocks(bride = 'Айгерим', groom = 'Дамир',
       content: {
         title: 'Наши моменты',
         images: JSON.stringify([
-          '/images/gallery-1.jpg',
-          '/images/gallery-2.jpg',
-          '/images/gallery-3.jpg',
-          '/images/gallery-4.jpg',
+          'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
+          'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80',
+          'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80',
+          'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80',
         ]),
       },
     },

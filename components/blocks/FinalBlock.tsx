@@ -106,7 +106,7 @@ export function FinalBlock({ block, colors, fonts, isEditing, onChange }: FinalB
             className="text-sm tracking-[0.4em] uppercase"
             style={{ color: colors.primary, fontFamily: fonts.body }}
           >
-            ✦ {content.date} ✦
+            ♥ {content.date} ♥
           </p>
         </motion.div>
 

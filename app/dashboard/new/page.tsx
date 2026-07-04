@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
-import { createProject } from '@/lib/projects'
+import { createProject, getProjects } from '@/lib/projects'
 import type { TemplateId, Language } from '@/types'
 import toast from 'react-hot-toast'
 
@@ -55,11 +55,20 @@ export default function NewProjectPage() {
   const { t } = useAppStore()
   const router = useRouter()
 
+  const FREE_LIMIT = 3
+
   const handleCreate = async () => {
     if (!user) { router.push('/auth/login'); return }
     if (!title.trim()) { toast.error('Введите название'); return }
     setLoading(true)
     try {
+      // Лимит бесплатного тарифа: максимум 3 активных сайта
+      const existing = await getProjects(user.id)
+      if (existing.length >= FREE_LIMIT) {
+        toast.error(`На бесплатном тарифе можно до ${FREE_LIMIT} сайтов. Удалите один, чтобы создать новый.`)
+        setLoading(false)
+        return
+      }
       const project = await createProject(user.id, title.trim(), template, language)
       toast.success('Приглашение создано! 🎉')
       router.push(`/dashboard/edit/${project.id}`)
@@ -112,7 +121,7 @@ export default function NewProjectPage() {
               </h1>
               <p className="text-[#2C2017]/40 text-sm mb-8">Всё можно изменить позже в редакторе</p>
 
-              <div className="grid md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
                 {TEMPLATES.map((tpl) => (
                   <button
                     key={tpl.id}
@@ -125,11 +134,11 @@ export default function NewProjectPage() {
                       <div className="text-center px-4">
                         <div className="w-6 h-px mx-auto mb-4" style={{ background: tpl.accent }} />
                         <p className="text-2xl font-light mb-0.5" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Камила
+                          Александр
                         </p>
-                        <p className="text-sm mb-0.5" style={{ color: tpl.accent }}>✦</p>
+                        <p className="text-sm mb-0.5" style={{ color: tpl.accent }}>♥</p>
                         <p className="text-2xl font-light" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Арман
+                          Мария
                         </p>
                         <div className="w-6 h-px mx-auto mt-4" style={{ background: tpl.accent }} />
                         <p className="text-xs mt-3 tracking-widest uppercase opacity-40" style={{ color: tpl.text }}>
@@ -189,7 +198,7 @@ export default function NewProjectPage() {
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Например: Айгерим и Дамир"
+                    placeholder="Например: Александр и Мария"
                     className="input-luxury text-[#2C2017] text-lg"
                     autoFocus
                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()}

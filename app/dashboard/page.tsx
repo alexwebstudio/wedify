@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Heart } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Heart, Settings2, ChevronRight } from 'lucide-react'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
@@ -32,12 +32,12 @@ export default function DashboardPage() {
   }, [user])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Удалить это приглашение?')) return
+    if (!confirm('Вы уверены, что хотите удалить сайт? Данные будут удалены без возможности восстановления.')) return
     setDeletingId(id)
     try {
       await deleteProject(id)
       setProjects((p) => p.filter((pr) => pr.id !== id))
-      toast.success('Удалено')
+      toast.success('Сайт удалён')
     } catch {
       toast.error('Ошибка')
     } finally {
@@ -125,32 +125,51 @@ export default function DashboardPage() {
               {projects.length === 0 ? 'Начните создавать' : `${projects.length} приглашени${projects.length === 1 ? 'е' : 'й'}`}
             </p>
           </div>
-          <Link href="/dashboard/new"
-            className="btn-luxury px-5 py-2.5 rounded-xl font-medium text-sm inline-flex items-center gap-2">
-            <span className="flex items-center gap-2">
-              <Plus size={16} />
-              {t('dashboard_create')}
-            </span>
+        </div>
+
+        {/* Единая кнопка настроек сайта */}
+        <div className="mb-10">
+          <Link href="/dashboard/settings"
+            className="group bg-white rounded-2xl border border-[#C4A97D]/15 p-4 flex items-center gap-4 hover:border-[#C4A97D]/40 hover:shadow-sm transition-all">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: 'rgba(196,169,125,.14)', color: '#8B6F47' }}>
+              <Settings2 size={20} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-[#2C2017]">Настройки сайта</p>
+              <p className="text-xs text-[#9A8B76]">Шрифты и палитра, безопасность и доступ, сообщения с форм, помощь</p>
+            </div>
+            <ChevronRight size={18} className="text-[#C4A97D] opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
           </Link>
         </div>
 
         {projects.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center py-24"
+            className="text-center py-20"
           >
-            <div className="w-20 h-20 rounded-full bg-[#C4A97D]/10 flex items-center justify-center mx-auto mb-6">
-              <Heart size={32} className="text-[#C4A97D]" />
+            {/* иллюстрация: мини-приглашение */}
+            <div className="mx-auto mb-8" style={{ width: 150 }}>
+              <div className="relative mx-auto rounded-2xl" style={{ width: 150, height: 196, background: 'linear-gradient(170deg,#FBF8F3,#F1E7D6)', boxShadow: '0 24px 50px -24px rgba(196,169,125,.6), 0 0 0 1px rgba(196,169,125,.25)', transform: 'rotate(-4deg)' }}>
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+                  <Heart size={20} className="text-[#C4A97D] mb-3" fill="#C4A97D" />
+                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>Имена</div>
+                  <div style={{ color: '#C4A97D', fontSize: 12, margin: '4px 0' }}>♥</div>
+                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>пары</div>
+                  <div style={{ width: 34, height: 1, background: 'rgba(184,149,106,.5)', margin: '10px 0 8px' }} />
+                  <div style={{ color: '#9A8B76', fontSize: 10, letterSpacing: '.15em' }}>ДД · ММ · 2026</div>
+                </div>
+              </div>
             </div>
             <h2 className="text-2xl font-light text-[#2C2017] mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-              {t('dashboard_empty')}
+              Здесь появятся ваши приглашения
             </h2>
-            <p className="text-[#2C2017]/40 text-sm mb-8">Создайте первое свадебное приглашение</p>
+            <p className="text-[#2C2017]/40 text-sm mb-8">Создайте первое — это займёт пару минут</p>
             <Link href="/dashboard/new"
               className="btn-luxury px-8 py-3.5 rounded-xl font-medium inline-flex items-center gap-2">
               <span className="flex items-center gap-2">
                 <Plus size={16} />
-                Создать приглашение
+                Создать первый свадебный сайт
               </span>
             </Link>
           </motion.div>
@@ -237,34 +256,37 @@ export default function DashboardPage() {
                     ) : null}
 
                     {/* Right-side actions */}
-                    <div className="ml-auto flex items-center gap-1">
+                    <div className="ml-auto flex items-center gap-1.5">
                       <button
                         onClick={() => handlePublish(project)}
-                        className={`p-1.5 rounded-lg transition-colors ${
+                        aria-label={project.published ? 'Скрыть сайт' : 'Опубликовать сайт'}
+                        className={`p-2.5 rounded-xl transition-colors ${
                           project.published
                             ? 'bg-green-50 text-green-600 hover:bg-green-100'
                             : 'bg-gray-50 text-gray-400 hover:bg-[#C4A97D]/10 hover:text-[#C4A97D]'
                         }`}
                         title={project.published ? 'Скрыть сайт' : 'Опубликовать сайт'}
                       >
-                        {project.published ? <Eye size={13} /> : <EyeOff size={13} />}
+                        {project.published ? <Eye size={16} /> : <EyeOff size={16} />}
                       </button>
 
                       <button
                         onClick={() => handleDuplicate(project)}
-                        className="p-1.5 rounded-lg bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors"
+                        aria-label="Дублировать"
+                        className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors"
                         title="Дублировать"
                       >
-                        <Copy size={13} />
+                        <Copy size={16} />
                       </button>
 
                       <button
                         onClick={() => handleDelete(project.id)}
                         disabled={deletingId === project.id}
-                        className="p-1.5 rounded-lg bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-400 transition-colors disabled:opacity-40"
+                        aria-label="Удалить"
+                        className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-400 transition-colors disabled:opacity-40"
                         title="Удалить"
                       >
-                        <Trash2 size={13} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>

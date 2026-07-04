@@ -10,6 +10,10 @@ export type BlockType =
   | 'location'
   | 'rsvp'
   | 'final'
+  | 'schedule'
+  | 'infocard'
+  | 'video'
+  | 'footer'
 
 export interface BlockData {
   id: string

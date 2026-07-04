@@ -33,26 +33,58 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
   const [tab, setTab] = useState<'preset' | 'upload'>('preset')
   const fileRef = useRef<HTMLInputElement>(null)
 
+  // Конвертация файла в base64 data-URL — он сохраняется в БД и
+  // открывается по опубликованной ссылке на любом устройстве
+  // (в отличие от blob:-ссылки, которая жила только в этом браузере).
+  const fileToDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Можно загружать только изображения')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Файл больше 10MB — выберите фото поменьше')
+      return
+    }
+
     setUploading(true)
+    const hasSupabase =
+      !!userId && !!projectId &&
+      !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+
     try {
-      // If Supabase creds available, upload there; otherwise use local object URL
-      if (userId && projectId && process.env.NEXT_PUBLIC_SUPABASE_URL && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) {
-        const url = await uploadMedia(file, userId, projectId)
+      if (hasSupabase) {
+        // Основной путь: реальная загрузка в Storage → постоянная ссылка
+        const url = await uploadMedia(file, userId!, projectId!)
         onSelect(url)
-      } else {
-        // MVP fallback: use object URL (works locally without Supabase)
-        const url = URL.createObjectURL(file)
-        onSelect(url)
+        onClose()
+        return
       }
+      // Нет Supabase → сохраняем как data-URL (тоже постоянный, работает по ссылке)
+      const dataUrl = await fileToDataUrl(file)
+      onSelect(dataUrl)
       onClose()
-    } catch {
-      // Final fallback
-      const url = URL.createObjectURL(file)
-      onSelect(url)
-      onClose()
+    } catch (err) {
+      console.warn('Upload to storage failed, fallback to data-URL:', err)
+      try {
+        // ВАЖНО: fallback именно в base64, НЕ в blob: — иначе у гостей будет «?»
+        const dataUrl = await fileToDataUrl(file)
+        onSelect(dataUrl)
+        onClose()
+      } catch {
+        toast.error('Не удалось загрузить фото. Попробуйте другое.')
+      }
     } finally {
       setUploading(false)
     }

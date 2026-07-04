@@ -84,10 +84,11 @@ export default function RegisterPage() {
               <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Пароль</label>
               <div className="relative">
                 <input type={showPass ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
-                  required placeholder="Минимум 6 символов" className="input-luxury text-white placeholder-white/20 pr-12" />
+                  required placeholder="Минимум 6 символов" className="input-luxury text-white placeholder-white/20 pr-14" />
                 <button type="button" onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                  aria-label={showPass ? 'Скрыть пароль' : 'Показать пароль'}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2.5 rounded-lg text-white/40 hover:text-white/80 hover:bg-white/5 active:scale-95 transition-all">
+                  {showPass ? <EyeOff size={22} /> : <Eye size={22} />}
                 </button>
               </div>
               {passwordStrength && (
