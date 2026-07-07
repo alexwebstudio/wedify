@@ -42,13 +42,14 @@ export async function createProject(
   userId: string,
   title: string,
   templateId: TemplateId,
-  language: 'ru' | 'kz' = 'ru'
+  language: 'ru' | 'kz' = 'ru',
+  vars: Partial<import('@/types').SiteVariables> = {}
 ): Promise<Project> {
   const baseSlug = generateSlug(title) || generateSlug(`${templateId}-wedding`)
   const slug = await ensureUniqueSlug(baseSlug)
 
   const defaults = getTemplateDefaults(templateId)
-  const blocks = getDefaultBlocks()
+  const blocks = getDefaultBlocks(vars)
 
   const { data, error } = await supabase
     .from('projects')

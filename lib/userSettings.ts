@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 export type FontSize = 'small' | 'medium' | 'large'
 export type HeadingStyle = 'classic' | 'modern' | 'script'
 export type ButtonStyle = 'rounded' | 'pill' | 'sharp'
+export type ImageStyle = 'rounded' | 'square' | 'pill' | 'circle'
 export type PaletteId = 'gold' | 'ivory' | 'burgundy' | 'pastel' | 'dark' | 'sage'
 export type DisplayType = 'elegant' | 'minimal' | 'luxury'
 export type BuildFirst = 'mobile' | 'desktop'
@@ -16,6 +17,7 @@ export interface UserSettings {
     fontSize: FontSize
     headingStyle: HeadingStyle
     buttonStyle: ButtonStyle
+    imageStyle: ImageStyle
     palette: PaletteId
     displayType: DisplayType
     buildFirst: BuildFirst
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
     fontSize: 'medium',
     headingStyle: 'classic',
     buttonStyle: 'rounded',
+    imageStyle: 'rounded',
     palette: 'gold',
     displayType: 'elegant',
     buildFirst: 'mobile',

@@ -1,4 +1,5 @@
 'use client'
+import { SiteFooter } from '@/components/landing/SiteFooter'
 
 import Link from 'next/link'
 import { Navbar } from '@/components/ui/Navbar'
@@ -72,6 +73,7 @@ export default function TermsPage() {
           </div>
         </div>
       </section>
+      <SiteFooter />
     </div>
   )
 }

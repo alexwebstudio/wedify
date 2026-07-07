@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
+import { usePlan, PLAN_META } from '@/lib/subscription'
 import { createProject, getProjects } from '@/lib/projects'
 import type { TemplateId, Language } from '@/types'
 import toast from 'react-hot-toast'
@@ -51,25 +52,52 @@ export default function NewProjectPage() {
   const [language, setLanguage] = useState<Language>('ru')
   const [loading, setLoading] = useState(false)
 
+  // Основные данные молодожёнов (подставятся во все блоки)
+  const [bride, setBride] = useState('')
+  const [groom, setGroom] = useState('')
+  const [date, setDate] = useState('')
+  const [time, setTime] = useState('16:00')
+  const [showMore, setShowMore] = useState(false)
+  const [venue, setVenue] = useState('')
+  const [address, setAddress] = useState('')
+  const [mapUrl, setMapUrl] = useState('')
+  const [dresscode, setDresscode] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [gifts, setGifts] = useState('')
+  const [instagram, setInstagram] = useState('')
+  const [telegram, setTelegram] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
+
   const { user } = useAuth()
+  const { plan } = usePlan()
   const { t } = useAppStore()
   const router = useRouter()
 
-  const FREE_LIMIT = 3
+  const SITE_LIMIT = plan === 'premium' ? 3 : plan === 'standard' ? 2 : 1
+
+  const autoTitle = title.trim() || [bride.trim(), groom.trim()].filter(Boolean).join(' и ')
 
   const handleCreate = async () => {
     if (!user) { router.push('/auth/login'); return }
-    if (!title.trim()) { toast.error('Введите название'); return }
+    if (!bride.trim() || !groom.trim()) { toast.error('Укажите имена молодожёнов'); return }
+    if (!date) { toast.error('Укажите дату свадьбы'); return }
+    const finalTitle = autoTitle
+    if (!finalTitle) { toast.error('Введите название'); return }
     setLoading(true)
     try {
-      // Лимит бесплатного тарифа: максимум 3 активных сайта
       const existing = await getProjects(user.id)
-      if (existing.length >= FREE_LIMIT) {
-        toast.error(`На бесплатном тарифе можно до ${FREE_LIMIT} сайтов. Удалите один, чтобы создать новый.`)
+      if (existing.length >= SITE_LIMIT) {
+        toast.error(`На тарифе «${PLAN_META[plan].label}» доступно сайтов: ${SITE_LIMIT}. ${plan !== 'premium' ? 'Оформите тариф выше или удалите один сайт.' : 'Удалите один, чтобы создать новый.'}`)
         setLoading(false)
         return
       }
-      const project = await createProject(user.id, title.trim(), template, language)
+      const project = await createProject(user.id, finalTitle, template, language, {
+        bride: bride.trim(), groom: groom.trim(), date, time,
+        venue: venue.trim(), address: address.trim(), mapUrl: mapUrl.trim(), coords: mapUrl.trim(),
+        dresscode: dresscode.trim(), contactName: contactName.trim(), contactPhone: contactPhone.trim(),
+        gifts: gifts.trim(), instagram: instagram.trim(), telegram: telegram.trim(), whatsapp: whatsapp.trim(),
+      })
       toast.success('Приглашение создано! 🎉')
       router.push(`/dashboard/edit/${project.id}`)
     } catch (err: unknown) {
@@ -189,26 +217,68 @@ export default function NewProjectPage() {
               <p className="text-[#2C2017]/40 text-sm mb-8">Заполните основные данные</p>
 
               <div className="space-y-6">
-                {/* Title */}
+                {/* Имена молодожёнов */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя невесты *</label>
+                    <input type="text" value={bride} onChange={(e) => setBride(e.target.value)} placeholder="Айгерім" className="input-luxury text-[#2C2017]" autoFocus />
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя жениха *</label>
+                    <input type="text" value={groom} onChange={(e) => setGroom(e.target.value)} placeholder="Дамир" className="input-luxury text-[#2C2017]" />
+                  </div>
+                </div>
+
+                {/* Дата и время */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Дата свадьбы *</label>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="input-luxury text-[#2C2017]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Время начала *</label>
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="input-luxury text-[#2C2017]" />
+                  </div>
+                </div>
+
+                {/* Название (необязательно) */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">
-                    Название приглашения
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Например: Александр и Мария"
-                    className="input-luxury text-[#2C2017] text-lg"
-                    autoFocus
-                    onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-                  />
-                  {title && (
-                    <p className="text-xs text-[#2C2017]/40 mt-2">
-                      Ссылка будет: <span className="font-mono text-[#C4A97D]">
-                        site.com/{title.toLowerCase().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30)}
-                      </span>
-                    </p>
+                  <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Название приглашения</label>
+                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                    placeholder={autoTitle || 'Например: Айгерім и Дамир'} className="input-luxury text-[#2C2017]"
+                    onKeyDown={(e) => e.key === 'Enter' && handleCreate()} />
+                  {autoTitle && (
+                    <p className="text-xs text-[#2C2017]/40 mt-2">Ссылка: <span className="font-mono text-[#C4A97D]">site.com/{autoTitle.toLowerCase().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30)}</span></p>
+                  )}
+                </div>
+
+                {/* Доп. данные (глобальные переменные сайта) */}
+                <div className="rounded-xl border border-gray-100 overflow-hidden">
+                  <button type="button" onClick={() => setShowMore((s) => !s)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm text-[#2C2017] hover:bg-gray-50 transition-colors">
+                    <span className="font-medium">Детали свадьбы <span className="text-[#2C2017]/40 font-normal">— можно заполнить позже</span></span>
+                    <span className={`transition-transform ${showMore ? 'rotate-180' : ''}`}>⌄</span>
+                  </button>
+                  {showMore && (
+                    <div className="p-4 pt-0 space-y-3">
+                      <p className="text-xs text-[#2C2017]/40 leading-relaxed pt-1">Эти данные автоматически подставятся в блоки локации, контактов, подарков и футер.</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Место (ресторан)" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={dresscode} onChange={(e) => setDresscode(e.target.value)} placeholder="Дресс-код" className="input-luxury text-[#2C2017] text-sm" />
+                      </div>
+                      <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Адрес" className="input-luxury text-[#2C2017] text-sm" />
+                      <input value={mapUrl} onChange={(e) => setMapUrl(e.target.value)} placeholder="Ссылка на карты / координаты" className="input-luxury text-[#2C2017] text-sm" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Контакт (имя)" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Телефон" className="input-luxury text-[#2C2017] text-sm" />
+                      </div>
+                      <input value={gifts} onChange={(e) => setGifts(e.target.value)} placeholder="Пожелания по подаркам" className="input-luxury text-[#2C2017] text-sm" />
+                      <div className="grid grid-cols-3 gap-3">
+                        <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="Instagram" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="Telegram" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" className="input-luxury text-[#2C2017] text-sm" />
+                      </div>
+                    </div>
                   )}
                 </div>
 
@@ -221,18 +291,22 @@ export default function NewProjectPage() {
                     {([['ru', '🇷🇺', 'Русский'], ['kz', '🇰🇿', 'Қазақша']] as const).map(([code, flag, name]) => (
                       <button
                         key={code}
-                        onClick={() => setLanguage(code)}
-                        className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                        onClick={() => {
+                          if (code === 'kz') { toast('Казахская версия платформы находится в разработке и станет доступна в одном из ближайших обновлений.', { icon: '🇰🇿', duration: 5000 }); return }
+                          setLanguage(code)
+                        }}
+                        className={`relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                           language === code
                             ? 'border-[#C4A97D] bg-[#C4A97D]/5'
                             : 'border-gray-100 hover:border-[#C4A97D]/30'
-                        }`}
+                        } ${code === 'kz' ? 'opacity-70' : ''}`}
                       >
                         <span className="text-2xl">{flag}</span>
                         <div className="text-left">
                           <p className="text-sm font-medium text-[#2C2017]">{name}</p>
+                          {code === 'kz' && <p className="text-[10px] text-[#C4A97D]">Скоро</p>}
                         </div>
-                        {language === code && (
+                        {language === code && code === 'ru' && (
                           <Check size={14} className="text-[#C4A97D] ml-auto" />
                         )}
                       </button>
@@ -265,7 +339,7 @@ export default function NewProjectPage() {
                 </button>
                 <button
                   onClick={handleCreate}
-                  disabled={loading || !title.trim()}
+                  disabled={loading || !bride.trim() || !groom.trim() || !date}
                   className="btn-luxury px-8 py-3 rounded-xl font-medium inline-flex items-center gap-2 disabled:opacity-50 group"
                 >
                   <span className="flex items-center gap-2">

@@ -6,6 +6,7 @@ export interface ReviewInput {
   name: string
   rating: number
   text: string
+  images?: string[]
 }
 
 export interface ReviewRow {
@@ -13,6 +14,7 @@ export interface ReviewRow {
   name: string
   rating: number
   text: string
+  images?: string[]
   created_at: string
 }
 
@@ -47,12 +49,22 @@ export async function submitReview(input: ReviewInput): Promise<SubmitReviewResu
     const { createClient } = await import('@/lib/supabase/server')
     const supabase = await createClient()
 
-    const { error } = await supabase.from('reviews').insert({
-      name,
-      rating,
-      text,
-      approved: true, // прошёл модерацию → показываем сразу
-    })
+    const images = (input.images || []).filter(Boolean).slice(0, 4)
+    const base = { name, rating, text, approved: true }
+
+    // Пытаемся сохранить с изображениями; если колонки ещё нет — сохраняем без них.
+    let error = null as { message: string } | null
+    if (images.length) {
+      const res = await supabase.from('reviews').insert({ ...base, images })
+      error = res.error
+      if (error && /images|column/i.test(error.message)) {
+        const retry = await supabase.from('reviews').insert(base)
+        error = retry.error
+      }
+    } else {
+      const res = await supabase.from('reviews').insert(base)
+      error = res.error
+    }
 
     if (error) {
       console.warn('Review insert error:', error.message)
@@ -77,12 +89,23 @@ export async function getApprovedReviews(limit = 12): Promise<ReviewRow[]> {
 
     const { data, error } = await supabase
       .from('reviews')
-      .select('id, name, rating, text, created_at')
+      .select('id, name, rating, text, images, created_at')
       .eq('approved', true)
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    if (error || !data) return []
+    if (error) {
+      // Колонки images может ещё не быть — повторяем без неё.
+      const retry = await supabase
+        .from('reviews')
+        .select('id, name, rating, text, created_at')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+      if (retry.error || !retry.data) return []
+      return retry.data as ReviewRow[]
+    }
+    if (!data) return []
     return data as ReviewRow[]
   } catch {
     return []

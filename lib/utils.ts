@@ -1,4 +1,5 @@
 import type { BlockData, Project, ProjectColors, ProjectFonts, ProjectMusic, TemplateId } from '@/types'
+import { PH } from './placeholders'
 
 export function generateSlug(name: string): string {
   return name
@@ -33,7 +34,7 @@ export function getTemplateDefaults(templateId: TemplateId): {
         background: '#FAF8F5',
         text: '#2C2017',
       },
-      fonts: { heading: 'Cormorant Garamond', body: 'Lato' },
+      fonts: { heading: 'Great Vibes', body: 'Lato' },
     },
     'minimal-white': {
       colors: {
@@ -79,8 +80,16 @@ export function getTemplateDefaults(templateId: TemplateId): {
   return templates[templateId] || templates['classic-luxury']
 }
 
-export function getDefaultBlocks(bride = 'Александр', groom = 'Мария', date = ''): BlockData[] {
-  const weddingDate = date || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> = {}): BlockData[] {
+  const bride = vars.bride || 'Александр'
+  const groom = vars.groom || 'Мария'
+  const weddingDate = vars.date || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  const time = vars.time || '16:00'
+  const venue = vars.venue || 'Grand Palace Hotel'
+  const address = vars.address || 'ул. Достык 1, Алматы'
+  const mapUrl = vars.mapUrl || vars.coords || 'https://maps.google.com'
+  const dresscode = vars.dresscode || 'Вечерний наряд'
+  const phone = vars.contactPhone || '+7 777 123 4567'
 
   return [
     {
@@ -89,12 +98,13 @@ export function getDefaultBlocks(bride = 'Александр', groom = 'Мари
       enabled: true,
       order: 0,
       content: {
+        variant: '1',
         bride,
         groom,
         date: weddingDate,
-        time: '16:00',
+        time,
         tagline: 'Приглашаем вас разделить с нами этот особенный день',
-        backgroundImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80',
+        backgroundImage: PH.heroCouple(),
       },
     },
     {
@@ -103,9 +113,10 @@ export function getDefaultBlocks(bride = 'Александр', groom = 'Мари
       enabled: true,
       order: 1,
       content: {
+        variant: '1',
         title: 'Наша история',
         text: 'Мы встретились случайно, но поняли — это судьба. С тех пор каждый день с тобой — это подарок.',
-        image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&q=80',
+        image: PH.storyPortrait(0),
         meetDate: '12 мая 2022',
         proposeDate: '14 февраля 2024',
       },
@@ -116,12 +127,13 @@ export function getDefaultBlocks(bride = 'Александр', groom = 'Мари
       enabled: true,
       order: 2,
       content: {
+        variant: 'masonry',
         title: 'Наши моменты',
         images: JSON.stringify([
-          'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
-          'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80',
-          'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80',
-          'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80',
+          PH.galleryTile(0),
+          PH.galleryTile(1),
+          PH.galleryTile(2),
+          PH.galleryTile(3),
         ]),
       },
     },
@@ -141,11 +153,13 @@ export function getDefaultBlocks(bride = 'Александр', groom = 'Мари
       enabled: true,
       order: 4,
       content: {
+        variant: '1',
         title: 'Место проведения',
-        venue: 'Grand Palace Hotel',
-        address: 'ул. Достык 1, Алматы',
-        mapUrl: 'https://maps.google.com',
-        dresscode: 'Evening dress',
+        venue,
+        address,
+        mapUrl,
+        coords: vars.coords || '',
+        dresscode,
         note: 'Просим прибыть за 30 минут до начала церемонии',
       },
     },
@@ -155,20 +169,26 @@ export function getDefaultBlocks(bride = 'Александр', groom = 'Мари
       enabled: true,
       order: 5,
       content: {
+        variant: '1',
         title: 'Подтвердите присутствие',
         subtitle: 'Пожалуйста, ответьте до 1 июня 2026',
-        phone: '+7 777 123 4567',
+        phone,
       },
     },
     {
-      id: 'final',
-      type: 'final',
+      id: 'footer',
+      type: 'footer',
       enabled: true,
       order: 6,
       content: {
-        title: `${bride} & ${groom}`,
-        message: 'Мы ждём вас с нетерпением и благодарны за то, что вы разделите с нами этот особенный день',
-        date: weddingDate,
+        variant: '1',
+        names: `${bride} & ${groom}`,
+        date: `${String(new Date(weddingDate).getDate()).padStart(2, '0')}.${String(new Date(weddingDate).getMonth() + 1).padStart(2, '0')}.${new Date(weddingDate).getFullYear()}`,
+        thanks: 'Спасибо, что вы с нами',
+        hashtag: '',
+        instagram: vars.instagram || '',
+        telegram: vars.telegram || '',
+        whatsapp: vars.whatsapp || '',
       },
     },
   ]

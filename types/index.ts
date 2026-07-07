@@ -14,6 +14,32 @@ export type BlockType =
   | 'infocard'
   | 'video'
   | 'footer'
+  | 'curtains'
+  | 'preloader'
+  | 'envelope'
+  | 'dresscode'
+  | 'custom'
+
+// Глобальные переменные сайта — единый источник имён/даты/локации и пр.
+// Значения «живут» внутри блоков; этот тип описывает их для панели «Данные сайта».
+export interface SiteVariables {
+  bride: string
+  groom: string
+  date: string
+  time: string
+  venue: string
+  address: string
+  coords: string
+  mapUrl: string
+  dresscode: string
+  contactName: string
+  contactPhone: string
+  gifts: string
+  instagram: string
+  telegram: string
+  whatsapp: string
+  musicTitle: string
+}
 
 export interface BlockData {
   id: string
@@ -34,6 +60,9 @@ export interface ProjectColors {
 export interface ProjectFonts {
   heading: string
   body: string
+  // Форма элементов сайта. Опциональны — старые проекты не ломаются.
+  buttonStyle?: 'rounded' | 'pill' | 'sharp'
+  imageStyle?: 'rounded' | 'square' | 'pill' | 'circle'
 }
 
 export interface ProjectMusic {

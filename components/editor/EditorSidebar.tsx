@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, Reorder, useDragControls } from 'framer-motion'
 import {
   Palette, Type, Music, Layers, Upload, Check, X,
-  Sparkles, Plus, Copy, Trash2, GripVertical, Eye, EyeOff,
+  Sparkles, Plus, Copy, Trash2, GripVertical, Eye, EyeOff, ClipboardList,
 } from 'lucide-react'
-import type { Project, ProjectColors, BlockData, BlockType } from '@/types'
+import type { Project, ProjectColors, BlockData, BlockType, SiteVariables } from '@/types'
+import { deriveVariables, applyVariables } from '@/lib/siteVariables'
+import { libraryForPlan } from '@/lib/musicLibrary'
 import {
   WEDDING_FONTS, fontFamilyValue, STYLE_PRESETS, COLOR_PRESETS,
-  hexToRgb, rgbToHex, normalizeHex,
+  hexToRgb, rgbToHex, normalizeHex, BUTTON_SHAPES, IMAGE_SHAPES,
+  type ButtonShape, type ImageShape,
 } from '@/lib/editorPresets'
 
 interface EditorSidebarProps {
@@ -19,6 +22,8 @@ interface EditorSidebarProps {
   onBlockDelete: (id: string) => void
   onBlockReorder: (blocks: BlockData[]) => void
   onAddBlock: () => void
+  canAddBlocks?: boolean
+  plan?: 'start' | 'standard' | 'premium'
   userId?: string
   projectId?: string
 }
@@ -35,6 +40,11 @@ const TYPE_META: Record<BlockType, { icon: string; label: string }> = {
   infocard: { icon: 'ℹ️', label: 'Инфо-блок' },
   video: { icon: '🎬', label: 'Видео' },
   footer: { icon: '🥂', label: 'Footer' },
+  curtains: { icon: '🎭', label: 'Шторки' },
+  preloader: { icon: '✨', label: 'Прелоадер' },
+  envelope: { icon: '✉️', label: 'Конверт' },
+  dresscode: { icon: '👗', label: 'Дресс-код' },
+  custom: { icon: '🧩', label: 'Свой блок' },
 }
 
 function blockTitle(block: BlockData): string {
@@ -43,16 +53,25 @@ function blockTitle(block: BlockData): string {
   return TYPE_META[block.type]?.label ?? block.type
 }
 
-type Tab = 'blocks' | 'style' | 'colors' | 'fonts' | 'music'
+type Tab = 'blocks' | 'data' | 'style' | 'colors' | 'fonts' | 'music'
 
 export function EditorSidebar({
   project, onUpdate, onBlockToggle, onBlockDuplicate, onBlockDelete, onBlockReorder, onAddBlock,
+  canAddBlocks = true, plan = 'standard',
 }: EditorSidebarProps) {
   const [tab, setTab] = useState<Tab>('blocks')
   const sorted = [...project.blocks].sort((a, b) => a.order - b.order)
 
+  // Глобальные переменные сайта (живут внутри блоков)
+  const [vars, setVars] = useState<SiteVariables>(() => deriveVariables(project.blocks))
+  useEffect(() => { setVars(deriveVariables(project.blocks)) }, [project.blocks])
+  const setVar = (k: keyof SiteVariables, v: string) => setVars((prev) => ({ ...prev, [k]: v }))
+  const commitVars = (next: SiteVariables) => onUpdate({ blocks: applyVariables(project.blocks, next) })
+  const [musicPreview, setMusicPreview] = useState<string | null>(null)
+
   const tabs: { key: Tab; icon: React.ReactNode; label: string }[] = [
     { key: 'blocks', icon: <Layers size={15} />, label: 'Блоки' },
+    { key: 'data', icon: <ClipboardList size={15} />, label: 'Данные' },
     { key: 'style', icon: <Sparkles size={15} />, label: 'Стиль' },
     { key: 'colors', icon: <Palette size={15} />, label: 'Цвета' },
     { key: 'fonts', icon: <Type size={15} />, label: 'Шрифты' },
@@ -85,10 +104,12 @@ export function EditorSidebar({
             <motion.div key="blocks" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3">
               <button
                 onClick={onAddBlock}
-                className="w-full mb-3 py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
-                style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}
+                className="w-full mb-3 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-transform active:scale-[0.98]"
+                style={canAddBlocks
+                  ? { background: 'linear-gradient(135deg,#C4A97D,#8B6F47)', color: '#fff' }
+                  : { background: '#EFEAE0', color: '#9A8B76' }}
               >
-                <Plus size={16} /> Добавить блок
+                {canAddBlocks ? <><Plus size={16} /> Добавить блок</> : <>🔒 Добавить блок · Стандарт</>}
               </button>
 
               <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">
@@ -117,6 +138,39 @@ export function EditorSidebar({
             </motion.div>
           )}
 
+          {/* DATA — глобальные переменные сайта */}
+          {tab === 'data' && (
+            <motion.div key="data" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3 space-y-3">
+              <p className="text-[11px] text-gray-400 leading-relaxed">Общие данные подставляются во все блоки сразу. Изменения применяются, когда вы уходите из поля.</p>
+              {([
+                ['bride', 'Имя невесты', 'text'], ['groom', 'Имя жениха', 'text'],
+                ['date', 'Дата свадьбы', 'date'], ['time', 'Время', 'time'],
+                ['venue', 'Место (ресторан)', 'text'], ['address', 'Адрес', 'text'],
+                ['mapUrl', 'Ссылка на карты', 'text'], ['dresscode', 'Дресс-код', 'text'],
+                ['contactName', 'Контакт (имя)', 'text'], ['contactPhone', 'Телефон', 'text'],
+                ['gifts', 'Подарки', 'text'],
+                ['instagram', 'Instagram', 'text'], ['telegram', 'Telegram', 'text'], ['whatsapp', 'WhatsApp', 'text'],
+              ] as [keyof SiteVariables, string, string][]).map(([key, label, type]) => (
+                <div key={key}>
+                  <label className="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">{label}</label>
+                  <input
+                    type={type}
+                    value={vars[key]}
+                    onChange={(e) => setVar(key, e.target.value)}
+                    onBlur={() => commitVars(vars)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { (e.target as HTMLInputElement).blur() } }}
+                    className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-[#2C2017] outline-none focus:ring-2 focus:ring-[#C4A97D]/30 transition"
+                  />
+                </div>
+              ))}
+              <button onClick={() => commitVars(vars)}
+                className="w-full mt-1 py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2"
+                style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}>
+                <Check size={15} /> Применить ко всем блокам
+              </button>
+            </motion.div>
+          )}
+
           {/* STYLE PRESETS */}
           {tab === 'style' && (
             <motion.div key="style" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3 space-y-2">
@@ -128,7 +182,7 @@ export function EditorSidebar({
                 return (
                   <button
                     key={s.id}
-                    onClick={() => onUpdate({ colors: s.colors, fonts: s.fonts })}
+                    onClick={() => onUpdate({ colors: s.colors, fonts: { ...project.fonts, ...s.fonts } })}
                     className={`w-full p-3 rounded-xl border text-left transition-all ${
                       active ? 'border-[#C4A97D] ring-1 ring-[#C4A97D]/30' : 'border-gray-100 hover:border-[#C4A97D]/40'
                     }`}
@@ -149,10 +203,41 @@ export function EditorSidebar({
                   </button>
                 )
               })}
+
+              {/* Форма элементов сайта */}
+              <div className="pt-3 mt-1 border-t border-gray-100">
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Форма кнопок</p>
+                <div className="flex gap-1.5 mb-4">
+                  {BUTTON_SHAPES.map((o) => {
+                    const active = (project.fonts.buttonStyle ?? 'rounded') === o.v
+                    return (
+                      <button key={o.v}
+                        onClick={() => onUpdate({ fonts: { ...project.fonts, buttonStyle: o.v as ButtonShape } })}
+                        className={`flex-1 py-2 text-[11px] font-medium transition-all border ${active ? 'bg-[#2C2017] text-white border-[#2C2017]' : 'bg-white text-gray-500 border-gray-200 hover:border-[#C4A97D]/50'}`}
+                        style={{ borderRadius: o.v === 'pill' ? 9999 : o.v === 'sharp' ? 2 : 12 }}>
+                        {o.label}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Форма изображений</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {IMAGE_SHAPES.map((o) => {
+                    const active = (project.fonts.imageStyle ?? 'rounded') === o.v
+                    const r = o.v === 'square' ? 2 : o.v === 'pill' ? 18 : o.v === 'circle' ? 9999 : 10
+                    return (
+                      <button key={o.v}
+                        onClick={() => onUpdate({ fonts: { ...project.fonts, imageStyle: o.v as ImageShape } })}
+                        className={`flex items-center gap-2 py-2 px-2.5 text-[11px] font-medium transition-all border rounded-xl ${active ? 'border-[#C4A97D] bg-[#C4A97D]/8 text-[#8B6F47]' : 'border-gray-200 text-gray-500 hover:border-[#C4A97D]/50'}`}>
+                        <span className="w-4 h-4 border-2 flex-shrink-0" style={{ borderRadius: r, borderColor: active ? '#C4A97D' : '#c9c2b8' }} />
+                        {o.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </motion.div>
           )}
-
-          {/* COLORS */}
           {tab === 'colors' && (
             <motion.div key="colors" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3 space-y-4">
               <div>
@@ -208,21 +293,25 @@ export function EditorSidebar({
               <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">{WEDDING_FONTS.length} свадебных шрифтов</p>
               {WEDDING_FONTS.map((f) => {
                 const active = project.fonts.heading === f.heading
-                const sample = f.cyrillic ? 'Айгерим & Дамир' : 'Adele & David'
                 return (
                   <button
                     key={f.label}
-                    onClick={() => onUpdate({ fonts: { heading: f.heading, body: f.body } })}
+                    onClick={() => onUpdate({ fonts: { ...project.fonts, heading: f.heading, body: f.body } })}
                     className={`w-full p-3 rounded-xl border text-left transition-all ${
                       active ? 'border-[#C4A97D] bg-[#C4A97D]/5 ring-1 ring-[#C4A97D]/30' : 'border-gray-100 hover:border-[#C4A97D]/40'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] text-gray-400">{f.label}{!f.cyrillic && <span className="ml-1 opacity-60">· латиница</span>}</span>
+                      <span className="text-[11px] text-gray-400 flex items-center gap-1.5">
+                        {f.label}
+                        <span className={`px-1.5 py-px rounded text-[9px] font-semibold tracking-wide ${
+                          f.langs === 'RU+KZ' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-400'
+                        }`}>{f.langs}</span>
+                      </span>
                       {active && <Check size={12} className="text-[#C4A97D]" />}
                     </div>
                     <p className="text-[#2C2017] leading-tight truncate" style={{ fontFamily: fontFamilyValue(f.heading), fontSize: f.kind === 'cursive' ? 26 : 22, fontWeight: 400 }}>
-                      {sample}
+                      Айгерім &amp; Дамир
                     </p>
                   </button>
                 )
@@ -267,6 +356,46 @@ export function EditorSidebar({
                 <button onClick={() => onUpdate({ music: { ...project.music, autoplay: !project.music.autoplay } })} className="toggle-fix" data-state={project.music.autoplay ? 'on' : 'off'} />
               </div>
               <p className="text-xs text-gray-400 px-1">💡 Музыка воспроизводится на опубликованном сайте гостей</p>
+
+              {/* Библиотека музыки */}
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between px-1 mb-2">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-400">Библиотека музыки</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: '#C4A97D22', color: '#8B6F47' }}>{libraryForPlan(plan).length} треков</span>
+                </div>
+                {plan === 'start' ? (
+                  <p className="text-[11px] text-gray-400 px-1 leading-snug">Библиотека доступна на тарифе Стандарт (10) и Премиум (30). Загрузите свой файл выше.</p>
+                ) : (
+                  <>
+                    <p className="text-[11px] text-gray-400 px-1 leading-snug mb-2">Выберите трек. Файлы подставляются вашими лицензированными копиями (загрузка в Storage).</p>
+                    <div className="max-h-60 overflow-y-auto space-y-1 pr-1" data-lenis-prevent>
+                      {libraryForPlan(plan).map((tr) => {
+                        const active = !!project.music.url && project.music.title === `${tr.title} — ${tr.artist}`
+                        return (
+                          <div key={tr.id} className={`flex items-center gap-2 p-2 rounded-lg ${active ? 'bg-[#C4A97D]/12' : 'hover:bg-gray-50'}`}>
+                            <button
+                              onClick={() => setMusicPreview((p) => (p === tr.id ? null : tr.id))}
+                              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-white"
+                              style={{ background: tr.url ? '#C4A97D' : '#CBB' }} title={tr.url ? 'Прослушать' : 'Файл не задан'}>
+                              {musicPreview === tr.id ? '❚❚' : '▶'}
+                            </button>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[12px] text-[#2C2017] truncate">{tr.title}</p>
+                              <p className="text-[10px] text-gray-400 truncate">{tr.artist}{tr.tier === 'premium' ? ' · 👑' : ''}</p>
+                            </div>
+                            <button
+                              onClick={() => onUpdate({ music: { url: tr.url || project.music.url, autoplay: project.music.autoplay, title: `${tr.title} — ${tr.artist}` } })}
+                              className="text-[11px] px-2 py-1 rounded-md flex-shrink-0" style={{ background: active ? '#C4A97D' : '#EFEAE0', color: active ? '#fff' : '#8B6F47' }}>
+                              {active ? '✓' : 'Выбрать'}
+                            </button>
+                            {musicPreview === tr.id && tr.url && <audio src={tr.url} autoPlay onEnded={() => setMusicPreview(null)} className="hidden" />}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
             </motion.div>
           )}
 

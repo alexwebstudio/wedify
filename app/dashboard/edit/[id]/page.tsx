@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, use, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -7,12 +7,14 @@ import {
   Monitor, Smartphone, PanelLeft, X, Undo2, Redo2,
 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { loadUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userSettings'
 import { getProjectById, updateProject, publishProject } from '@/lib/projects'
 import { WeddingSite } from '@/components/templates/WeddingSite'
 import { EditorSidebar } from '@/components/editor/EditorSidebar'
 import { BlockLibraryModal } from '@/components/editor/BlockLibraryModal'
 import { DeleteConfirm } from '@/components/editor/DeleteConfirm'
 import { makeBlockFromCatalog } from '@/lib/blockLibrary'
+import { usePlan, canAddBlocks } from '@/lib/subscription'
 import type { CatalogItem } from '@/lib/blockLibrary'
 import type { Project, BlockData } from '@/types'
 import toast from 'react-hot-toast'
@@ -54,6 +56,25 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
   // modals
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<BlockData | null>(null)
+  const { plan } = usePlan()
+
+  // Настройки аккаунта: форма кнопок/картинок и стартовая версия (моб/деск)
+  const [acctBtn, setAcctBtn] = useState<ButtonStyle>('rounded')
+  const [acctImg, setAcctImg] = useState<ImageStyle>('rounded')
+  const viewInit = useRef(false)
+
+  useEffect(() => {
+    if (!user) return
+    loadUserSettings(user.id, user.email || '').then((st) => {
+      setAcctBtn(st.defaults.buttonStyle)
+      setAcctImg(st.defaults.imageStyle)
+      // Стартовать редактор в той версии, что выбрана в настройках (моб/деск) — один раз.
+      if (!viewInit.current) {
+        viewInit.current = true
+        setViewMode(st.defaults.buildFirst === 'mobile' ? 'mobile' : 'desktop')
+      }
+    })
+  }, [user])
 
   useEffect(() => {
     if (!authLoading && !user) router.push('/auth/login')
@@ -245,7 +266,12 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
     onBlockDuplicate: handleBlockDuplicate,
     onBlockDelete: requestDelete,
     onBlockReorder: handleBlockReorder,
-    onAddBlock: () => setLibraryOpen(true),
+    onAddBlock: () => {
+      if (!canAddBlocks(plan)) { toast('Добавление блоков доступно на тарифе Стандарт и выше', { icon: '🔒' }); return }
+      setLibraryOpen(true)
+    },
+    canAddBlocks: canAddBlocks(plan),
+    plan,
     userId: user?.id,
   }
 
@@ -388,6 +414,8 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
               onBlockMoveUp={handleBlockMoveUp}
               onBlockMoveDown={handleBlockMoveDown}
               userId={user?.id}
+              buttonStyleFallback={acctBtn}
+              imageStyleFallback={acctImg}
             />
           </div>
         </div>
@@ -434,6 +462,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
         open={libraryOpen}
         colors={project.colors}
         fonts={project.fonts}
+        plan={plan}
         onClose={() => setLibraryOpen(false)}
         onAdd={handleAddFromCatalog}
       />

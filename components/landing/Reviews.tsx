@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
-import { Star, Quote, X, Lock } from 'lucide-react'
+import { Star, Quote, X, Lock, ImagePlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { uploadMedia } from '@/lib/projects'
 import { submitReview, getApprovedReviews, type ReviewRow } from '@/app/actions/reviews'
 
 // запасные отзывы, пока в базе пусто (чтобы блок не был пустым)
@@ -47,6 +48,29 @@ export default function Reviews() {
   const [rating, setRating] = useState(5)
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
+  const [images, setImages] = useState<string[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || !user) return
+    const room = 4 - images.length
+    const list = Array.from(files).slice(0, room)
+    if (!list.length) { toast('Можно прикрепить до 4 изображений', { icon: 'ℹ️' }); return }
+    setUploading(true)
+    try {
+      for (const f of list) {
+        if (!f.type.startsWith('image/')) continue
+        const url = await uploadMedia(f, user.id, 'reviews')
+        setImages((prev) => [...prev, url].slice(0, 4))
+      }
+    } catch {
+      toast.error('Не удалось загрузить изображение')
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
 
   useEffect(() => {
     getApprovedReviews(12).then((rows) => {
@@ -72,19 +96,18 @@ export default function Reviews() {
 
   const handleSubmit = async () => {
     setSending(true)
-    const res = await submitReview({ name, rating, text })
+    const res = await submitReview({ name, rating, text, images })
     setSending(false)
     if (res.ok) {
       toast.success(res.message)
       setOpen(false)
-      // мгновенно показываем на сайте (реальное время), без очереди
       const fresh: ReviewRow = {
         id: 'new-' + Date.now(), name: name.trim(), rating, text: text.trim(),
-        created_at: new Date().toISOString(),
+        images, created_at: new Date().toISOString(),
       }
       setReviews((prev) => [fresh, ...(seeded ? [] : prev)])
       setSeeded(false)
-      setText(''); setRating(5)
+      setText(''); setRating(5); setImages([])
     } else {
       toast.error(res.message)
     }
@@ -126,6 +149,15 @@ export default function Reviews() {
             >
               <Quote size={22} color="#C4A97D" style={{ opacity: 0.5 }} />
               <p style={{ color: '#3A322A', fontSize: 14.5, lineHeight: 1.65, flex: 1 }}>{r.text}</p>
+              {r.images && r.images.length > 0 && (
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {r.images.slice(0, 4).map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noreferrer" style={{ display: 'block', width: 56, height: 56, borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(196,169,125,.2)' }}>
+                      <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </a>
+                  ))}
+                </div>
+              )}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
                 <div
                   style={{
@@ -247,11 +279,36 @@ export default function Reviews() {
                 </p>
               </div>
 
+              <div>
+                <label style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9A9188', marginBottom: 8 }}>
+                  Фото (необязательно)
+                </label>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {images.map((url, i) => (
+                    <div key={i} style={{ position: 'relative', width: 64, height: 64, borderRadius: 10, overflow: 'hidden', border: '1px solid #e5ddd3' }}>
+                      <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                        style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,.55)', border: 'none', borderRadius: 6, padding: 2, cursor: 'pointer', lineHeight: 0 }}>
+                        <X size={12} color="#fff" />
+                      </button>
+                    </div>
+                  ))}
+                  {images.length < 4 && (
+                    <button onClick={() => fileRef.current?.click()} disabled={uploading}
+                      style={{ width: 64, height: 64, borderRadius: 10, border: '1.5px dashed rgba(196,169,125,.5)', background: '#FAF8F5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, cursor: 'pointer', color: '#B8956A' }}>
+                      {uploading ? <span style={{ fontSize: 10 }}>…</span> : <><ImagePlus size={16} /><span style={{ fontSize: 9 }}>Фото</span></>}
+                    </button>
+                  )}
+                </div>
+                <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
+                <p style={{ fontSize: 11, color: '#b3a89c', marginTop: 6 }}>Скриншоты или фото — до 4 изображений.</p>
+              </div>
+
               <button
                 onClick={handleSubmit}
-                disabled={sending}
+                disabled={sending || uploading}
                 className="btn-luxury"
-                style={{ width: '100%', padding: '13px', borderRadius: 14, fontSize: 14, fontWeight: 500, opacity: sending ? 0.6 : 1 }}
+                style={{ width: '100%', padding: '13px', borderRadius: 14, fontSize: 14, fontWeight: 500, opacity: (sending || uploading) ? 0.6 : 1 }}
               >
                 {sending ? 'Отправляем…' : 'Опубликовать отзыв'}
               </button>

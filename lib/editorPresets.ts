@@ -1,44 +1,41 @@
 import type { ProjectColors, ProjectFonts } from '@/types'
 
 export type FontFamilyKind = 'serif' | 'sans' | 'cursive'
+export type FontLang = 'RU' | 'KZ' | 'RU+KZ'
 
 export interface WeddingFont {
   heading: string
   body: string
   label: string
   kind: FontFamilyKind
-  cyrillic: boolean // корректно отображает кириллицу
+  langs: FontLang // поддержка языков: RU (русский) / RU+KZ (русский + казахский)
 }
 
-// 25 аккуратных свадебных / каллиграфических шрифтов.
-// cyrillic:true — шрифт умеет кириллицу (для имён Айгерим / Дамир).
-// cyrillic:false — латиница (для имён вида Adele & David), в превью используем латинский образец.
+// Только шрифты с поддержкой кириллицы (латиница-онли убрана — для RU/KZ бесполезна).
+// langs: 'RU+KZ' — есть расширенная кириллица с казахскими буквами (ә ғ қ ң ө ұ ү һ і);
+//        'RU'    — базовая кириллица (казахские спецбуквы могут отсутствовать).
 export const WEDDING_FONTS: WeddingFont[] = [
-  { heading: 'Cormorant Garamond', body: 'Lato',    label: 'Cormorant',     kind: 'serif',   cyrillic: true },
-  { heading: 'Playfair Display',   body: 'Lato',    label: 'Playfair',      kind: 'serif',   cyrillic: true },
-  { heading: 'EB Garamond',        body: 'Lato',    label: 'EB Garamond',   kind: 'serif',   cyrillic: true },
-  { heading: 'Cormorant',          body: 'Raleway', label: 'Cormorant Alt', kind: 'serif',   cyrillic: true },
-  { heading: 'Lora',               body: 'Inter',   label: 'Lora',          kind: 'serif',   cyrillic: true },
-  { heading: 'Prata',              body: 'Raleway', label: 'Prata',         kind: 'serif',   cyrillic: true },
-  { heading: 'Spectral',           body: 'Inter',   label: 'Spectral',      kind: 'serif',   cyrillic: true },
-  { heading: 'PT Serif',           body: 'Lato',    label: 'PT Serif',      kind: 'serif',   cyrillic: true },
-  { heading: 'Alice',              body: 'Raleway', label: 'Alice',         kind: 'serif',   cyrillic: true },
-  { heading: 'Yeseva One',         body: 'Lato',    label: 'Yeseva One',    kind: 'serif',   cyrillic: true },
-  { heading: 'Forum',              body: 'Manrope', label: 'Forum',         kind: 'serif',   cyrillic: true },
-  { heading: 'Philosopher',        body: 'Raleway', label: 'Philosopher',   kind: 'sans',    cyrillic: true },
-  { heading: 'Tenor Sans',         body: 'Manrope', label: 'Tenor Sans',    kind: 'sans',    cyrillic: true },
-  { heading: 'Marcellus',          body: 'Raleway', label: 'Marcellus',     kind: 'serif',   cyrillic: false },
-  { heading: 'Cinzel',             body: 'Raleway', label: 'Cinzel',        kind: 'serif',   cyrillic: false },
-  { heading: 'Dancing Script',     body: 'Lato',    label: 'Dancing Script',kind: 'cursive', cyrillic: true },
-  { heading: 'Marck Script',       body: 'Lato',    label: 'Marck Script',  kind: 'cursive', cyrillic: true },
-  { heading: 'Caveat',             body: 'Lato',    label: 'Caveat',        kind: 'cursive', cyrillic: true },
-  { heading: 'Pacifico',           body: 'Lato',    label: 'Pacifico',      kind: 'cursive', cyrillic: true },
-  { heading: 'Great Vibes',        body: 'Lato',    label: 'Great Vibes',   kind: 'cursive', cyrillic: false },
-  { heading: 'Sacramento',         body: 'Lato',    label: 'Sacramento',    kind: 'cursive', cyrillic: false },
-  { heading: 'Parisienne',         body: 'Lato',    label: 'Parisienne',    kind: 'cursive', cyrillic: false },
-  { heading: 'Allura',             body: 'Lato',    label: 'Allura',        kind: 'cursive', cyrillic: false },
-  { heading: 'Alex Brush',         body: 'Lato',    label: 'Alex Brush',    kind: 'cursive', cyrillic: false },
-  { heading: 'Pinyon Script',      body: 'Lato',    label: 'Pinyon Script', kind: 'cursive', cyrillic: false },
+  { heading: 'Great Vibes',        body: 'Lato',    label: 'Great Vibes',  kind: 'cursive', langs: 'RU' },
+  { heading: 'Cormorant Garamond', body: 'Lato',    label: 'Cormorant',    kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Playfair Display',   body: 'Lato',    label: 'Playfair',     kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'EB Garamond',        body: 'Lato',    label: 'EB Garamond',  kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Cormorant',          body: 'Raleway', label: 'Cormorant Alt',kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Lora',               body: 'Inter',   label: 'Lora',         kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Prata',              body: 'Raleway', label: 'Prata',        kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Spectral',           body: 'Inter',   label: 'Spectral',     kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'PT Serif',           body: 'Lato',    label: 'PT Serif',     kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Alice',              body: 'Raleway', label: 'Alice',        kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Yeseva One',         body: 'Lato',    label: 'Yeseva One',   kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Forum',              body: 'Manrope', label: 'Forum',        kind: 'serif',   langs: 'RU+KZ' },
+  { heading: 'Philosopher',        body: 'Raleway', label: 'Philosopher',  kind: 'sans',    langs: 'RU+KZ' },
+  { heading: 'Montserrat',         body: 'Inter',   label: 'Montserrat',   kind: 'sans',    langs: 'RU+KZ' },
+  { heading: 'Manrope',            body: 'Inter',   label: 'Manrope',      kind: 'sans',    langs: 'RU+KZ' },
+  { heading: 'Tenor Sans',         body: 'Manrope', label: 'Tenor Sans',   kind: 'sans',    langs: 'RU' },
+  { heading: 'Comfortaa',          body: 'Inter',   label: 'Comfortaa',    kind: 'sans',    langs: 'RU+KZ' },
+  { heading: 'Caveat',             body: 'Lato',    label: 'Caveat',       kind: 'cursive', langs: 'RU+KZ' },
+  { heading: 'Marck Script',       body: 'Lato',    label: 'Marck Script', kind: 'cursive', langs: 'RU' },
+  { heading: 'Dancing Script',     body: 'Lato',    label: 'Dancing Script',kind: 'cursive',langs: 'RU' },
+  { heading: 'Pacifico',           body: 'Lato',    label: 'Pacifico',     kind: 'cursive', langs: 'RU' },
 ]
 
 export function fontFamilyValue(font: string): string {
@@ -49,6 +46,28 @@ export function fontFamilyValue(font: string): string {
     return `'${font}', serif`
   }
   return `'${font}', serif`
+}
+
+// ── Форма элементов сайта (кнопки / изображения) ──
+export type ButtonShape = 'rounded' | 'pill' | 'sharp'
+export type ImageShape = 'rounded' | 'square' | 'pill' | 'circle'
+
+export const BUTTON_SHAPES: { v: ButtonShape; label: string }[] = [
+  { v: 'rounded', label: 'Скруглённые' },
+  { v: 'pill', label: 'Капсула' },
+  { v: 'sharp', label: 'Прямые' },
+]
+export const IMAGE_SHAPES: { v: ImageShape; label: string }[] = [
+  { v: 'rounded', label: 'Скруглённые' },
+  { v: 'square', label: 'Квадратные' },
+  { v: 'pill', label: 'Капсула' },
+  { v: 'circle', label: 'Круглые' },
+]
+export function buttonRadius(s?: ButtonShape): string {
+  return s === 'pill' ? '9999px' : s === 'sharp' ? '0px' : '14px'
+}
+export function imageRadius(s?: ImageShape): string {
+  return s === 'square' ? '0px' : s === 'pill' ? '2.25rem' : s === 'circle' ? '9999px' : '1rem'
 }
 
 // Готовые цельные стили — задают палитру + типографику одним нажатием.
@@ -102,6 +121,20 @@ export const STYLE_PRESETS: StylePreset[] = [
     desc: 'Гротеск, графика, современный минимал',
     colors: { primary: '#B5654A', secondary: '#7A4230', accent: '#EFE9E3', background: '#F7F4F1', text: '#1E1A17' },
     fonts: { heading: 'Manrope', body: 'Inter' },
+  },
+  {
+    id: 'noir',
+    name: 'Noir',
+    desc: 'Глубокий графит и шампань, драматично',
+    colors: { primary: '#C9A96A', secondary: '#8A7A55', accent: '#2A2A2E', background: '#141416', text: '#EDEAE3' },
+    fonts: { heading: 'Prata', body: 'Manrope' },
+  },
+  {
+    id: 'blush',
+    name: 'Blush',
+    desc: 'Пудра, шампань и мягкий беж, воздушно',
+    colors: { primary: '#C98B7A', secondary: '#9A6455', accent: '#F7E9E3', background: '#FFFBF9', text: '#3A2620' },
+    fonts: { heading: 'Great Vibes', body: 'Lato' },
   },
 ]
 

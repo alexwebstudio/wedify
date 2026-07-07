@@ -30,7 +30,7 @@ const TIERS: Tier[] = [
   {
     id: 'standard',
     name: 'Стандарт',
-    price: '4 590 ₸',
+    price: '3 590 ₸',
     period: 'навсегда',
     note: 'Разовая покупка — доступ навсегда для этой почты',
     featured: true,

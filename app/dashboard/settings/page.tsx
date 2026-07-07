@@ -178,6 +178,12 @@ export default function SettingsPage() {
                 onChange={(v) => patch((d) => { d.defaults.buttonStyle = v })} />
             </Field>
 
+            <Field label="Форма изображений" hint="Применяется к фото в блоках истории, галереи и карточках">
+              <Seg value={s.defaults.imageStyle}
+                options={[{ v: 'rounded', label: 'Скруглённые' }, { v: 'square', label: 'Квадратные' }, { v: 'pill', label: 'Капсула' }, { v: 'circle', label: 'Круглые' }]}
+                onChange={(v) => patch((d) => { d.defaults.imageStyle = v })} />
+            </Field>
+
             <Field label="Базовая цветовая палитра" hint="Больше палитр и свои цвета — в конструкторе конкретного сайта">
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(140px,1fr))', gap: 10 }}>
                 {PALETTES.map((p) => {

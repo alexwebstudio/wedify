@@ -3,22 +3,11 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import { uploadMedia } from '@/lib/projects'
+import { PLACEHOLDER_PRESETS } from '@/lib/placeholders'
 import toast from 'react-hot-toast'
 
-const PRESET_IMAGES = [
-  { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=600', label: 'Свадьба' },
-  { url: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600', label: 'Цветы' },
-  { url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600', label: 'Пара' },
-  { url: 'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=600', label: 'Кольца' },
-  { url: 'https://images.unsplash.com/photo-1470075801209-17f9ec0cada6?w=600', label: 'Ceremony' },
-  { url: 'https://images.unsplash.com/photo-1550005809-91ad75fb315f?w=600', label: 'Букет' },
-  { url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600', label: 'Торт' },
-  { url: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600', label: 'Вечер' },
-  { url: 'https://images.unsplash.com/photo-1591604021695-0c69b7c05981?w=600', label: 'Поцелуй' },
-  { url: 'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?w=600', label: 'Платье' },
-  { url: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=600', label: 'Детали' },
-  { url: 'https://images.unsplash.com/photo-1563195010-3e99c4f2a9a2?w=600', label: 'Танец' },
-]
+// Красивые нейтральные свадебные заглушки (по категориям) — без случайных стоковых фото.
+const PRESET_IMAGES = PLACEHOLDER_PRESETS
 
 interface ImagePickerProps {
   onSelect: (url: string) => void

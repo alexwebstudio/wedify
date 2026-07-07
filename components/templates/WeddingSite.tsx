@@ -11,8 +11,14 @@ import { ScheduleBlock } from '@/components/blocks/ScheduleBlock'
 import { InfoCardBlock } from '@/components/blocks/InfoCardBlock'
 import { VideoBlock } from '@/components/blocks/VideoBlock'
 import { FooterBlock } from '@/components/blocks/FooterBlock'
+import { CurtainsBlock } from '@/components/blocks/CurtainsBlock'
+import { PreloaderBlock } from '@/components/blocks/PreloaderBlock'
+import { EnvelopeBlock } from '@/components/blocks/EnvelopeBlock'
+import { DressCodeBlock } from '@/components/blocks/DressCodeBlock'
+import { CustomBlock } from '@/components/blocks/CustomBlock'
 import { BlockWrapper } from '@/components/editor/BlockWrapper'
 import { MusicPlayer } from '@/components/ui/MusicPlayer'
+import { buttonRadius, imageRadius, type ButtonShape, type ImageShape } from '@/lib/editorPresets'
 import type { BlockData } from '@/types'
 
 interface WeddingSiteProps {
@@ -23,6 +29,8 @@ interface WeddingSiteProps {
   onBlockMoveUp?: (blockId: string) => void
   onBlockMoveDown?: (blockId: string) => void
   userId?: string
+  buttonStyleFallback?: ButtonShape
+  imageStyleFallback?: ImageShape
 }
 
 export function WeddingSite({
@@ -33,6 +41,8 @@ export function WeddingSite({
   onBlockMoveUp,
   onBlockMoveDown,
   userId,
+  buttonStyleFallback,
+  imageStyleFallback,
 }: WeddingSiteProps) {
   const { colors, fonts, music, blocks } = project
   const sorted = [...blocks].sort((a, b) => a.order - b.order)
@@ -61,6 +71,11 @@ export function WeddingSite({
         case 'infocard': return <InfoCardBlock {...sharedProps} />
         case 'video': return <VideoBlock {...sharedProps} />
         case 'footer': return <FooterBlock {...sharedProps} />
+        case 'curtains': return <CurtainsBlock {...sharedProps} />
+        case 'preloader': return <PreloaderBlock {...sharedProps} />
+        case 'envelope': return <EnvelopeBlock {...sharedProps} />
+        case 'dresscode': return <DressCodeBlock {...sharedProps} />
+        case 'custom': return <CustomBlock {...sharedProps} />
         default: return null
       }
     })()
@@ -84,7 +99,13 @@ export function WeddingSite({
   }
 
   return (
-    <div style={{ backgroundColor: colors.background }}>
+    <div
+      style={{
+        backgroundColor: colors.background,
+        ['--wd-btn-radius' as string]: buttonRadius(fonts.buttonStyle ?? buttonStyleFallback),
+        ['--wd-img-radius' as string]: imageRadius(fonts.imageStyle ?? imageStyleFallback),
+      } as React.CSSProperties}
+    >
       {sorted.map((block, idx) => renderBlock(block, idx))}
       <MusicPlayer music={music} accentColor={colors.primary} />
     </div>

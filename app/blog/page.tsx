@@ -1,4 +1,5 @@
 'use client'
+import { SiteFooter } from '@/components/landing/SiteFooter'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -224,6 +225,7 @@ export default function BlogPage() {
         .blog-card:hover .blog-card-arrow { transform: translateX(4px); }
         .blog-card-arrow { transition: transform .3s ease; }
       `}</style>
+      <SiteFooter />
     </div>
   )
 }
