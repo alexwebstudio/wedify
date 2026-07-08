@@ -61,7 +61,7 @@ export function EnvelopeBlock({ block, colors, fonts, isEditing, onChange, intro
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8 }}
           className="relative z-10 text-center px-6">
           <p style={{ color: '#fff', opacity: .7, fontFamily: bodyFf, letterSpacing: '.4em', textTransform: 'uppercase', fontSize: 11, marginBottom: 18 }}>Вы приглашены</p>
-          <EditableText tag="h1" value={content.names || 'Айгерім & Дамир'} onChange={(x) => update('names', x)} isEditing={isEditing}
+          <EditableText tag="h1" value={content.names || 'Алия & Тимур'} onChange={(x) => update('names', x)} isEditing={isEditing}
             style={{ color: '#fff', fontFamily: ff, fontSize: 'clamp(2.6rem,8vw,5rem)', fontWeight: 300, letterSpacing: '.03em', lineHeight: 1.1, textShadow: '0 4px 30px rgba(0,0,0,.4)' }} />
           {(dateStr || isEditing) && (
             isEditing

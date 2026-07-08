@@ -56,7 +56,7 @@ export function PreloaderBlock({ block, colors, fonts, isEditing, onChange, intr
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: colors.primary }} />
           <span style={{ width: 44, height: 1, background: colors.primary, opacity: .5 }} />
         </div>
-        <EditableText tag="h2" value={content.names || 'Айгерім & Дамир'} onChange={(x) => update('names', x)} isEditing={isEditing}
+        <EditableText tag="h2" value={content.names || 'Алия & Тимур'} onChange={(x) => update('names', x)} isEditing={isEditing}
           style={{ color: colors.text, fontFamily: ff, fontSize: 'clamp(2.4rem,7vw,4.4rem)', fontWeight: 300, letterSpacing: '.03em', lineHeight: 1.1 }} />
         <EditableText tag="p" value={content.subtitle || 'Приглашение на свадьбу'} onChange={(x) => update('subtitle', x)} isEditing={isEditing}
           className="mt-3 opacity-60" style={{ color: colors.text, fontFamily: bodyFf, fontSize: 13, letterSpacing: '.34em', textTransform: 'uppercase' }} />

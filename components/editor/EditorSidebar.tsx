@@ -53,7 +53,7 @@ function blockTitle(block: BlockData): string {
   return TYPE_META[block.type]?.label ?? block.type
 }
 
-type Tab = 'blocks' | 'data' | 'style' | 'colors' | 'fonts' | 'music'
+type Tab = 'blocks' | 'data' | 'style' | 'fonts' | 'music'
 
 export function EditorSidebar({
   project, onUpdate, onBlockToggle, onBlockDuplicate, onBlockDelete, onBlockReorder, onAddBlock,
@@ -72,9 +72,7 @@ export function EditorSidebar({
   const tabs: { key: Tab; icon: React.ReactNode; label: string }[] = [
     { key: 'blocks', icon: <Layers size={15} />, label: 'Блоки' },
     { key: 'data', icon: <ClipboardList size={15} />, label: 'Данные' },
-    { key: 'style', icon: <Sparkles size={15} />, label: 'Стиль' },
-    { key: 'colors', icon: <Palette size={15} />, label: 'Цвета' },
-    { key: 'fonts', icon: <Type size={15} />, label: 'Шрифты' },
+    { key: 'style', icon: <Sparkles size={15} />, label: 'Стиль' },    { key: 'fonts', icon: <Type size={15} />, label: 'Шрифты' },
     { key: 'music', icon: <Music size={15} />, label: 'Музыка' },
   ]
 
@@ -168,6 +166,17 @@ export function EditorSidebar({
                 style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}>
                 <Check size={15} /> Применить ко всем блокам
               </button>
+
+              {/* Защита PIN-кодом (per-site) */}
+              <div className="pt-3 mt-1 border-t border-gray-100">
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Защита PIN-кодом</p>
+                <p className="text-[11px] text-gray-400 mb-2 leading-snug">Если задать код, гости не откроют сайт без него. Пусто — доступ свободный.</p>
+                <input
+                  value={project.access_secret || ''} inputMode="numeric" maxLength={8} placeholder="Напр. 2026"
+                  onChange={(e) => onUpdate({ access_secret: e.target.value.replace(/\D/g, '') || null })}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-[#2C2017] tracking-[0.3em] text-center outline-none focus:ring-2 focus:ring-[#C4A97D]/30"
+                />
+              </div>
             </motion.div>
           )}
 
@@ -236,10 +245,9 @@ export function EditorSidebar({
                   })}
                 </div>
               </div>
-            </motion.div>
-          )}
-          {tab === 'colors' && (
-            <motion.div key="colors" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3 space-y-4">
+              <div className="pt-3 mt-1 border-t border-gray-100">
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Цветовая схема</p>
+              </div>
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Готовые палитры</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -311,7 +319,7 @@ export function EditorSidebar({
                       {active && <Check size={12} className="text-[#C4A97D]" />}
                     </div>
                     <p className="text-[#2C2017] leading-tight truncate" style={{ fontFamily: fontFamilyValue(f.heading), fontSize: f.kind === 'cursive' ? 26 : 22, fontWeight: 400 }}>
-                      Айгерім &amp; Дамир
+                      Алия &amp; Тимур
                     </p>
                   </button>
                 )

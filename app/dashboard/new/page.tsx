@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Check, Heart } from 'lucide-react'
@@ -48,6 +48,13 @@ const TEMPLATES: { id: TemplateId; name: string; desc: string; bg: string; bg2: 
 export default function NewProjectPage() {
   const [step, setStep] = useState<1 | 2>(1)
   const [template, setTemplate] = useState<TemplateId>('classic-luxury')
+
+  // Если пришли с главной с выбранным шаблоном — сразу шаг 2
+  useEffect(() => {
+    const valid: TemplateId[] = ['classic-luxury', 'minimal-white', 'dark-elegant', 'sage-garden', 'rose-blush']
+    const p = new URLSearchParams(window.location.search).get('template') as TemplateId | null
+    if (p && valid.includes(p)) { setTemplate(p); setStep(2) }
+  }, [])
   const [title, setTitle] = useState('')
   const [language, setLanguage] = useState<Language>('ru')
   const [loading, setLoading] = useState(false)
@@ -162,11 +169,11 @@ export default function NewProjectPage() {
                       <div className="text-center px-4">
                         <div className="w-6 h-px mx-auto mb-4" style={{ background: tpl.accent }} />
                         <p className="text-2xl font-light mb-0.5" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Александр
+                          Алия
                         </p>
                         <p className="text-sm mb-0.5" style={{ color: tpl.accent }}>♥</p>
                         <p className="text-2xl font-light" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Мария
+                          Тимур
                         </p>
                         <div className="w-6 h-px mx-auto mt-4" style={{ background: tpl.accent }} />
                         <p className="text-xs mt-3 tracking-widest uppercase opacity-40" style={{ color: tpl.text }}>
@@ -221,11 +228,11 @@ export default function NewProjectPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя невесты *</label>
-                    <input type="text" value={bride} onChange={(e) => setBride(e.target.value)} placeholder="Айгерім" className="input-luxury text-[#2C2017]" autoFocus />
+                    <input type="text" value={bride} onChange={(e) => setBride(e.target.value)} placeholder="Алия" className="input-luxury text-[#2C2017]" autoFocus />
                   </div>
                   <div>
                     <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя жениха *</label>
-                    <input type="text" value={groom} onChange={(e) => setGroom(e.target.value)} placeholder="Дамир" className="input-luxury text-[#2C2017]" />
+                    <input type="text" value={groom} onChange={(e) => setGroom(e.target.value)} placeholder="Тимур" className="input-luxury text-[#2C2017]" />
                   </div>
                 </div>
 
@@ -245,7 +252,7 @@ export default function NewProjectPage() {
                 <div>
                   <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Название приглашения</label>
                   <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                    placeholder={autoTitle || 'Например: Айгерім и Дамир'} className="input-luxury text-[#2C2017]"
+                    placeholder={autoTitle || 'Например: Алия и Тимур'} className="input-luxury text-[#2C2017]"
                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()} />
                   {autoTitle && (
                     <p className="text-xs text-[#2C2017]/40 mt-2">Ссылка: <span className="font-mono text-[#C4A97D]">site.com/{autoTitle.toLowerCase().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30)}</span></p>

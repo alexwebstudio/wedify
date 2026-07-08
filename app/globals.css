@@ -47,7 +47,7 @@ body { font-family: 'Comfortaa', 'Lato', sans-serif; -webkit-font-smoothing: ant
 .btn-luxury:active { transform: translateY(0); }
 .btn-luxury:disabled { opacity: 0.45; transform: none; cursor: not-allowed; }
 
-.input-luxury { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,169,125,0.3); border-radius: 10px; padding: 11px 14px; color: inherit; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; width: 100%; font-family: 'Lato', sans-serif; font-size: 14px; }
+.input-luxury { background: rgba(255,255,255,0.05); border: 1px solid rgba(196,169,125,0.3); border-radius: 10px; padding: 11px 14px; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; width: 100%; font-family: 'Lato', sans-serif; font-size: 14px; }
 .input-luxury:focus { border-color: #C4A97D; box-shadow: 0 0 0 3px rgba(196,169,125,0.12); }
 
 .ornament { display: flex; align-items: center; gap: 14px; color: #C4A97D; }

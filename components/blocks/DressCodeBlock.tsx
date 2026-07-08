@@ -36,7 +36,7 @@ export function DressCodeBlock({ block, colors, fonts, isEditing, onChange, user
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
         {/* иллюстрация */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ duration: .6 }} className="relative">
-          <div className="relative overflow-hidden shadow-xl" style={{ aspectRatio: '4/5', borderRadius: 'var(--wd-img-radius,1rem)' }}>
+          <div onClick={() => isEditing && setPicker(true)} className={`relative overflow-hidden shadow-xl ${isEditing ? 'cursor-pointer' : ''}`} style={{ aspectRatio: '4/5', borderRadius: 'var(--wd-img-radius,1rem)' }}>
             {content.image
               ? <img src={content.image} alt="" loading="lazy" className="w-full h-full object-cover" />
               : <div className="w-full h-full flex items-center justify-center text-5xl" style={{ background: `linear-gradient(135deg, ${defaultPalette[1]}, ${defaultPalette[3]})` }}>👗🤵</div>}

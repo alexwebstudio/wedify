@@ -1,5 +1,5 @@
 'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { WeddingSite } from '@/components/templates/WeddingSite'
 import { PreloaderBlock } from '@/components/blocks/PreloaderBlock'
@@ -11,6 +11,23 @@ const INTRO_TYPES = ['preloader', 'envelope', 'curtains'] as const
 type IntroType = (typeof INTRO_TYPES)[number]
 
 export function WeddingSiteClient({ project }: { project: Project }) {
+  const pin = (project.access_secret || '').trim()
+  const [unlocked, setUnlocked] = useState(!pin)
+  const [pinInput, setPinInput] = useState('')
+  const [pinError, setPinError] = useState(false)
+
+  useEffect(() => {
+    if (!pin) { setUnlocked(true); return }
+    try { if (sessionStorage.getItem(`wd.unlock.${project.slug}`) === pin) setUnlocked(true) } catch {}
+  }, [pin, project.slug])
+
+  const tryUnlock = () => {
+    if (pinInput === pin) {
+      setUnlocked(true)
+      try { sessionStorage.setItem(`wd.unlock.${project.slug}`, pin) } catch {}
+    } else { setPinError(true); setTimeout(() => setPinError(false), 800) }
+  }
+
   const sorted = useMemo(() => [...project.blocks].sort((a, b) => a.order - b.order), [project.blocks])
 
   // Ведущие интро-блоки (прелоадер / конверт / шторы) в начале сайта
@@ -44,6 +61,24 @@ export function WeddingSiteClient({ project }: { project: Project }) {
 
   return (
     <>
+      {!unlocked && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center px-6" style={{ background: `linear-gradient(160deg, ${project.colors.background}, ${project.colors.accent})` }}>
+          <div className="w-full max-w-xs text-center">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl" style={{ background: project.colors.primary, color: '#fff' }}>🔒</div>
+            <h1 className="text-2xl font-light mb-2" style={{ color: project.colors.text, fontFamily: `'${project.fonts.heading}', serif` }}>Приглашение защищено</h1>
+            <p className="text-sm opacity-60 mb-6" style={{ color: project.colors.text }}>Введите PIN-код из приглашения</p>
+            <input
+              value={pinInput} onChange={(e) => setPinInput(e.target.value.replace(/\D/g, ''))}
+              onKeyDown={(e) => e.key === 'Enter' && tryUnlock()}
+              inputMode="numeric" maxLength={8} placeholder="••••"
+              className="w-full text-center text-2xl tracking-[0.5em] py-3 rounded-xl outline-none mb-3"
+              style={{ background: '#fff', border: `2px solid ${pinError ? '#e5484d' : project.colors.primary + '55'}`, color: project.colors.text }}
+            />
+            <button onClick={tryUnlock} className="w-full py-3 rounded-xl text-white font-medium" style={{ background: project.colors.primary }}>Открыть</button>
+            {pinError && <p className="text-xs mt-3" style={{ color: '#e5484d' }}>Неверный код</p>}
+          </div>
+        </div>
+      )}
       <div style={{ visibility: introActive ? 'hidden' : 'visible' }}>
         <WeddingSite project={mainProject} isEditing={false} />
       </div>

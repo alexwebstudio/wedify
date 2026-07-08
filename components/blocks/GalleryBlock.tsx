@@ -23,7 +23,7 @@ export function GalleryBlock({ block, colors, fonts, isEditing, onChange, userId
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-100px' })
 
-  const content = block.content as { variant?: string; title: string; images: string }
+  const content = block.content as { variant?: string; title: string; images: string; eyebrow?: string }
   const v = content.variant || 'masonry'
   const [lightbox, setLightbox] = useState<number | null>(null)
   const images: string[] = (() => { try { return JSON.parse(content.images) } catch { return [] } })()
@@ -66,7 +66,10 @@ export function GalleryBlock({ block, colors, fonts, isEditing, onChange, userId
     <section ref={ref} className="py-14 px-4 md:py-24 md:px-6" style={{ background: `linear-gradient(180deg, ${colors.background}, ${colors.accent}33, ${colors.background})` }}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <p style={{ color: colors.primary, fontFamily: bodyFf, letterSpacing: '.34em', textTransform: 'uppercase', fontSize: 12, marginBottom: 10 }}>Наши фото</p>
+          {(content.eyebrow === undefined || content.eyebrow) && (
+            <EditableText value={content.eyebrow ?? 'Наши фото'} onChange={(x) => onChange({ ...content, eyebrow: x })} isEditing={isEditing} tag="p" placeholder="(надзаголовок)"
+              style={{ color: colors.primary, fontFamily: bodyFf, letterSpacing: '.34em', textTransform: 'uppercase', fontSize: 12, marginBottom: 10 }} />
+          )}
           <EditableText value={content.title} onChange={(x) => onChange({ ...content, title: x })} isEditing={isEditing} tag="h2"
             style={{ color: colors.text, fontFamily: ff, fontSize: 'clamp(1.9rem,4.5vw,3rem)', fontWeight: 300 }} />
         </div>

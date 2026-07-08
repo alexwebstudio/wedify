@@ -19,7 +19,7 @@ export function FooterBlock({ block, colors, fonts, isEditing, onChange }: Props
   const names = (size: number, color: string) => (
     <EditableText
       tag="h2"
-      value={content.names || 'Айгерим & Дамир'}
+      value={content.names || 'Алия & Тимур'}
       onChange={(v) => update('names', v)}
       isEditing={isEditing}
       style={{ fontFamily: fontFamilyValue(fonts.heading), fontSize: size, fontWeight: 400, color, lineHeight: 1.15 }}

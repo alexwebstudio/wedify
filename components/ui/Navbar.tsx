@@ -44,13 +44,9 @@ export function Navbar({ dark = false }: NavbarProps) {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`} style={{ height: 58 }}>
         <div className="max-w-6xl mx-auto px-5 h-full flex items-center justify-between">
           {/* Logo — Wedify */}
-          <Link href="/" className="flex items-center gap-2.5 group" onClick={() => setMobileOpen(false)}>
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)' }}>
-              <span style={{ color: 'white', fontSize: 14, lineHeight: 1 }}>♥</span>
-            </div>
+          <Link href="/" className="flex items-center group" onClick={() => setMobileOpen(false)}>
             <span className={`font-medium tracking-wide transition-colors ${textColor}`}
-              style={{ fontFamily: 'Comfortaa, cursive', fontSize: 18, letterSpacing: '0.02em' }}>
+              style={{ fontFamily: 'Comfortaa, cursive', fontSize: 20, letterSpacing: '0.02em' }}>
               Wedify
             </span>
           </Link>
@@ -146,7 +142,7 @@ export function Navbar({ dark = false }: NavbarProps) {
                 {/* Общие ссылки (доступны всем) */}
                 <Link href="/pricing" onClick={() => setMobileOpen(false)}
                   className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
-                  ♥ Тарифы
+                  Тарифы
                 </Link>
                 <Link href="/blog" onClick={() => setMobileOpen(false)}
                   className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
@@ -182,7 +178,7 @@ export function Navbar({ dark = false }: NavbarProps) {
                     <Link href="/dashboard/new" onClick={() => setMobileOpen(false)}
                       className="mt-2 py-4 px-4 rounded-2xl text-base font-medium text-center"
                       style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      ♥ Создать сайт
+                      Создать сайт
                     </Link>
                     <button onClick={handleSignOut}
                       className="py-3 px-4 rounded-2xl text-white/40 text-sm text-left">
@@ -199,7 +195,7 @@ export function Navbar({ dark = false }: NavbarProps) {
                     <Link href="/auth/register" onClick={() => setMobileOpen(false)}
                       className="py-4 px-4 rounded-2xl text-base font-medium text-center"
                       style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      ♥ Начать бесплатно
+                      Начать бесплатно
                     </Link>
                   </>
                 )}

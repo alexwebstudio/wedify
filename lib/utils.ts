@@ -81,8 +81,8 @@ export function getTemplateDefaults(templateId: TemplateId): {
 }
 
 export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> = {}): BlockData[] {
-  const bride = vars.bride || 'Александр'
-  const groom = vars.groom || 'Мария'
+  const bride = vars.bride || 'Алия'
+  const groom = vars.groom || 'Тимур'
   const weddingDate = vars.date || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const time = vars.time || '16:00'
   const venue = vars.venue || 'Grand Palace Hotel'

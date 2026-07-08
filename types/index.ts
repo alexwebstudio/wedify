@@ -83,6 +83,7 @@ export interface Project {
   music: ProjectMusic
   blocks: BlockData[]
   published: boolean
+  access_secret?: string | null
   created_at: string
   updated_at: string
 }
