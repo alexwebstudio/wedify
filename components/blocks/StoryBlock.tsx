@@ -24,7 +24,7 @@ export function StoryBlock({ block, colors, fonts, isEditing, onChange, userId, 
 
   const content = block.content as {
     variant?: string; title: string; text: string; image: string; meetDate: string; proposeDate: string
-  ; eyebrow?: string }
+  }
   const v = content.variant || '1'
   const update = (key: string, val: string) => onChange({ ...content, [key]: val })
   const ff = fontFamilyValue(fonts.heading)
@@ -40,7 +40,7 @@ export function StoryBlock({ block, colors, fonts, isEditing, onChange, userId, 
 
   const photo = (ratio = '3/4') => (
     <div className="relative">
-      <div onClick={() => isEditing && setShowPicker(true)} className={`relative overflow-hidden shadow-xl ${isEditing ? 'cursor-pointer' : ''}`} style={{ aspectRatio: ratio, borderRadius: 'var(--wd-img-radius,1rem)' }}>
+      <div className="relative overflow-hidden shadow-xl" style={{ aspectRatio: ratio, borderRadius: 'var(--wd-img-radius,1rem)' }}>
         {content.image
           ? <img src={content.image} alt="" loading="lazy" className="w-full h-full object-cover" />
           : <div className="w-full h-full flex items-center justify-center" style={{ background: colors.accent }}><span style={{ color: colors.secondary }}>Фото пары</span></div>}

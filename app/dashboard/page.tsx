@@ -14,35 +14,36 @@ import toast from 'react-hot-toast'
 
 function PlanCard() {
   const { plan, setPlan, meta } = usePlan()
-  const priceLabel = plan === 'standard' ? 'Бесплатно' : meta.price
+  const priceLabel = plan === 'standard' ? 'Бесплатно' : plan === 'start' ? 'Бесплатно' : meta.price
   return (
     <div className="mb-6 bg-white rounded-2xl border p-4 sm:p-5" style={{ borderColor: meta.color + '40' }}>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white text-lg" style={{ background: meta.color }}>
-            {plan === 'standard' ? '⭐' : '✦'}
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-[#2C2017] flex items-center gap-2 flex-wrap">
-              Тариф: {meta.label}
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white" style={{ background: meta.color }}>{priceLabel}</span>
-            </p>
-            <p className="text-xs text-[#9A8B76] mt-0.5">{meta.desc}</p>
-          </div>
+      <div className="flex items-start gap-3">
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 text-white text-lg" style={{ background: meta.color }}>
+          {plan === 'standard' ? '⭐' : '✦'}
         </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-semibold text-[#2C2017]">Тариф: {meta.label}</p>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white whitespace-nowrap" style={{ background: meta.color }}>{priceLabel}</span>
+          </div>
+          <p className="text-xs text-[#9A8B76] mt-0.5 leading-snug">{meta.desc}</p>
+        </div>
+      </div>
 
+      <div className="mt-3.5">
         {plan === 'start' && (
           <button onClick={() => { setPlan('standard'); toast.success('Тариф «Стандарт» активирован 🎉') }}
-            className="px-4 py-2 rounded-xl text-xs font-medium text-white transition-transform active:scale-95 whitespace-nowrap"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-medium text-white transition-transform active:scale-95"
             style={{ background: `linear-gradient(135deg, ${PLAN_META.standard.color}, ${PLAN_META.standard.color}CC)` }}>
-            Получить Стандарт · БЕСПЛАТНО
+            Получить Стандарт · Бесплатно
           </button>
         )}
         {plan === 'standard' && (
-          <button onClick={() => { setPlan('start'); toast('Возвращён базовый тариф', { icon: 'ℹ️' }) }} className="text-xs text-gray-400 hover:text-gray-600 underline self-start sm:self-auto">Вернуться на базовый</button>
+          <button onClick={() => { setPlan('start'); toast('Возвращён базовый тариф', { icon: 'ℹ️' }) }}
+            className="text-xs text-gray-400 hover:text-gray-600 underline">Вернуться на базовый</button>
         )}
       </div>
-      <p className="text-[10px] text-gray-300 mt-2">Премиум-тариф скоро — блоки Premium пока в разработке.</p>
+      <p className="text-[10px] text-gray-300 mt-2.5">Премиум-тариф скоро — блоки Premium пока в разработке.</p>
     </div>
   )
 }

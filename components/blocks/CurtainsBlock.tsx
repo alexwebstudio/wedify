@@ -61,7 +61,7 @@ export function CurtainsBlock({ block, colors, fonts, isEditing, onChange, userI
           <p style={{ color: '#fff', opacity: .8, fontFamily: bodyFf, letterSpacing: '.4em', textTransform: 'uppercase', fontSize: 11, marginBottom: 16 }}>
             <EditableText tag="span" value={content.label || 'Добро пожаловать'} onChange={(x) => update('label', x)} isEditing={isEditing} />
           </p>
-          <EditableText tag="h1" value={content.names || 'Алия & Тимур'} onChange={(x) => update('names', x)} isEditing={isEditing}
+          <EditableText tag="h1" value={content.names || 'Айгерім & Дамир'} onChange={(x) => update('names', x)} isEditing={isEditing}
             style={{ color: '#fff', fontFamily: ff, fontSize: 'clamp(2.6rem,8vw,5rem)', fontWeight: 300, letterSpacing: '.03em', textShadow: '0 4px 30px rgba(0,0,0,.4)' }} />
           {dateStr && !isEditing && <p style={{ color: '#fff', fontFamily: bodyFf, letterSpacing: '.3em', textTransform: 'uppercase', fontSize: 13, marginTop: 14 }}>{dateStr}</p>}
         </motion.div>
@@ -78,7 +78,7 @@ export function CurtainsBlock({ block, colors, fonts, isEditing, onChange, userI
       {/* кнопка открытия */}
       {!open && !isEditing && (
         <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6">
-          <EditableText tag="h1" value={content.names || 'Алия & Тимур'} onChange={() => {}} isEditing={false}
+          <EditableText tag="h1" value={content.names || 'Айгерім & Дамир'} onChange={() => {}} isEditing={false}
             style={{ color: '#fff', fontFamily: ff, fontSize: 'clamp(2rem,6vw,3.4rem)', fontWeight: 300, textShadow: '0 4px 30px rgba(0,0,0,.5)' }} />
           <motion.button onClick={handleOpen} whileHover={{ scale: 1.05 }} whileTap={{ scale: .96 }}
             className="px-8 py-3.5 rounded-full text-sm font-medium" style={{ background: '#fff', color: colors.text, boxShadow: '0 10px 40px rgba(0,0,0,.3)' }}>

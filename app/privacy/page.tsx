@@ -9,7 +9,7 @@ import { Navbar } from '@/components/ui/Navbar'
 const SECTIONS = [
   {
     h: '1. Общие положения',
-    p: 'Настоящая Политика конфиденциальности описывает, как сервис Wedify собирает, использует и защищает персональные данные пользователей. Используя сервис, вы соглашаетесь с условиями данной Политики.',
+    p: 'Настоящая Политика конфиденциальности описывает, как сервис Maruno собирает, использует и защищает персональные данные пользователей. Используя сервис, вы соглашаетесь с условиями данной Политики.',
   },
   {
     h: '2. Какие данные мы собираем',
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
       <Navbar />
       <section style={{ padding: '110px 20px 80px' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
-          <p style={{ color: '#B8956A', fontSize: 11, letterSpacing: '.4em', textTransform: 'uppercase', marginBottom: 10 }}>Wedify</p>
+          <p style={{ color: '#B8956A', fontSize: 11, letterSpacing: '.4em', textTransform: 'uppercase', marginBottom: 10 }}>Maruno</p>
           <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2.2rem,5vw,3.2rem)', fontWeight: 300, color: '#1A1410', marginBottom: 8 }}>
             Политика конфиденциальности
           </h1>

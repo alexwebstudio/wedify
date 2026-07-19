@@ -297,7 +297,7 @@ export default function SettingsPage() {
                 <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 14, background: '#F0F6FB', border: '1px solid #D6E6F2' }}>
                   <Send size={17} color="#2A7BB8" style={{ flexShrink: 0, marginTop: 1 }} />
                   <p style={{ fontSize: 12.5, color: '#3A5A72', lineHeight: 1.6 }}>
-                    Telegram-уведомления без возни с BotFather: скоро подключение будет в один клик через общий бот Wedify. Пока можно оставить email — ответы точно не потеряются.
+                    Telegram-уведомления без возни с BotFather: скоро подключение будет в один клик через общий бот Maruno. Пока можно оставить email — ответы точно не потеряются.
                   </p>
                 </div>
                 <button onClick={() => toast('Подключение Telegram в один клик — скоро 🤍', { icon: '✈️' })}

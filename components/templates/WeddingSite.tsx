@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import type { Project } from '@/types'
 import { HeroBlock } from '@/components/blocks/HeroBlock'
 import { StoryBlock } from '@/components/blocks/StoryBlock'
@@ -16,7 +17,9 @@ import { PreloaderBlock } from '@/components/blocks/PreloaderBlock'
 import { EnvelopeBlock } from '@/components/blocks/EnvelopeBlock'
 import { DressCodeBlock } from '@/components/blocks/DressCodeBlock'
 import { CustomBlock } from '@/components/blocks/CustomBlock'
+import { DividerBlock } from '@/components/blocks/DividerBlock'
 import { BlockWrapper } from '@/components/editor/BlockWrapper'
+import { BlockCustomizer, type BlockSettings } from '@/components/editor/BlockCustomizer'
 import { MusicPlayer } from '@/components/ui/MusicPlayer'
 import { buttonRadius, imageRadius, type ButtonShape, type ImageShape } from '@/lib/editorPresets'
 import type { BlockData } from '@/types'
@@ -45,6 +48,7 @@ export function WeddingSite({
   imageStyleFallback,
 }: WeddingSiteProps) {
   const { colors, fonts, music, blocks } = project
+  const [settingsFor, setSettingsFor] = useState<string | null>(null)
   const sorted = [...blocks].sort((a, b) => a.order - b.order)
 
   const renderBlock = (block: BlockData, idx: number) => {
@@ -76,6 +80,7 @@ export function WeddingSite({
         case 'envelope': return <EnvelopeBlock {...sharedProps} />
         case 'dresscode': return <DressCodeBlock {...sharedProps} />
         case 'custom': return <CustomBlock {...sharedProps} />
+        case 'divider': return <DividerBlock {...sharedProps} />
         default: return null
       }
     })()
@@ -90,10 +95,21 @@ export function WeddingSite({
         onToggle={() => onBlockToggle?.(block.id)}
         onMoveUp={() => onBlockMoveUp?.(block.id)}
         onMoveDown={() => onBlockMoveDown?.(block.id)}
+        onSettings={() => setSettingsFor((cur) => (cur === block.id ? null : block.id))}
         canMoveUp={idx > 0}
         canMoveDown={idx < sorted.length - 1}
       >
-        {inner}
+        <BlockCustomizer
+          blockId={block.id}
+          settings={(() => { try { return JSON.parse(String(block.content.settings || '{}')) as BlockSettings } catch { return {} as BlockSettings } })()}
+          isEditing={isEditing}
+          colors={colors}
+          open={settingsFor === block.id}
+          onClose={() => setSettingsFor(null)}
+          onChange={(s) => onBlockChange?.(block.id, { ...block.content, settings: JSON.stringify(s) })}
+        >
+          {inner}
+        </BlockCustomizer>
       </BlockWrapper>
     )
   }

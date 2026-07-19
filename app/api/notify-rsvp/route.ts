@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, reason: 'no_key' })
     }
 
-    const from = process.env.RSVP_FROM_EMAIL || 'Wedify <onboarding@resend.dev>'
+    const from = process.env.RSVP_FROM_EMAIL || 'Maruno <onboarding@resend.dev>'
     const attendText = attending === false ? 'НЕ придёт' : 'придёт'
     const sentAt = new Date().toLocaleString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     const row = (label: string, value: string, strong = false) => `
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
           </td></tr>
           <tr><td style="padding:20px 30px 28px;text-align:center">
             <div style="height:1px;background:#F0E9DE;margin-bottom:16px"></div>
-            <div style="color:#B8A48A;font-size:12px">Отправлено через <b style="color:#8B6F47">Wedify</b></div>
+            <div style="color:#B8A48A;font-size:12px">Отправлено через <b style="color:#8B6F47">Maruno</b></div>
           </td></tr>
         </table></td></tr></table>
       </div>`

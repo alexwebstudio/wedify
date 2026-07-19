@@ -19,6 +19,7 @@ export type BlockType =
   | 'envelope'
   | 'dresscode'
   | 'custom'
+  | 'divider'
 
 // Глобальные переменные сайта — единый источник имён/даты/локации и пр.
 // Значения «живут» внутри блоков; этот тип описывает их для панели «Данные сайта».
@@ -69,6 +70,7 @@ export interface ProjectMusic {
   url: string | null
   autoplay: boolean
   title: string
+  accessPin?: string // PIN-код доступа к сайту (хранится тут, чтобы не требовать миграции БД)
 }
 
 export interface Project {
@@ -83,7 +85,6 @@ export interface Project {
   music: ProjectMusic
   blocks: BlockData[]
   published: boolean
-  access_secret?: string | null
   created_at: string
   updated_at: string
 }

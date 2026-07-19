@@ -1,7 +1,7 @@
 'use client'
 
 const WEDIFY_URL = 'https://wedify.kz'
-const STUDIO_URL = 'https://alexweb.studio'
+const STUDIO_URL = 'https://alexwebstudio.ru'
 
 export function SiteFooter() {
   return (
@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div style={{ maxWidth: 960, margin: '0 auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center', textAlign: 'center' }}>
           <div>
-            <a href={WEDIFY_URL} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Comfortaa, Cormorant Garamond, cursive', fontSize: 22, color: '#fff', fontWeight: 300, textDecoration: 'none' }}>Wedify</a>
+            <a href={WEDIFY_URL} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Comfortaa, Cormorant Garamond, cursive', fontSize: 22, color: '#fff', fontWeight: 300, textDecoration: 'none' }}>Maruno</a>
             <p style={{ color: 'rgba(255,255,255,.24)', fontSize: 12, marginTop: 4 }}>Конструктор свадебных сайтов</p>
           </div>
 
@@ -40,7 +40,7 @@ export function SiteFooter() {
 
           <p style={{ color: 'rgba(255,255,255,.2)', fontSize: 11 }}>
             © 2026{' '}
-            <a href={WEDIFY_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,.38)', textDecoration: 'none' }}>Wedify</a>
+            <a href={WEDIFY_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255,255,255,.38)', textDecoration: 'none' }}>Maruno</a>
             {' '}· Разработано веб-студией{' '}
             <a href={STUDIO_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(196,169,125,.65)', textDecoration: 'none' }}>AlexWebStudio</a>
           </p>

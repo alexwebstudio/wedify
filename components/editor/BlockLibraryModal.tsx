@@ -22,6 +22,7 @@ import { PreloaderBlock } from '@/components/blocks/PreloaderBlock'
 import { EnvelopeBlock } from '@/components/blocks/EnvelopeBlock'
 import { DressCodeBlock } from '@/components/blocks/DressCodeBlock'
 import { CustomBlock } from '@/components/blocks/CustomBlock'
+import { DividerBlock } from '@/components/blocks/DividerBlock'
 import { canUsePremium, type Plan } from '@/lib/subscription'
 import { Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -173,6 +174,8 @@ function MiniMockup({ layout, colors: c }: { layout: LayoutKind; colors: Project
       return <div style={{ ...box, display: 'flex', gap: 8, padding: 10, alignItems: 'center' }}><div style={{ width: '50%', display: 'flex', flexDirection: 'column', gap: 3 }}><Bar w={'70%'} h={5} />{[0, 1, 2].map(i => <Bar key={i} w={i === 2 ? '55%' : '95%'} h={2} op={.4} />)}</div><div style={{ width: '50%', height: '70%', borderRadius: 6, background: `linear-gradient(135deg,${c.primary}33,${c.secondary}33)` }} /><div style={{ position: 'absolute', top: 6, right: 6, width: 14, height: 8, borderRadius: 3, background: c.primary }} /></div>
     case 'loc-card':
       return <div style={{ ...box, ...center, padding: 10 }}><div style={{ width: '82%', background: c.background, borderRadius: 8, overflow: 'hidden', boxShadow: '0 6px 16px rgba(0,0,0,.1)', border: `1px solid ${c.primary}18` }}><div style={{ height: 34, background: `linear-gradient(135deg,${c.primary}44,${c.secondary}44)` }} /><div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 3 }}><Bar w={'60%'} h={4} /><Bar w={'85%'} h={2} op={.4} /><div style={{ height: 9, borderRadius: 4, background: c.primary, marginTop: 2 }} /></div></div></div>
+    case 'divider':
+      return <div style={{ ...box, ...center, gap: 8 }}><span style={{ width: 40, height: 1, background: c.secondary }} /><span style={{ width: 7, height: 7, border: `1px solid ${c.primary}`, transform: 'rotate(45deg)' }} /><span style={{ width: 40, height: 1, background: c.secondary }} /></div>
     case 'grid':
       return <div style={{ ...box, padding: 10, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 4, alignContent: 'center' }}>{Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ aspectRatio: '1', borderRadius: 4, background: soft }} />)}</div>
     case 'masonry':
@@ -215,6 +218,7 @@ function PreviewBlock({ item, colors, fonts }: { item: CatalogItem; colors: Proj
     case 'envelope': return <EnvelopeBlock {...shared} />
     case 'dresscode': return <DressCodeBlock {...shared} />
     case 'custom': return <CustomBlock {...shared} />
+    case 'divider': return <DividerBlock {...shared} />
     default: return null
   }
 }

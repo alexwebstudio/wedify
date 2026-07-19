@@ -43,11 +43,14 @@ export function Navbar({ dark = false }: NavbarProps) {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`} style={{ height: 58 }}>
         <div className="max-w-6xl mx-auto px-5 h-full flex items-center justify-between">
-          {/* Logo — Wedify */}
-          <Link href="/" className="flex items-center group" onClick={() => setMobileOpen(false)}>
+          {/* Logo — Maruno / wedding */}
+          <Link href="/" className="flex items-baseline gap-1.5 group" onClick={() => setMobileOpen(false)}>
             <span className={`font-medium tracking-wide transition-colors ${textColor}`}
               style={{ fontFamily: 'Comfortaa, cursive', fontSize: 20, letterSpacing: '0.02em' }}>
-              Wedify
+              Maruno
+            </span>
+            <span style={{ fontFamily: 'Comfortaa, cursive', fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#C4A97D' }}>
+              wedding
             </span>
           </Link>
 
@@ -133,7 +136,7 @@ export function Navbar({ dark = false }: NavbarProps) {
               <div className="px-5 pt-2 pb-8 flex flex-col gap-2">
                 {/* Brand */}
                 <div className="flex items-center justify-between py-3 mb-2 border-b border-white/8">
-                  <span style={{ fontFamily: 'Comfortaa, cursive', fontSize: 18, color: 'white', fontWeight: 300 }}>Wedify</span>
+                  <span style={{ fontFamily: 'Comfortaa, cursive', fontSize: 18, color: 'white', fontWeight: 300 }}>Maruno <span style={{ fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#C4A97D' }}>wedding</span></span>
                   <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <X size={16} className="text-white/60" />
                   </button>

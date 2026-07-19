@@ -3,7 +3,6 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { EditableText } from '@/components/editor/EditableText'
 import { fontFamilyValue } from '@/lib/editorPresets'
-import { displayDate } from '@/lib/siteVariables'
 import type { BlockData, ProjectColors, ProjectFonts } from '@/types'
 
 interface Props {
@@ -17,20 +16,18 @@ interface Props {
 }
 
 /**
- * Premium «Открывающийся конверт» — полноэкранный блок с видео (envelope.mp4).
- * Имена/дата поверх, по нажатию запускается видео открытия, затем плавный
- * переход к сайту.
+ * Premium «Открывающийся конверт» — ТОЛЬКО видео конверта, без текста/имён/кнопок.
+ * Открывается по нажатию в любое место экрана. Снизу — аккуратная подсказка.
  */
 export function EnvelopeBlock({ block, colors, fonts, isEditing, onChange, intro, onDone }: Props) {
-  const content = block.content as { names?: string; date?: string; note?: string; hint?: string; video?: string }
-  const update = (k: string, v: string) => onChange({ ...content, [k]: v })
-  const ff = fontFamilyValue(fonts.heading)
-  const bodyFf = fontFamilyValue(fonts.body)
+  const content = block.content as { hint?: string; video?: string }
+  const headFf = fontFamilyValue(fonts.heading)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [opening, setOpening] = useState(false)
   const [flash, setFlash] = useState(false)
   const done = useRef(false)
   const src = content.video || '/premium/envelope.mp4'
+  const hint = content.hint ?? 'Нажмите на конвертик'
 
   const open = () => {
     if (isEditing || done.current) return
@@ -38,49 +35,39 @@ export function EnvelopeBlock({ block, colors, fonts, isEditing, onChange, intro
     setOpening(true)
     const v = videoRef.current
     if (v) { try { v.currentTime = 0 } catch {} v.play().catch(() => {}) }
-    const finish = () => {
-      setFlash(true)
-      setTimeout(() => { onDone?.() }, 650)
-    }
+    const finish = () => { setFlash(true); setTimeout(() => { onDone?.() }, 650) }
     if (v) v.addEventListener('ended', finish, { once: true })
     setTimeout(finish, 3300)
   }
 
-  const dateStr = content.date ? displayDate(content.date) : ''
-
   return (
-    <section onClick={open} className="relative overflow-hidden flex items-center justify-center"
+    <section onClick={open} className="relative overflow-hidden flex items-end justify-center"
       style={{ minHeight: intro ? '100dvh' : '100vh', background: '#0d0b08', cursor: isEditing ? 'default' : 'pointer' }}>
-      <video ref={videoRef} playsInline muted preload="auto" className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: .9 }}>
+      <video ref={videoRef} playsInline muted preload="auto" className="absolute inset-0 w-full h-full object-cover">
         <source src={src} type="video/mp4" />
       </video>
-      <div className="absolute inset-0" style={{ background: opening ? 'rgba(0,0,0,.15)' : 'linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.55))' }} />
+      {/* лёгкое затемнение только у низа, чтобы подсказка читалась */}
+      <div className="absolute inset-x-0 bottom-0 h-40 pointer-events-none" style={{ background: opening ? 'transparent' : 'linear-gradient(to top, rgba(0,0,0,.45), transparent)' }} />
 
+      {/* минималистичная подсказка снизу — без имён/дат/кнопок */}
       {!opening && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8 }}
-          className="relative z-10 text-center px-6">
-          <p style={{ color: '#fff', opacity: .7, fontFamily: bodyFf, letterSpacing: '.4em', textTransform: 'uppercase', fontSize: 11, marginBottom: 18 }}>Вы приглашены</p>
-          <EditableText tag="h1" value={content.names || 'Алия & Тимур'} onChange={(x) => update('names', x)} isEditing={isEditing}
-            style={{ color: '#fff', fontFamily: ff, fontSize: 'clamp(2.6rem,8vw,5rem)', fontWeight: 300, letterSpacing: '.03em', lineHeight: 1.1, textShadow: '0 4px 30px rgba(0,0,0,.4)' }} />
-          {(dateStr || isEditing) && (
-            isEditing
-              ? <input type="date" value={content.date || ''} onChange={(e) => update('date', e.target.value)} onClick={(e) => e.stopPropagation()} className="mt-3 bg-white/15 text-white rounded-lg px-3 py-1.5 text-center outline-none" />
-              : <p style={{ color: '#fff', fontFamily: bodyFf, letterSpacing: '.3em', textTransform: 'uppercase', fontSize: 13, marginTop: 14 }}>{dateStr}</p>
-          )}
-          {(content.note || isEditing) && (
-            <EditableText tag="p" value={content.note || ''} onChange={(x) => update('note', x)} isEditing={isEditing} placeholder="Доп. информация (необязательно)"
-              className="mt-2" style={{ color: 'rgba(255,255,255,.75)', fontFamily: bodyFf, fontSize: 14 }} />
-          )}
-          {!isEditing && (
-            <motion.div animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 1.8 }}
-              className="mt-10 inline-flex items-center gap-2 px-6 py-3 rounded-full"
-              style={{ background: 'rgba(255,255,255,.14)', border: '1px solid rgba(255,255,255,.3)', color: '#fff', fontFamily: bodyFf, fontSize: 13, letterSpacing: '.1em', backdropFilter: 'blur(6px)' }}>
-              ✉️ Нажмите, чтобы открыть
-            </motion.div>
-          )}
-          {isEditing && <p className="mt-8 text-xs" style={{ color: 'rgba(255,255,255,.6)' }}>На опубликованном сайте по нажатию проигрывается видео открытия конверта</p>}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: .4 }}
+          className="relative z-10 pb-[6vh] flex flex-col items-center gap-3">
+          <motion.span animate={{ y: [0, -5, 0], opacity: [0.85, 1, 0.85] }} transition={{ repeat: Infinity, duration: 2.2 }}
+            style={{ color: colors.primary, fontSize: 24, lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,.6)' }}>✦</motion.span>
+          <div className="flex items-center gap-3">
+            <span style={{ width: 34, height: 1, background: 'rgba(255,255,255,.55)' }} />
+            <EditableText tag="p" value={hint} onChange={(x) => onChange({ ...content, hint: x })} isEditing={isEditing} placeholder="Подсказка"
+              style={{ color: '#fff', fontFamily: headFf, fontSize: 17, letterSpacing: '.12em', textShadow: '0 2px 14px rgba(0,0,0,.7)' }} />
+            <span style={{ width: 34, height: 1, background: 'rgba(255,255,255,.55)' }} />
+          </div>
         </motion.div>
+      )}
+
+      {isEditing && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 text-[11px] px-3 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,.55)', color: '#fff' }}>
+          Конверт: на сайте открывается нажатием в любое место. Текста и кнопок нет — только видео и подсказка снизу.
+        </div>
       )}
 
       <motion.div className="absolute inset-0 z-20 pointer-events-none bg-white" initial={{ opacity: 0 }} animate={{ opacity: flash ? 1 : 0 }} transition={{ duration: .5 }} />

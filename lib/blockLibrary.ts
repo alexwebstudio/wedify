@@ -2,7 +2,7 @@ import type { BlockData, BlockType } from '@/types'
 import { weddingPlaceholder, PH } from './placeholders'
 
 export type BlockCategory =
-  | 'hero' | 'story' | 'timing' | 'location' | 'rsvp' | 'gallery' | 'info' | 'footer' | 'premium'
+  | 'hero' | 'story' | 'timing' | 'location' | 'rsvp' | 'gallery' | 'info' | 'footer' | 'divider' | 'premium'
 
 export type PreviewKind = 'photo' | 'text' | 'timeline' | 'map' | 'form' | 'grid' | 'video' | 'info' | 'footer'
 
@@ -15,7 +15,7 @@ export type LayoutKind =
   | 'form' | 'form-card' | 'form-split' | 'form-glass' | 'form-full' | 'form-min'
   | 'grid' | 'masonry' | 'strip' | 'video'
   | 'footer-center' | 'footer-dark' | 'footer-ornament' | 'footer-date'
-  | 'curtains' | 'preloader' | 'envelope' | 'dresscode' | 'custom' | 'loc-card' | 'cinematic'
+  | 'curtains' | 'preloader' | 'envelope' | 'dresscode' | 'custom' | 'loc-card' | 'cinematic' | 'divider'
 
 export interface CatalogItem {
   id: string
@@ -38,6 +38,7 @@ export const CATEGORIES: { id: BlockCategory; label: string; icon: string }[] = 
   { id: 'gallery',  label: 'Галерея',       icon: '📸' },
   { id: 'info',     label: 'Информация',    icon: 'ℹ️' },
   { id: 'footer',   label: 'Footer',        icon: '🌹' },
+  { id: 'divider',  label: 'Разделители',   icon: '➰' },
   { id: 'premium',  label: 'Premium',       icon: '👑' },
 ]
 
@@ -65,19 +66,19 @@ const DAY = [
 export const BLOCK_CATALOG: CatalogItem[] = [
   // ── Hero ──
   { id: 'hero-classic', category: 'hero', name: 'Классический', desc: 'Имена по центру на фоне фото', type: 'hero', preview: 'photo', layout: 'hero-center',
-    content: { variant: '1', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Приглашаем вас разделить с нами этот особенный день', backgroundImage: IMG.couple1 } },
+    content: { variant: '1', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Приглашаем вас разделить с нами этот особенный день', backgroundImage: IMG.couple1 } },
   { id: 'hero-split-right', category: 'hero', name: 'Фото справа', desc: 'Текст слева, фотография справа', type: 'hero', preview: 'photo', layout: 'hero-split-r',
-    content: { variant: '2', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Мы женимся и хотим разделить это с вами', backgroundImage: IMG.portrait1 } },
+    content: { variant: '2', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Мы женимся и хотим разделить это с вами', backgroundImage: IMG.portrait1 } },
   { id: 'hero-split-left', category: 'hero', name: 'Фото слева', desc: 'Фотография слева, текст справа', type: 'hero', preview: 'photo', layout: 'hero-split-l',
-    content: { variant: '3', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Начало нашей общей истории', backgroundImage: IMG.portrait2 } },
+    content: { variant: '3', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Начало нашей общей истории', backgroundImage: IMG.portrait2 } },
   { id: 'hero-photo', category: 'hero', name: 'Фото на весь экран', desc: 'Крупный кадр, подпись снизу', type: 'hero', preview: 'photo', layout: 'hero-full',
-    content: { variant: '4', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Наш день начинается здесь', backgroundImage: IMG.couple2 } },
+    content: { variant: '4', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Наш день начинается здесь', backgroundImage: IMG.couple2 } },
   { id: 'hero-minimal', category: 'hero', name: 'Минимализм', desc: 'Чистый экран без фото', type: 'hero', preview: 'text', layout: 'hero-minimal',
-    content: { variant: '5', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Мы женимся', backgroundImage: '' } },
+    content: { variant: '5', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Мы женимся', backgroundImage: '' } },
   { id: 'hero-timer', category: 'hero', name: 'С таймером', desc: 'Имена и обратный отсчёт', type: 'hero', preview: 'photo', layout: 'hero-timer',
-    content: { variant: '7', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Совсем скоро мы скажем «да»', backgroundImage: IMG.couple4 } },
+    content: { variant: '7', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Совсем скоро мы скажем «да»', backgroundImage: IMG.couple4 } },
   { id: 'hero-collage', category: 'hero', name: 'Коллаж', desc: 'Несколько кадров и имена', type: 'hero', preview: 'photo', layout: 'hero-collage',
-    content: { variant: '9', bride: 'Алия', groom: 'Тимур', date: '', time: '16:00', tagline: 'Каждый момент — про нас', backgroundImage: IMG.couple1, image2: IMG.couple2, image3: IMG.couple4 } },
+    content: { variant: '9', bride: 'Айгерім', groom: 'Дамир', date: '', time: '16:00', tagline: 'Каждый момент — про нас', backgroundImage: IMG.couple1, image2: IMG.couple2, image3: IMG.couple4 } },
 
   // ── История ──
   { id: 'story-love', category: 'story', name: 'Две колонки · фото справа', desc: 'Текст слева, фото справа', type: 'story', preview: 'text', layout: 'story-right',
@@ -155,23 +156,33 @@ export const BLOCK_CATALOG: CatalogItem[] = [
 
   // ── Footer ──
   { id: 'footer-minimal', category: 'footer', name: 'Футер · Минимал', desc: 'Имена, дата, благодарность', type: 'footer', preview: 'footer', layout: 'footer-center',
-    content: { variant: '1', names: 'Алия & Тимур', date: '15.08.2026', thanks: 'Спасибо, что вы с нами', hashtag: '' } },
+    content: { variant: '1', names: 'Айгерім & Дамир', date: '15.08.2026', thanks: 'Спасибо, что вы с нами', hashtag: '' } },
   { id: 'footer-accent', category: 'footer', name: 'Футер · Акцент', desc: 'Тёмная акцентная полоса', type: 'footer', preview: 'footer', layout: 'footer-dark',
-    content: { variant: '2', names: 'Алия & Тимур', date: '15.08.2026', thanks: 'С любовью, молодожёны', hashtag: '' } },
+    content: { variant: '2', names: 'Айгерім & Дамир', date: '15.08.2026', thanks: 'С любовью, молодожёны', hashtag: '' } },
   { id: 'footer-ornament', category: 'footer', name: 'Футер · Орнамент', desc: 'Орнамент и хэштег', type: 'footer', preview: 'footer', layout: 'footer-ornament',
-    content: { variant: '3', names: 'Алия & Тимур', date: '15.08.2026', thanks: '', hashtag: '#АлияИТимур2026' } },
+    content: { variant: '3', names: 'Айгерім & Дамир', date: '15.08.2026', thanks: '', hashtag: '#АйгерімИДамир2026' } },
   { id: 'footer-date', category: 'footer', name: 'Футер · Дата', desc: 'Крупная дата, двухцветный', type: 'footer', preview: 'footer', layout: 'footer-date',
-    content: { variant: '4', names: 'Алия & Тимур', date: '15.08.2026', thanks: 'До встречи на празднике', hashtag: '' } },
+    content: { variant: '4', names: 'Айгерім & Дамир', date: '15.08.2026', thanks: 'До встречи на празднике', hashtag: '' } },
+
+  // ── Разделители ──
+  { id: 'div-1', category: 'divider', name: 'Ромб на линии', desc: 'Линия с ромбом по центру', type: 'divider', preview: 'text', layout: 'divider',
+    content: { variant: '1', useAccent: false, padY: 44 } },
+  { id: 'div-2', category: 'divider', name: 'Ботаника', desc: 'Тонкий росток между линиями', type: 'divider', preview: 'text', layout: 'divider',
+    content: { variant: '2', useAccent: true, padY: 44 } },
+  { id: 'div-3', category: 'divider', name: 'Двойная линия', desc: 'Двойная линия с ромбом', type: 'divider', preview: 'text', layout: 'divider',
+    content: { variant: '3', useAccent: false, padY: 44 } },
+  { id: 'div-4', category: 'divider', name: 'Флориш', desc: 'Волнистый узор с точкой', type: 'divider', preview: 'text', layout: 'divider',
+    content: { variant: '4', useAccent: true, padY: 44 } },
 
   // ── Premium ──
   { id: 'prem-preloader', category: 'premium', name: 'Premium Preloader', desc: 'Полноэкранное вступление 0→100, затем автопереход', type: 'preloader', preview: 'text', layout: 'preloader', premium: true,
-    content: { names: 'Алия & Тимур', subtitle: 'Приглашение на свадьбу' } },
+    content: { names: 'Айгерім & Дамир', subtitle: 'Приглашение на свадьбу' } },
   { id: 'prem-envelope', category: 'premium', name: 'Открывающийся конверт', desc: 'Полноэкранное видео-приглашение с открытием', type: 'envelope', preview: 'video', layout: 'envelope', premium: true,
-    content: { names: 'Алия & Тимур', date: '', note: '', video: '/premium/envelope.mp4' } },
+    content: { names: 'Айгерім & Дамир', date: '', note: '', video: '/premium/envelope.mp4' } },
   { id: 'prem-curtains', category: 'premium', name: 'Шторки (Hero)', desc: 'Полноэкранный занавес, раскрывается по кнопке', type: 'curtains', preview: 'photo', layout: 'curtains', premium: true,
-    content: { label: 'Добро пожаловать', names: 'Алия & Тимур', date: '', message: '', backgroundImage: IMG.couple1 } },
+    content: { label: 'Добро пожаловать', names: 'Айгерім & Дамир', date: '', message: '', backgroundImage: IMG.couple1 } },
   { id: 'prem-cinematic', category: 'premium', name: 'Cinematic Hero', desc: 'Кинематографичный полноэкранный герой', type: 'hero', preview: 'photo', layout: 'cinematic', premium: true,
-    content: { variant: 'cinematic', bride: 'Алия', groom: 'Тимур', date: '', time: '17:00', tagline: 'История, которую мы будем рассказывать всю жизнь', backgroundImage: IMG.couple3 } },
+    content: { variant: 'cinematic', bride: 'Айгерім', groom: 'Дамир', date: '', time: '17:00', tagline: 'История, которую мы будем рассказывать всю жизнь', backgroundImage: IMG.couple3 } },
   { id: 'prem-gallery', category: 'premium', name: 'Premium Gallery', desc: 'Разноразмерная сетка, hover и lightbox', type: 'gallery', preview: 'grid', layout: 'masonry', premium: true,
     content: { variant: 'premium', title: 'Галерея', images: gal([PH.galleryTile(0), PH.galleryTile(3), PH.galleryTile(1), PH.galleryTile(4), PH.galleryTile(2), PH.galleryTile(5)]) } },
 ]

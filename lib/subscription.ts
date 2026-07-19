@@ -5,9 +5,10 @@ import type { BlockType } from '@/types'
 
 export type Plan = 'start' | 'standard' | 'premium'
 
-// ПУБЛИЧНЫЙ БИЛД: премиум недоступен (блоки Premium видны, но заблокированы).
-// Тестовые премиум-подписки остаются только в приватном файле разработчика.
+// ПУБЛИЧНЫЙ БИЛД: премиум-подписка недоступна (блоки Premium видны, но заблокированы).
+// Тестовые премиум-подписки остаются только в приватном dev-файле.
 const PREMIUM_EMAILS: string[] = []
+// Максимально доступный тариф в открытом доступе.
 const MAX_PUBLIC_PLAN: Plan = 'standard'
 
 export const PLAN_RANK: Record<Plan, number> = { start: 0, standard: 1, premium: 2 }

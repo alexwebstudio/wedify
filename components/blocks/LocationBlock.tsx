@@ -3,6 +3,7 @@ import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { EditableText } from '@/components/editor/EditableText'
 import { fontFamilyValue } from '@/lib/editorPresets'
+import { DecorDivider } from '@/components/blocks/DividerBlock'
 import { MapPin, Shirt, Info, ExternalLink } from 'lucide-react'
 import type { BlockData, ProjectColors, ProjectFonts } from '@/types'
 
@@ -44,7 +45,7 @@ export function LocationBlock({ block, colors, fonts, isEditing, onChange }: Loc
 
   const heading = (
     <div className="text-center mb-10">
-      <p style={{ color: colors.primary, fontFamily: bodyFf, letterSpacing: '.34em', textTransform: 'uppercase', fontSize: 12, marginBottom: 10 }}>Где и когда</p>
+      <div className="flex justify-center mb-4"><DecorDivider variant="1" color={colors.primary} width={180} /></div>
       <EditableText value={content.title} onChange={(x) => update('title', x)} isEditing={isEditing} tag="h2"
         style={{ color: colors.text, fontFamily: ff, fontSize: 'clamp(1.9rem,4.5vw,3rem)', fontWeight: 300 }} />
     </div>

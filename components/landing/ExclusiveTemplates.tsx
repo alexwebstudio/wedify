@@ -70,7 +70,7 @@ export default function ExclusiveTemplatesPlate() {
                 </div>
                 <div>
                   <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 24, color: '#fff', fontWeight: 500, lineHeight: 1 }}>Эксклюзивные шаблоны</h3>
-                  <p style={{ color: 'rgba(255,255,255,.4)', fontSize: 12, marginTop: 4 }}>Раздел в разработке · скоро в Wedify</p>
+                  <p style={{ color: 'rgba(255,255,255,.4)', fontSize: 12, marginTop: 4 }}>Раздел в разработке · скоро в Maruno</p>
                 </div>
               </div>
               <button onClick={() => setOpen(false)} style={{ background: 'rgba(255,255,255,.06)', border: 'none', borderRadius: 10, padding: 8, cursor: 'pointer' }}>

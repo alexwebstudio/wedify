@@ -12,17 +12,17 @@ import Reviews from '@/components/landing/Reviews'
 import UpdatesSubscribe from '@/components/landing/UpdatesSubscribe'
 import { ArrowRight, Smartphone, Link2, MessageCircle, Heart, Layers, Sparkles } from 'lucide-react'
 
-export const BRAND = 'Wedify'
+export const BRAND = 'Maruno'
 
 const WEDIFY_URL = 'https://wedify-kz.vercel.app'
-const STUDIO_URL = 'https://alexwebstudio.netlify.app'
+const STUDIO_URL = 'https://alexwebstudio.ru'
 
 const TEMPLATES = [
-  { id: 'classic-luxury',   name: 'Classic Luxury',   desc: 'Золото · Минимализм', bride: 'Алия', groom: 'Тимур',   bg: '#FAF8F5', bg2: '#F0E8DC', acc: '#B8956A', text: '#1E1610', hf: 'Cormorant Garamond, serif' },
-  { id: 'minimal-white',    name: 'Minimal White',    desc: 'Журнальный минимал',   bride: 'Алия', groom: 'Тимур',   bg: '#FAFAFA', bg2: '#EDEDED', acc: '#1A1A1A', text: '#1A1A1A', hf: 'Manrope, sans-serif' },
-  { id: 'dark-elegant',     name: 'Dark Elegant',     desc: 'Cinematic · Золото',   bride: 'Алия', groom: 'Тимур',   bg: '#0F0D0A', bg2: '#1E1A14', acc: '#C8A96E', text: '#F0E8D8', hf: 'Playfair Display, serif' },
-  { id: 'sage-garden',      name: 'Sage Garden',      desc: 'Природа · Шалфей',     bride: 'Алия', groom: 'Тимур',   bg: '#F4F6F0', bg2: '#DDE5D4', acc: '#6B8560', text: '#1E2518', hf: 'Cormorant Garamond, serif' },
-  { id: 'rose-blush',       name: 'Rose Blush',       desc: 'Пудра · Романтика',    bride: 'Алия', groom: 'Тимур',   bg: '#FFF8F6', bg2: '#FDE8E0', acc: '#C0706A', text: '#2A1815', hf: 'Great Vibes, cursive' },
+  { id: 'classic-luxury',   name: 'Classic Luxury',   desc: 'Золото · Минимализм', bride: 'Александр', groom: 'Мария',   bg: '#FAF8F5', bg2: '#F0E8DC', acc: '#B8956A', text: '#1E1610', hf: 'Cormorant Garamond, serif' },
+  { id: 'modern-editorial', name: 'Modern Editorial', desc: 'Журнальный стиль',    bride: 'Sofia',     groom: 'Arsen',   bg: '#FAFAFA', bg2: '#EFEFEF', acc: '#1A1A1A', text: '#1A1A1A', hf: 'Playfair Display, serif' },
+  { id: 'soft-romantic',    name: 'Soft Romantic',    desc: 'Нежность · Пастель',  bride: 'Алина',     groom: 'Нурлан',  bg: '#FFF8F6', bg2: '#FDE8E0', acc: '#C0706A', text: '#2A1815', hf: 'Caveat, cursive' },
+  { id: 'dark-elegant',     name: 'Dark Elegant',     desc: 'Cinematic · Золото',  bride: 'Виктория',  groom: 'Марат',   bg: '#0F0D0A', bg2: '#1E1A14', acc: '#C8A96E', text: '#F0E8D8', hf: 'Playfair Display, serif' },
+  { id: 'sage-garden',      name: 'Sage Garden',      desc: 'Природа · Шалфей',    bride: 'Зарина',    groom: 'Алексей', bg: '#F4F6F0', bg2: '#DDE5D4', acc: '#6B8560', text: '#1E2518', hf: 'Cormorant Garamond, serif' },
 ]
 
 const FEATURES = [
@@ -187,7 +187,7 @@ function LandingInner() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(150px,1fr))', gap: 14, alignItems: 'stretch' }}>
             {TEMPLATES.map((tpl) => (
-              <div key={tpl.id} data-anim="card" className="wf-tpl" onClick={() => (window.location.href = user ? `/dashboard/new?template=${tpl.id}` : '/auth/register')}
+              <div key={tpl.id} data-anim="card" className="wf-tpl" onClick={() => (window.location.href = templateHref)}
                 style={{ cursor: 'pointer', borderRadius: 18, overflow: 'hidden', background: '#fff', boxShadow: '0 12px 30px -18px rgba(0,0,0,.25)', display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <div style={{ aspectRatio: '2/3', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(165deg,${tpl.bg},${tpl.bg2})`, overflow: 'hidden' }}>
                   <div style={{ textAlign: 'center', padding: '0 12px' }}>

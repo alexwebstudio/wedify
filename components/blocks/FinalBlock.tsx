@@ -119,7 +119,7 @@ export function FinalBlock({ block, colors, fonts, isEditing, onChange }: FinalB
           style={{ borderColor: colors.primary + '20' }}
         >
           <p className="text-xs opacity-30" style={{ color: colors.text, fontFamily: fonts.body }}>
-            Создано на Wedify · Разработано Alex Web Studio
+            Создано на Maruno · Разработано Alex Web Studio
           </p>
         </motion.div>
       </div>

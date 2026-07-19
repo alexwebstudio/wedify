@@ -53,10 +53,10 @@ export function HeroBlock({ block, colors, fonts, isEditing, onChange, userId, p
   // ── общие кусочки ──
   const names = (size: string, color: string, gap = '0.4rem') => (
     <div style={{ display: 'flex', flexDirection: 'column', gap }}>
-      <EditableText value={content.bride} onChange={(x) => update('bride', x)} isEditing={isEditing} tag="span"
+      <EditableText value={content.bride} onChange={(x) => update('bride', x)} isEditing={isEditing} tag="span" className="mrn-title"
         style={{ fontFamily: ff, fontSize: size, fontWeight: 300, letterSpacing: '.04em', color, lineHeight: 1.05, display: 'block' }} />
       <span style={{ fontFamily: ff, color: colors.primary, fontSize: `calc(${size} * 0.42)`, fontStyle: 'italic' }}>&amp;</span>
-      <EditableText value={content.groom} onChange={(x) => update('groom', x)} isEditing={isEditing} tag="span"
+      <EditableText value={content.groom} onChange={(x) => update('groom', x)} isEditing={isEditing} tag="span" className="mrn-title"
         style={{ fontFamily: ff, fontSize: size, fontWeight: 300, letterSpacing: '.04em', color, lineHeight: 1.05, display: 'block' }} />
     </div>
   )
@@ -125,10 +125,10 @@ export function HeroBlock({ block, colors, fonts, isEditing, onChange, userId, p
           <div style={{ maxWidth: 900 }}>
             <p style={{ fontFamily: bodyFf, color: colors.primary, letterSpacing: '.5em', textTransform: 'uppercase', fontSize: 12, marginBottom: 20 }}>Save the date</p>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: .92 }}>
-              <EditableText value={content.bride} onChange={(x) => update('bride', x)} isEditing={isEditing} tag="span"
+              <EditableText value={content.bride} onChange={(x) => update('bride', x)} isEditing={isEditing} tag="span" className="mrn-title"
                 style={{ fontFamily: ff, fontSize: 'clamp(3rem,12vw,9rem)', fontWeight: 300, color: '#fff', letterSpacing: '-.01em' }} />
               <span style={{ fontFamily: ff, fontSize: 'clamp(1.4rem,4vw,2.6rem)', color: colors.primary, fontStyle: 'italic', margin: '0.1em 0 0.1em 0.2em' }}>&amp;</span>
-              <EditableText value={content.groom} onChange={(x) => update('groom', x)} isEditing={isEditing} tag="span"
+              <EditableText value={content.groom} onChange={(x) => update('groom', x)} isEditing={isEditing} tag="span" className="mrn-title"
                 style={{ fontFamily: ff, fontSize: 'clamp(3rem,12vw,9rem)', fontWeight: 300, color: '#fff', letterSpacing: '-.01em' }} />
             </div>
             <div className="mt-8 flex items-center gap-6 flex-wrap">

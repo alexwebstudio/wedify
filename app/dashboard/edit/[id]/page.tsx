@@ -11,9 +11,14 @@ import { loadUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userS
 import { getProjectById, updateProject, publishProject } from '@/lib/projects'
 import { WeddingSite } from '@/components/templates/WeddingSite'
 import { EditorSidebar } from '@/components/editor/EditorSidebar'
-import { BlockLibraryModal } from '@/components/editor/BlockLibraryModal'
+import dynamic from 'next/dynamic'
+const BlockLibraryModal = dynamic(
+  () => import('@/components/editor/BlockLibraryModal').then((m) => ({ default: m.BlockLibraryModal })),
+  { ssr: false },
+)
 import { DeleteConfirm } from '@/components/editor/DeleteConfirm'
 import { makeBlockFromCatalog } from '@/lib/blockLibrary'
+import { deriveVariables, applyVariables } from '@/lib/siteVariables'
 import { usePlan, canAddBlocks } from '@/lib/subscription'
 import type { CatalogItem } from '@/lib/blockLibrary'
 import type { Project, BlockData } from '@/types'
@@ -150,11 +155,20 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
   const handleAddFromCatalog = useCallback((item: CatalogItem) => {
     applyMutation((p) => {
+      // Наследуем уже введённые данные сайта, чтобы новый блок не сбрасывал их на дефолт (#6)
+      const vars = deriveVariables(p.blocks)
       const order = p.blocks.length
-      const nb = makeBlockFromCatalog(item, order)
-      return { ...p, blocks: [...p.blocks, nb] }
+      const raw = makeBlockFromCatalog(item, order)
+      const seeded = applyVariables([raw], vars)[0]
+
+      // Прелоадер всегда закрепляется сверху (#5)
+      if (seeded.type === 'preloader') {
+        const rest = p.blocks.map((b) => ({ ...b, order: b.order + 1 }))
+        return { ...p, blocks: [{ ...seeded, order: 0 }, ...rest] }
+      }
+      return { ...p, blocks: [...p.blocks, seeded] }
     })
-    toast.success(`Добавлен блок: ${item.name}`)
+    toast.success(item.type === 'preloader' ? 'Прелоадер закреплён сверху' : `Добавлен блок: ${item.name}`)
   }, [applyMutation])
 
   const requestDelete = useCallback((blockId: string) => {

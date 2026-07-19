@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, Reorder, useDragControls } from 'framer-motion'
 import {
   Palette, Type, Music, Layers, Upload, Check, X,
@@ -45,6 +45,7 @@ const TYPE_META: Record<BlockType, { icon: string; label: string }> = {
   envelope: { icon: '✉️', label: 'Конверт' },
   dresscode: { icon: '👗', label: 'Дресс-код' },
   custom: { icon: '🧩', label: 'Свой блок' },
+  divider: { icon: '➰', label: 'Разделитель' },
 }
 
 function blockTitle(block: BlockData): string {
@@ -53,7 +54,7 @@ function blockTitle(block: BlockData): string {
   return TYPE_META[block.type]?.label ?? block.type
 }
 
-type Tab = 'blocks' | 'data' | 'style' | 'fonts' | 'music'
+type Tab = 'blocks' | 'data' | 'style' | 'colors' | 'fonts' | 'music'
 
 export function EditorSidebar({
   project, onUpdate, onBlockToggle, onBlockDuplicate, onBlockDelete, onBlockReorder, onAddBlock,
@@ -64,7 +65,15 @@ export function EditorSidebar({
 
   // Глобальные переменные сайта (живут внутри блоков)
   const [vars, setVars] = useState<SiteVariables>(() => deriveVariables(project.blocks))
-  useEffect(() => { setVars(deriveVariables(project.blocks)) }, [project.blocks])
+  // Инициализируем данные один раз при загрузке проекта. НЕ пере-деривим при каждом
+  // изменении блоков — иначе введённые в «Данные» значения слетают (#6).
+  const varsInit = useRef<string | null>(null)
+  useEffect(() => {
+    if (varsInit.current !== project.id && project.blocks.length > 0) {
+      varsInit.current = project.id
+      setVars(deriveVariables(project.blocks))
+    }
+  }, [project.id, project.blocks])
   const setVar = (k: keyof SiteVariables, v: string) => setVars((prev) => ({ ...prev, [k]: v }))
   const commitVars = (next: SiteVariables) => onUpdate({ blocks: applyVariables(project.blocks, next) })
   const [musicPreview, setMusicPreview] = useState<string | null>(null)
@@ -72,7 +81,9 @@ export function EditorSidebar({
   const tabs: { key: Tab; icon: React.ReactNode; label: string }[] = [
     { key: 'blocks', icon: <Layers size={15} />, label: 'Блоки' },
     { key: 'data', icon: <ClipboardList size={15} />, label: 'Данные' },
-    { key: 'style', icon: <Sparkles size={15} />, label: 'Стиль' },    { key: 'fonts', icon: <Type size={15} />, label: 'Шрифты' },
+    { key: 'style', icon: <Sparkles size={15} />, label: 'Стиль' },
+    { key: 'colors', icon: <Palette size={15} />, label: 'Цвета' },
+    { key: 'fonts', icon: <Type size={15} />, label: 'Шрифты' },
     { key: 'music', icon: <Music size={15} />, label: 'Музыка' },
   ]
 
@@ -161,21 +172,26 @@ export function EditorSidebar({
                   />
                 </div>
               ))}
-              <button onClick={() => commitVars(vars)}
+              <button onClick={() => { commitVars(vars); import('react-hot-toast').then((m) => m.default.success('Данные применены ко всем блокам')) }}
                 className="w-full mt-1 py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2"
                 style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}>
                 <Check size={15} /> Применить ко всем блокам
               </button>
 
-              {/* Защита PIN-кодом (per-site) */}
+              {/* Защита PIN-кодом (#4) */}
               <div className="pt-3 mt-1 border-t border-gray-100">
-                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Защита PIN-кодом</p>
-                <p className="text-[11px] text-gray-400 mb-2 leading-snug">Если задать код, гости не откроют сайт без него. Пусто — доступ свободный.</p>
+                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1.5">🔒 Защита PIN-кодом</p>
+                <p className="text-[11px] text-gray-400 mb-2 leading-snug">Если задать код — гости не откроют сайт без него. Пусто — доступ свободный.</p>
                 <input
-                  value={project.access_secret || ''} inputMode="numeric" maxLength={8} placeholder="Напр. 2026"
-                  onChange={(e) => onUpdate({ access_secret: e.target.value.replace(/\D/g, '') || null })}
-                  className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-[#2C2017] tracking-[0.3em] text-center outline-none focus:ring-2 focus:ring-[#C4A97D]/30"
+                  value={project.music.accessPin || ''}
+                  placeholder="Например, 2026"
+                  maxLength={12}
+                  onChange={(e) => onUpdate({ music: { ...project.music, accessPin: e.target.value } })}
+                  className="w-full px-3 py-2 rounded-lg bg-gray-50 text-sm text-[#2C2017] tracking-[0.25em] text-center outline-none focus:ring-2 focus:ring-[#C4A97D]/30"
                 />
+                {project.music.accessPin ? (
+                  <button onClick={() => onUpdate({ music: { ...project.music, accessPin: '' } })} className="mt-1.5 text-[11px] text-gray-400 hover:text-red-500 underline">Убрать код</button>
+                ) : null}
               </div>
             </motion.div>
           )}
@@ -245,9 +261,10 @@ export function EditorSidebar({
                   })}
                 </div>
               </div>
-              <div className="pt-3 mt-1 border-t border-gray-100">
-                <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Цветовая схема</p>
-              </div>
+            </motion.div>
+          )}
+          {tab === 'colors' && (
+            <motion.div key="colors" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3 space-y-4">
               <div>
                 <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 px-1">Готовые палитры</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -319,7 +336,7 @@ export function EditorSidebar({
                       {active && <Check size={12} className="text-[#C4A97D]" />}
                     </div>
                     <p className="text-[#2C2017] leading-tight truncate" style={{ fontFamily: fontFamilyValue(f.heading), fontSize: f.kind === 'cursive' ? 26 : 22, fontWeight: 400 }}>
-                      Алия &amp; Тимур
+                      Айгерім &amp; Дамир
                     </p>
                   </button>
                 )

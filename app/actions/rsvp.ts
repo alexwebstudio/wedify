@@ -85,7 +85,7 @@ export async function sendRSVPEmail(data: RSVPData): Promise<{ ok: boolean; reas
   const to = process.env.RSVP_TO_EMAIL
   if (!key || !to) return { ok: false, reason: 'not_configured' }
 
-  const from = process.env.RSVP_FROM_EMAIL || 'Wedify <onboarding@resend.dev>'
+  const from = process.env.RSVP_FROM_EMAIL || 'Maruno <onboarding@resend.dev>'
   const status = data.attending === 'yes' ? 'придёт' : 'НЕ придёт'
   const sentAt = new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Almaty' })
   const esc = (s: string) => String(s).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c] || c))
@@ -110,7 +110,7 @@ export async function sendRSVPEmail(data: RSVPData): Promise<{ ok: boolean; reas
         </td></tr>
         <tr><td style="padding:20px 30px 28px;text-align:center">
           <div style="height:1px;background:#F0E9DE;margin-bottom:16px"></div>
-          <div style="color:#B8A48A;font-size:12px">Отправлено через <b style="color:#8B6F47">Wedify</b></div>
+          <div style="color:#B8A48A;font-size:12px">Отправлено через <b style="color:#8B6F47">Maruno</b></div>
         </td></tr>
       </table></td></tr></table>
     </div>`

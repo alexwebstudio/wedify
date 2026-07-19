@@ -43,7 +43,7 @@ export function CustomBlock({ block, colors, fonts, isEditing, onChange, userId,
   const bg = c.useAccentBg ? colors.accent + '40' : (c.bg || colors.background)
 
   const img = (
-    <div onClick={() => isEditing && setPicker(true)} className={`relative overflow-hidden shadow-lg ${isEditing ? 'cursor-pointer' : ''}`} style={{ aspectRatio: '4/3', borderRadius: 'var(--wd-img-radius,1rem)', width: '100%' }}>
+    <div className="relative overflow-hidden shadow-lg" style={{ aspectRatio: '4/3', borderRadius: 'var(--wd-img-radius,1rem)', width: '100%' }}>
       {c.image ? <img src={c.image} alt="" loading="lazy" className="w-full h-full object-cover" />
         : <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg,${colors.primary}33,${colors.secondary}33)`, color: colors.secondary }}>Изображение</div>}
       {isEditing && <button onClick={() => setPicker(true)} className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1.5 rounded-lg text-white text-xs" style={{ background: 'rgba(0,0,0,.5)' }}><Camera size={12} /> Фото</button>}

@@ -65,7 +65,7 @@ export default function RegisterPage() {
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#C4A97D] to-[#8B6F47] flex items-center justify-center">
               <Heart size={16} className="text-white fill-white" />
             </div>
-            <span className="text-white font-bold text-xl" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Wedify</span>
+            <span className="text-white font-bold text-xl" style={{ fontFamily: 'Cormorant Garamond, serif' }}>Maruno</span>
           </Link>
 
           <h1 className="text-3xl font-light text-white mb-2 text-center" style={{ fontFamily: 'Cormorant Garamond, serif' }}>

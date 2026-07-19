@@ -27,7 +27,7 @@ export function RsvpBlock({ block, colors, fonts, isEditing, onChange, projectTi
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
-  const content = block.content as { variant?: string; title: string; subtitle: string; phone: string; eyebrow?: string }
+  const content = block.content as { variant?: string; title: string; subtitle: string; phone: string }
   const v = content.variant || '1'
   const update = (k: string, val: string) => onChange({ ...content, [k]: val })
   const ff = fontFamilyValue(fonts.heading)
@@ -90,9 +90,7 @@ export function RsvpBlock({ block, colors, fonts, isEditing, onChange, projectTi
 
   const heading = (align: 'center' | 'left' = 'center', onDark = false) => (
     <div className={align === 'center' ? 'text-center mb-8' : 'mb-6'}>
-      {(content.eyebrow === undefined || content.eyebrow) && (
-        <EditableText value={content.eyebrow ?? 'RSVP'} onChange={(x) => update('eyebrow', x)} isEditing={isEditing} tag="p" placeholder="(надзаголовок)" className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: onDark ? '#fff' : colors.primary, fontFamily: bodyFf } as React.CSSProperties} />
-      )}
+      <p className="text-xs tracking-[0.4em] uppercase mb-3" style={{ color: colors.primary, fontFamily: bodyFf }}>RSVP</p>
       <EditableText value={content.title} onChange={(x) => update('title', x)} isEditing={isEditing} tag="h2" className="font-light mb-2"
         style={{ color: onDark ? '#fff' : colors.text, fontFamily: ff, fontSize: 'clamp(1.6rem,4vw,2.4rem)' } as React.CSSProperties} />
       <EditableText value={content.subtitle} onChange={(x) => update('subtitle', x)} isEditing={isEditing} tag="p" className="text-sm"

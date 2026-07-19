@@ -9,9 +9,11 @@ export default function PricingPage() {
     <div style={{ minHeight: '100vh', background: '#F7F5F2' }}>
       <Navbar dark={false} />
 
-      <div style={{ paddingTop: 90 }}>
-        <Pricing />
-      </div>
+      <section style={{ padding: '120px 20px 8px', textAlign: 'center' }}>
+        <p style={{ color: '#B8956A', fontSize: 11, letterSpacing: '.4em', textTransform: 'uppercase', marginBottom: 12 }}>Тарифы</p>
+      </section>
+
+      <Pricing />
 
       <SiteFooter />
     </div>
