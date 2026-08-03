@@ -33,7 +33,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #1C1812 0%, #2C2018 60%, #3D3025 100%)' }}>
+    // mrn-dark: экран тёмный, поэтому кнопки и поля дизайн-системы
+    // переключаются в инверсный режим. Переработка экранов входа — следующий этап.
+    <div className="mrn-dark min-h-screen flex" style={{ background: 'linear-gradient(135deg, #1C1812 0%, #2C2018 60%, #3D3025 100%)' }}>
       {/* Left decorative panel - hidden on mobile */}
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.04]"

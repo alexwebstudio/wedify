@@ -1,212 +1,268 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { useRouter } from 'next/navigation'
 
 interface NavbarProps {
+  /** Навигация лежит поверх тёмного первого экрана. */
   dark?: boolean
 }
 
+/** Пункты публичной части. Существующие маршруты не менялись. */
+const NAV_ITEMS = [
+  { href: '/templates', label: 'Шаблоны' },
+  { href: '/pricing', label: 'Тарифы' },
+  { href: '/blog', label: 'Советы' },
+]
+
+/**
+ * Секция, над которой навигация должна быть светлой, помечается
+ * атрибутом data-nav-dark-zone (сейчас это первый экран главной).
+ * Пока панель находится над ней — тёмная тема и прозрачный фон;
+ * как только уходит выше — обычная светлая панель с подложкой.
+ */
+const DARK_ZONE = '[data-nav-dark-zone]'
+
 export function Navbar({ dark = false }: NavbarProps) {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [overDarkZone, setOverDarkZone] = useState(false)
   const { user, signOut } = useAuth()
   const { t } = useAppStore()
+  const pathname = usePathname()
   const router = useRouter()
 
+  const menuRef = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    let frame = 0
+
+    const measure = () => {
+      frame = 0
+      setScrolled(window.scrollY > 12)
+
+      const zone = document.querySelector(DARK_ZONE)
+      const navHeight = window.innerWidth < 768 ? 60 : 68
+      setOverDarkZone(!!zone && zone.getBoundingClientRect().bottom > navHeight)
+    }
+
+    const onScroll = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(measure)
+    }
+
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [pathname])
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false)
+    toggleRef.current?.focus()
   }, [])
+
+  // Блокировка прокрутки, Escape и удержание фокуса внутри меню.
+  // В версии 1.1.5 ничего из этого не было: меню можно было «протабать» насквозь.
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const focusables = () =>
+      Array.from(
+        menuRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      )
+
+    focusables()[0]?.focus()
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); closeMenu(); return }
+      if (e.key !== 'Tab') return
+
+      const items = focusables()
+      if (items.length === 0) return
+      const first = items[0]
+      const last = items[items.length - 1]
+
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen, closeMenu])
 
   const handleSignOut = async () => {
     await signOut()
+    setMenuOpen(false)
     router.push('/')
-    setMobileOpen(false)
   }
 
-  const navBg = scrolled
-    ? dark
-      ? 'bg-[#0F0D0A]/95 backdrop-blur-xl border-b border-white/5'
-      : 'bg-white/95 backdrop-blur-xl border-b border-[#B8956A]/10 shadow-sm'
-    : 'bg-transparent'
+  const isCurrent = (href: string) => (href === '/' ? pathname === '/' : !!pathname?.startsWith(href))
 
-  const textColor = dark ? 'text-white/80' : 'text-[#1E1610]'
+  // Тёмная тема — либо задана страницей, либо панель сейчас над тёмной секцией
+  const isDark = dark || overDarkZone
+  const tone = isDark ? 'mrn-dark' : ''
+  // Подложку показываем только когда панель ушла с тёмной секции
+  const solid = scrolled && !overDarkZone
+
+  const logo = (
+    <Link href="/" className="mrn-logo" onClick={() => setMenuOpen(false)} aria-label="Maruno Wedding — на главную">
+      <span className="mrn-logo-name">Maruno</span>
+      <span className="mrn-logo-sub">wedding</span>
+    </Link>
+  )
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`} style={{ height: 58 }}>
-        <div className="max-w-6xl mx-auto px-5 h-full flex items-center justify-between">
-          {/* Logo — Maruno / wedding */}
-          <Link href="/" className="flex items-baseline gap-1.5 group" onClick={() => setMobileOpen(false)}>
-            <span className={`font-medium tracking-wide transition-colors ${textColor}`}
-              style={{ fontFamily: 'Comfortaa, cursive', fontSize: 20, letterSpacing: '0.02em' }}>
-              Maruno
-            </span>
-            <span style={{ fontFamily: 'Comfortaa, cursive', fontSize: 10, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#C4A97D' }}>
-              wedding
-            </span>
-          </Link>
+      <header className={`mrn-nav ${tone}`} data-scrolled={solid}>
+        <nav className="mrn-container h-full flex items-center justify-between gap-4" aria-label="Основная навигация">
+          {logo}
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/pricing"
-              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
-              }`}>
-              Тарифы
-            </Link>
-            <Link href="/blog"
-              className={`px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
-              }`}>
-              Полезные советы
-            </Link>
-            <LanguageSwitcher dark={dark} />
+          {/* Десктоп */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="mrn-navlink"
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <LanguageSwitcher dark={isDark} />
             {user ? (
               <>
-                <Link href="/dashboard"
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
-                  }`}>
+                <Link
+                  href="/dashboard"
+                  className="mrn-navlink"
+                  aria-current={pathname === '/dashboard' ? 'page' : undefined}
+                >
                   {t('nav_dashboard')}
                 </Link>
-                <Link href="/dashboard/new"
-                  className="btn-luxury px-5 py-2.5 rounded-xl text-sm">
-                  + Создать
+                <Link href="/dashboard/new" className="mrn-btn mrn-btn--sm mrn-btn--primary">
+                  Создать сайт
                 </Link>
-                <button onClick={handleSignOut}
-                  className={`px-3 py-2 rounded-xl text-sm transition-all opacity-50 hover:opacity-80 ${textColor}`}>
+                <button onClick={handleSignOut} className="mrn-btn mrn-btn--sm mrn-btn--ghost">
                   {t('nav_logout')}
                 </button>
               </>
             ) : (
               <>
-                <Link href="/auth/login"
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                    dark ? 'text-white/60 hover:text-white hover:bg-white/8' : 'text-[#1E1610]/60 hover:text-[#1E1610] hover:bg-black/5'
-                  }`}>
-                  Войти
-                </Link>
-                <Link href="/auth/register"
-                  className="btn-luxury px-5 py-2.5 rounded-xl text-sm">
-                  Начать бесплатно
+                <Link href="/auth/login" className="mrn-navlink">Войти</Link>
+                <Link href="/auth/register" className="mrn-btn mrn-btn--sm mrn-btn--primary">
+                  Создать сайт
                 </Link>
               </>
             )}
           </div>
 
-          {/* Mobile right */}
-          <div className="flex md:hidden items-center gap-2">
-            <LanguageSwitcher dark={dark} />
-            <button onClick={() => setMobileOpen(true)}
-              className={`p-2 rounded-xl transition-colors ${dark ? 'text-white/70 hover:bg-white/10' : 'text-[#1E1610]/70 hover:bg-black/5'}`}>
-              <Menu size={20} />
+          {/* Мобильный */}
+          <div className="flex md:hidden items-center gap-1">
+            <LanguageSwitcher dark={isDark} />
+            <button
+              ref={toggleRef}
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="mrn-icon-btn"
+              aria-label="Открыть меню"
+              aria-expanded={menuOpen}
+              aria-haspopup="dialog"
+            >
+              <Menu size={22} />
             </button>
           </div>
+        </nav>
+      </header>
+
+      {/* Мобильное меню — панель на весь экран, а не всплывающая шторка снизу */}
+      {menuOpen && (
+        <div
+          ref={menuRef}
+          className={`mrn-menu ${tone} md:hidden`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Меню"
+          data-lenis-prevent
+        >
+          <div className="mrn-container flex items-center justify-between" style={{ height: 60, flexShrink: 0 }}>
+            {logo}
+            <button type="button" onClick={closeMenu} className="mrn-icon-btn" aria-label="Закрыть меню">
+              <X size={22} />
+            </button>
+          </div>
+
+          <div className="mrn-container flex-1 overflow-y-auto" style={{ paddingBottom: 24 }}>
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="mrn-menu-item"
+                onClick={() => setMenuOpen(false)}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            {user && (
+              <Link
+                href="/dashboard"
+                className="mrn-menu-item"
+                onClick={() => setMenuOpen(false)}
+                aria-current={pathname === '/dashboard' ? 'page' : undefined}
+              >
+                {t('nav_dashboard')}
+              </Link>
+            )}
+          </div>
+
+          <div
+            className="mrn-container flex flex-col gap-3"
+            style={{ paddingTop: 20, paddingBottom: 28, flexShrink: 0 }}
+          >
+            {user ? (
+              <>
+                <Link href="/dashboard/new" onClick={() => setMenuOpen(false)} className="mrn-btn mrn-btn--primary mrn-btn--block">
+                  Создать сайт
+                </Link>
+                <button onClick={handleSignOut} className="mrn-btn mrn-btn--ghost mrn-btn--block">
+                  {t('nav_logout')}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/register" onClick={() => setMenuOpen(false)} className="mrn-btn mrn-btn--primary mrn-btn--block">
+                  Создать сайт
+                </Link>
+                <Link href="/auth/login" onClick={() => setMenuOpen(false)} className="mrn-btn mrn-btn--secondary mrn-btn--block">
+                  Войти
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-      </nav>
-
-      {/* Mobile menu — bottom sheet style */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 z-50 md:hidden"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.div
-              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 32, stiffness: 280 }}
-              className="fixed bottom-0 left-0 right-0 z-50 md:hidden rounded-t-3xl overflow-hidden"
-              style={{ background: '#0F0D0A', border: '1px solid rgba(196,169,125,0.15)' }}
-            >
-              {/* Handle */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.15)' }} />
-              </div>
-
-              <div className="px-5 pt-2 pb-8 flex flex-col gap-2">
-                {/* Brand */}
-                <div className="flex items-center justify-between py-3 mb-2 border-b border-white/8">
-                  <span style={{ fontFamily: 'Comfortaa, cursive', fontSize: 18, color: 'white', fontWeight: 300 }}>Maruno <span style={{ fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', color: '#C4A97D' }}>wedding</span></span>
-                  <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                    <X size={16} className="text-white/60" />
-                  </button>
-                </div>
-
-                {/* Общие ссылки (доступны всем) */}
-                <Link href="/pricing" onClick={() => setMobileOpen(false)}
-                  className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
-                  Тарифы
-                </Link>
-                <Link href="/blog" onClick={() => setMobileOpen(false)}
-                  className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
-                  📖 Полезные советы
-                </Link>
-
-                {user ? (
-                  <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)}
-                      className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors hover:bg-white/6 flex items-center gap-3">
-                      📋 {t('nav_dashboard')}
-                    </Link>
-
-                    {/* Настройки личного кабинета */}
-                    <div className="mt-2 mb-1 px-4 text-[11px] uppercase tracking-widest text-white/25">Настройки</div>
-                    <Link href="/dashboard/settings#defaults" onClick={() => setMobileOpen(false)}
-                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
-                      ⚙️ Настройки сайта по умолчанию
-                    </Link>
-                    <Link href="/dashboard/settings#security" onClick={() => setMobileOpen(false)}
-                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
-                      🔒 Безопасность и доступ
-                    </Link>
-                    <Link href="/dashboard/settings#messages" onClick={() => setMobileOpen(false)}
-                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
-                      ✉️ Сообщения с форм
-                    </Link>
-                    <Link href="/dashboard/settings#help" onClick={() => setMobileOpen(false)}
-                      className="py-3.5 px-4 rounded-2xl text-white/70 text-[15px] transition-colors hover:bg-white/6 flex items-center gap-3">
-                      💡 Помощь и инструкция
-                    </Link>
-
-                    <Link href="/dashboard/new" onClick={() => setMobileOpen(false)}
-                      className="mt-2 py-4 px-4 rounded-2xl text-base font-medium text-center"
-                      style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      Создать сайт
-                    </Link>
-                    <button onClick={handleSignOut}
-                      className="py-3 px-4 rounded-2xl text-white/40 text-sm text-left">
-                      Выйти
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/auth/login" onClick={() => setMobileOpen(false)}
-                      className="py-4 px-4 rounded-2xl text-white/80 text-base font-medium transition-colors"
-                      style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
-                      Войти
-                    </Link>
-                    <Link href="/auth/register" onClick={() => setMobileOpen(false)}
-                      className="py-4 px-4 rounded-2xl text-base font-medium text-center"
-                      style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)', color: 'white' }}>
-                      Начать бесплатно
-                    </Link>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      )}
     </>
   )
 }

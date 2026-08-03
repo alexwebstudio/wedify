@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
-import { Star, Quote, X, Lock, ImagePlus } from 'lucide-react'
+import { Star, X, Lock, ImagePlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { uploadMedia } from '@/lib/projects'
 import { submitReview, getApprovedReviews, type ReviewRow } from '@/app/actions/reviews'
+import { Reveal } from './Reveal'
 
 // запасные отзывы, пока в базе пусто (чтобы блок не был пустым)
 const SEED: ReviewRow[] = [
@@ -17,21 +18,30 @@ const SEED: ReviewRow[] = [
 
 function Stars({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
   return (
-    <div style={{ display: 'flex', gap: 4 }}>
+    <div
+      style={{ display: 'flex', gap: 3 }}
+      role={onChange ? 'radiogroup' : 'img'}
+      aria-label={onChange ? 'Оценка' : `Оценка: ${value} из 5`}
+    >
       {[1, 2, 3, 4, 5].map((i) => (
         <button
           key={i}
           type="button"
           onClick={onChange ? () => onChange(i) : undefined}
+          tabIndex={onChange ? 0 : -1}
+          aria-label={onChange ? `${i} из 5` : undefined}
+          aria-checked={onChange ? i === value : undefined}
+          role={onChange ? 'radio' : undefined}
           style={{
             background: 'none', border: 'none', padding: 0,
             cursor: onChange ? 'pointer' : 'default', lineHeight: 0,
           }}
         >
           <Star
-            size={onChange ? 26 : 15}
-            color="#C4A97D"
-            fill={i <= value ? '#C4A97D' : 'transparent'}
+            size={onChange ? 26 : 14}
+            color="var(--color-wine)"
+            fill={i <= value ? 'var(--color-wine)' : 'transparent'}
+            aria-hidden="true"
           />
         </button>
       ))}
@@ -114,201 +124,184 @@ export default function Reviews() {
   }
 
   return (
-    <section id="reviews" data-anim="section" style={{ padding: '84px 20px', background: '#FFFFFF' }}>
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <div data-anim="fade" style={{ textAlign: 'center', marginBottom: 44 }}>
-          <p style={{ color: '#B8956A', fontSize: 11, letterSpacing: '.4em', textTransform: 'uppercase', marginBottom: 10 }}>
-            Отзывы
-          </p>
-          <h2
-            style={{
-              fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,4.5vw,3rem)',
-              fontWeight: 300, color: '#1A1410', marginBottom: 8,
-            }}
-          >
-            Что говорят пары
-          </h2>
-          <p style={{ color: '#8A7F74', fontSize: 14, fontWeight: 300 }}>Реальные впечатления тех, кто уже сделал сайт</p>
-        </div>
+    <section id="reviews" className="mrn-section mrn-tone-paper">
+      <div className="mrn-container">
+        <Reveal style={{ marginBottom: 40 }}>
+          <p className="mrn-eyebrow">Отзывы</p>
+          <h2 className="mrn-h2" style={{ marginTop: 14, maxWidth: '18ch' }}>Отзывы пар, которые уже сделали сайт</h2>
+        </Reveal>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))',
-            gap: 16,
-          }}
-        >
+        <Reveal className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {reviews.map((r) => (
-            <div
+            <figure
               key={r.id}
-              data-anim="card"
-              style={{
-                padding: '26px 24px', borderRadius: 22, background: '#FAF8F5',
-                border: '1px solid rgba(196,169,125,.14)', display: 'flex', flexDirection: 'column', gap: 14,
-              }}
+              className="mrn-card flex flex-col"
+              style={{ margin: 0, padding: 'clamp(22px, 3vw, 28px)', background: 'var(--color-milk)' }}
             >
-              <Quote size={22} color="#C4A97D" style={{ opacity: 0.5 }} />
-              <p style={{ color: '#3A322A', fontSize: 14.5, lineHeight: 1.65, flex: 1 }}>{r.text}</p>
+              <Stars value={r.rating} />
+              <blockquote style={{ margin: '16px 0 0', flex: 1 }}>
+                <p style={{ fontSize: 15.5, lineHeight: 1.65, color: 'var(--color-ink-700)' }}>{r.text}</p>
+              </blockquote>
+
               {r.images && r.images.length > 0 && (
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 16 }}>
                   {r.images.slice(0, 4).map((url, i) => (
-                    <a key={i} href={url} target="_blank" rel="noreferrer" style={{ display: 'block', width: 56, height: 56, borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(196,169,125,.2)' }}>
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={`Фото к отзыву ${r.name}, ${i + 1}`}
+                      style={{ display: 'block', width: 56, height: 56, borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--mrn-line)' }}
+                    >
                       <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </a>
                   ))}
                 </div>
               )}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-                <div
+
+              <figcaption
+                className="flex items-center gap-3"
+                style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--mrn-line)' }}
+              >
+                <span
+                  aria-hidden="true"
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
+                    width: 34, height: 34, borderRadius: 'var(--radius-full)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 600,
+                    color: 'var(--color-wine)', background: 'var(--color-blush)',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontWeight: 600, color: '#8B6F47', fontSize: 14,
-                      background: 'rgba(196,169,125,.14)',
-                    }}
-                  >
-                    {r.name.charAt(0).toUpperCase()}
-                  </div>
-                  <span style={{ fontSize: 13.5, fontWeight: 500, color: '#1A1410' }}>{r.name}</span>
-                </div>
-                <Stars value={r.rating} />
-              </div>
-            </div>
+                  {r.name.charAt(0).toUpperCase()}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>{r.name}</span>
+              </figcaption>
+            </figure>
           ))}
-        </div>
+        </Reveal>
 
-        <div data-anim="fade" style={{ textAlign: 'center', marginTop: 36 }}>
+        <Reveal style={{ textAlign: 'center', marginTop: 36 }}>
           {user ? (
-            <button
-              onClick={openModal}
-              style={{
-                padding: '13px 30px', borderRadius: 14, fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                background: 'transparent', border: '1px solid rgba(196,169,125,.4)', color: '#8B6F47',
-              }}
-            >
+            <button onClick={openModal} className="mrn-btn mrn-btn--secondary">
               Оставить отзыв
             </button>
           ) : (
-            <Link
-              href="/auth/login"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '13px 30px', borderRadius: 14, fontSize: 14, fontWeight: 500,
-                background: 'transparent', border: '1px solid rgba(196,169,125,.4)', color: '#8B6F47', textDecoration: 'none',
-              }}
-            >
-              <Lock size={14} /> Войдите, чтобы оставить отзыв
+            <Link href="/auth/login" className="mrn-btn mrn-btn--secondary">
+              <Lock size={15} /> Войдите, чтобы оставить отзыв
             </Link>
           )}
-          <p style={{ fontSize: 12, color: '#b3a89c', marginTop: 12 }}>
+          <p className="mrn-meta" style={{ marginTop: 12 }}>
             Отзыв публикуется сразу. Мат и оскорбления автоматически не пропускаются.
           </p>
-        </div>
+        </Reveal>
       </div>
 
       {/* Модалка отзыва */}
       {open && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Ваш отзыв"
+          data-lenis-prevent
           style={{
             position: 'fixed', inset: 0, zIndex: 70, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 16, background: 'rgba(0,0,0,.55)', backdropFilter: 'blur(4px)',
+            padding: 16, background: 'rgba(22,19,15,.55)',
           }}
           onClick={() => setOpen(false)}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              width: '100%', maxWidth: 460, background: '#fff', borderRadius: 24, overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(0,0,0,.3)',
-            }}
+            className="mrn-card"
+            style={{ width: '100%', maxWidth: 460, maxHeight: '92vh', overflowY: 'auto', boxShadow: 'var(--mrn-shadow-lift)' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px', borderBottom: '1px solid #f0ece6' }}>
-              <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, color: '#1A1410', fontWeight: 500 }}>
-                Ваш отзыв
-              </h3>
-              <button onClick={() => setOpen(false)} style={{ background: '#f5f2ee', border: 'none', borderRadius: 10, padding: 8, cursor: 'pointer' }}>
-                <X size={16} color="#8A7F74" />
+            <div
+              className="flex items-center justify-between"
+              style={{ padding: '18px 22px', borderBottom: '1px solid var(--mrn-line)' }}
+            >
+              <h3 className="mrn-h3">Ваш отзыв</h3>
+              <button onClick={() => setOpen(false)} className="mrn-icon-btn" aria-label="Закрыть">
+                <X size={18} />
               </button>
             </div>
 
-            <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9A9188', marginBottom: 8 }}>
-                  Ваше имя
-                </label>
+            <div style={{ padding: 22, display: 'flex', flexDirection: 'column', gap: 18 }}>
+              <div className="mrn-field">
+                <label className="mrn-label" htmlFor="review-name">Ваше имя</label>
                 <input
+                  id="review-name"
+                  className="mrn-input"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Как вас зовут"
                   maxLength={60}
-                  style={{
-                    width: '100%', padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3',
-                    fontSize: 14, outline: 'none', color: '#1A1410',
-                  }}
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9A9188', marginBottom: 8 }}>
-                  Оценка
-                </label>
+              <div className="mrn-field">
+                <span className="mrn-label">Оценка</span>
                 <Stars value={rating} onChange={setRating} />
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9A9188', marginBottom: 8 }}>
-                  Отзыв
-                </label>
+              <div className="mrn-field">
+                <label className="mrn-label" htmlFor="review-text">Отзыв</label>
                 <textarea
+                  id="review-text"
+                  className="mrn-textarea"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Расскажите о вашем опыте — что понравилось, что было удобно"
                   rows={4}
                   maxLength={800}
-                  style={{
-                    width: '100%', padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3',
-                    fontSize: 14, outline: 'none', resize: 'vertical', color: '#1A1410', lineHeight: 1.5,
-                  }}
                 />
-                <p style={{ fontSize: 11, color: '#b3a89c', marginTop: 6 }}>
+                <p className="mrn-meta" style={{ fontSize: 12 }}>
                   Отзыв появится на сайте сразу. Нецензурная лексика и оскорбления не пропускаются автоматически.
                 </p>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: '#9A9188', marginBottom: 8 }}>
-                  Фото (необязательно)
-                </label>
+              <div className="mrn-field">
+                <span className="mrn-label">Фото (необязательно)</span>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {images.map((url, i) => (
-                    <div key={i} style={{ position: 'relative', width: 64, height: 64, borderRadius: 10, overflow: 'hidden', border: '1px solid #e5ddd3' }}>
+                    <div
+                      key={i}
+                      style={{ position: 'relative', width: 64, height: 64, borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--mrn-line)' }}
+                    >
                       <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      <button onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
-                        style={{ position: 'absolute', top: 2, right: 2, background: 'rgba(0,0,0,.55)', border: 'none', borderRadius: 6, padding: 2, cursor: 'pointer', lineHeight: 0 }}>
+                      <button
+                        type="button"
+                        aria-label="Удалить фото"
+                        onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                        style={{ position: 'absolute', top: 3, right: 3, background: 'rgba(22,19,15,.6)', border: 'none', borderRadius: 'var(--radius-xs)', padding: 3, cursor: 'pointer', lineHeight: 0 }}
+                      >
                         <X size={12} color="#fff" />
                       </button>
                     </div>
                   ))}
                   {images.length < 4 && (
-                    <button onClick={() => fileRef.current?.click()} disabled={uploading}
-                      style={{ width: 64, height: 64, borderRadius: 10, border: '1.5px dashed rgba(196,169,125,.5)', background: '#FAF8F5', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, cursor: 'pointer', color: '#B8956A' }}>
-                      {uploading ? <span style={{ fontSize: 10 }}>…</span> : <><ImagePlus size={16} /><span style={{ fontSize: 9 }}>Фото</span></>}
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading}
+                      style={{
+                        width: 64, height: 64, borderRadius: 'var(--radius-sm)',
+                        border: '1px dashed var(--mrn-line-strong)', background: 'var(--color-paper-2)',
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: 2, cursor: 'pointer', color: 'var(--color-ink-400)',
+                      }}
+                    >
+                      {uploading ? <span style={{ fontSize: 11 }}>…</span> : <><ImagePlus size={16} /><span style={{ fontSize: 10 }}>Фото</span></>}
                     </button>
                   )}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
-                <p style={{ fontSize: 11, color: '#b3a89c', marginTop: 6 }}>Скриншоты или фото — до 4 изображений.</p>
+                <p className="mrn-meta" style={{ fontSize: 12 }}>Скриншоты или фото — до 4 изображений.</p>
               </div>
 
               <button
                 onClick={handleSubmit}
                 disabled={sending || uploading}
-                className="btn-luxury"
-                style={{ width: '100%', padding: '13px', borderRadius: 14, fontSize: 14, fontWeight: 500, opacity: (sending || uploading) ? 0.6 : 1 }}
+                className="mrn-btn mrn-btn--primary mrn-btn--block"
               >
                 {sending ? 'Отправляем…' : 'Опубликовать отзыв'}
               </button>

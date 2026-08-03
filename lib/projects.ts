@@ -1,6 +1,7 @@
 import { createClient } from './supabase/client'
 import type { Project, TemplateId } from '@/types'
-import { generateSlug, getDefaultBlocks, getDefaultMusic, getTemplateDefaults } from './utils'
+import { generateSlug, getBlankBlocks, getDefaultBlocks, getDefaultMusic, getTemplateDefaults } from './utils'
+import { getTemplate } from './templateCatalog'
 
 const supabase = createClient()
 
@@ -43,13 +44,18 @@ export async function createProject(
   title: string,
   templateId: TemplateId,
   language: 'ru' | 'kz' = 'ru',
-  vars: Partial<import('@/types').SiteVariables> = {}
+  vars: Partial<import('@/types').SiteVariables> = {},
+  options: { blank?: boolean } = {}
 ): Promise<Project> {
   const baseSlug = generateSlug(title) || generateSlug(`${templateId}-wedding`)
   const slug = await ensureUniqueSlug(baseSlug)
 
   const defaults = getTemplateDefaults(templateId)
-  const blocks = getDefaultBlocks(vars)
+  // Композиция первого экрана задаётся шаблоном — именно она делает шаблоны
+  // по-настоящему разными, а не только цветом и шрифтом.
+  const blocks = options.blank
+    ? getBlankBlocks(vars, getTemplate(templateId))
+    : getDefaultBlocks(vars, getTemplate(templateId))
 
   const { data, error } = await supabase
     .from('projects')

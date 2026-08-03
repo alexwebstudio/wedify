@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { WeddingSiteClient } from './WeddingSiteClient'
+import { SiteFonts } from '@/components/providers/SiteFonts'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -42,5 +43,14 @@ export default async function PublicWeddingPage({ params }: Props) {
 
   if (!project) notFound()
 
-  return <WeddingSiteClient project={project} />
+  // Гостю грузим ровно те два семейства, которые выбраны в этом приглашении,
+  // а не всю библиотеку редактора.
+  const usedFonts = [project.fonts?.heading, project.fonts?.body].filter(Boolean) as string[]
+
+  return (
+    <>
+      <SiteFonts families={usedFonts} />
+      <WeddingSiteClient project={project} />
+    </>
+  )
 }

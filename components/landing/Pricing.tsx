@@ -1,7 +1,10 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Check } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { Reveal } from './Reveal'
 
 interface Tier {
   id: 'free' | 'standard' | 'exclusive'
@@ -63,130 +66,102 @@ const TIERS: Tier[] = [
 ]
 
 export default function Pricing() {
+  const router = useRouter()
+
   // TODO(payment): здесь подключается платёжка.
   // Когда появится трафик — заменить toast на редирект в Kaspi/Robokassa/Stripe,
   // передавая tier.id и email пользователя. Проверка оплаты → выдача подписки.
   const handleBuy = (tier: Tier) => {
     if (tier.id === 'free') {
-      window.location.href = '/auth/register'
+      router.push('/auth/register')
       return
     }
-    toast('Оплата подключается — скоро можно будет купить ♥', { icon: '⏳' })
+    toast('Оплата подключается — скоро можно будет купить')
   }
 
   return (
-    <section id="pricing" data-anim="section" style={{ padding: '84px 20px', background: '#F7F5F2' }}>
-      <div style={{ maxWidth: 1080, margin: '0 auto' }}>
-        <div data-anim="fade" style={{ textAlign: 'center', marginBottom: 44 }}>
-          <p style={{ color: '#B8956A', fontSize: 11, letterSpacing: '.4em', textTransform: 'uppercase', marginBottom: 10 }}>
-            Тарифы
-          </p>
-          <h2
-            style={{
-              fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,4.5vw,3rem)',
-              fontWeight: 300, color: '#1A1410', marginBottom: 8,
-            }}
-          >
-            Просто и честно
-          </h2>
-          <p style={{ color: '#8A7F74', fontSize: 14, fontWeight: 300 }}>
-            Сейчас всё бесплатно. Платные тарифы появятся позже — покупка разовая, доступ навсегда.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))',
-            gap: 18,
-            alignItems: 'stretch',
-          }}
-        >
+    <section id="pricing" className="mrn-section" style={{ background: 'var(--color-paper)' }}>
+      {/* Заголовок раздела живёт на странице /pricing — здесь он не дублируется */}
+      <div className="mrn-container">
+        <Reveal className="grid gap-5 md:grid-cols-3 items-stretch">
           {TIERS.map((tier) => (
             <div
               key={tier.id}
-              data-anim="card"
+              className={`mrn-card flex flex-col ${tier.featured ? 'mrn-dark' : ''}`}
               style={{
-                position: 'relative', display: 'flex', flexDirection: 'column', padding: '30px 26px',
-                borderRadius: 24,
-                background: tier.featured ? 'linear-gradient(160deg,#1A1410,#2A2018)' : '#fff',
-                border: tier.featured ? '1px solid rgba(196,169,125,.35)' : '1px solid rgba(0,0,0,.06)',
-                boxShadow: tier.featured ? '0 24px 60px rgba(0,0,0,.28)' : '0 8px 30px rgba(0,0,0,.05)',
+                padding: 'clamp(26px, 3.4vw, 34px)',
+                background: tier.featured ? 'var(--color-ink)' : 'var(--color-paper-2)',
+                borderColor: tier.featured ? 'transparent' : 'var(--mrn-line)',
               }}
             >
-              {tier.featured && (
-                <span
-                  style={{
-                    position: 'absolute', top: 18, right: 18, fontSize: 10, fontWeight: 700, letterSpacing: '.14em',
-                    textTransform: 'uppercase', padding: '5px 12px', borderRadius: 100,
-                    background: 'linear-gradient(135deg,#C4A97D,#8B6F47)', color: '#fff',
-                  }}
-                >
-                  Популярный
-                </span>
-              )}
-
-              <p style={{ color: tier.featured ? 'rgba(255,255,255,.85)' : '#1A1410', fontSize: 15, fontWeight: 600, marginBottom: 8 }}>
-                {tier.name}
-              </p>
-
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                <span
-                  style={{
-                    fontFamily: 'Cormorant Garamond, serif', fontSize: 40, fontWeight: 500, lineHeight: 1,
-                    color: tier.featured ? '#E8D5B0' : '#1A1410',
-                  }}
-                >
-                  {tier.price}
-                </span>
-                <span style={{ fontSize: 13, color: tier.featured ? 'rgba(255,255,255,.4)' : '#9A9188' }}>
-                  / {tier.period}
-                </span>
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="mrn-h3">
+                  {tier.name}
+                </h3>
+                {tier.featured && <span className="mrn-tag">Популярный</span>}
               </div>
 
-              <p style={{ fontSize: 12.5, color: tier.featured ? 'rgba(255,255,255,.4)' : '#9A9188', marginBottom: 22, lineHeight: 1.5 }}>
-                {tier.note}
+              <p
+                className="mrn-display"
+                style={{
+                  fontSize: 'clamp(2.1rem, 4vw, 2.6rem)',
+                  marginTop: 18,
+                  color: tier.featured ? 'var(--color-champagne)' : 'var(--color-ink)',
+                }}
+              >
+                {tier.price}
               </p>
+              <p className="mrn-meta" style={{ marginTop: 6 }}>{tier.period}</p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 11, marginBottom: 26, flex: 1 }}>
+              <p className="mrn-lead" style={{ marginTop: 14, fontSize: 14.5 }}>{tier.note}</p>
+
+              <ul style={{ listStyle: 'none', margin: '24px 0 0', padding: 0, display: 'grid', gap: 11, flex: 1 }}>
                 {tier.features.map((f) => (
-                  <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 9 }}>
+                  <li key={f} className="flex items-start gap-2.5">
+                    <Check
+                      size={16}
+                      aria-hidden="true"
+                      style={{
+                        flexShrink: 0,
+                        marginTop: 3,
+                        color: tier.featured ? 'var(--color-champagne)' : 'var(--color-wine)',
+                      }}
+                    />
                     <span
                       style={{
-                        width: 18, height: 18, borderRadius: '50%', flexShrink: 0, marginTop: 1,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: tier.featured ? 'rgba(196,169,125,.18)' : 'rgba(196,169,125,.12)',
+                        fontSize: 14.5,
+                        lineHeight: 1.5,
+                        color: tier.featured ? 'rgba(251,248,244,0.78)' : 'var(--color-ink-600)',
                       }}
                     >
-                      <Check size={11} color="#C4A97D" />
-                    </span>
-                    <span style={{ fontSize: 13.5, lineHeight: 1.45, color: tier.featured ? 'rgba(255,255,255,.72)' : '#4A4038' }}>
                       {f}
                     </span>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
 
               <button
                 onClick={() => handleBuy(tier)}
-                className={tier.featured || tier.id === 'free' ? 'btn-luxury' : ''}
-                style={{
-                  width: '100%', padding: '13px 20px', borderRadius: 14, fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                  border: tier.featured || tier.id === 'free' ? 'none' : '1px solid rgba(196,169,125,.4)',
-                  background: tier.featured || tier.id === 'free' ? undefined : 'transparent',
-                  color: tier.featured || tier.id === 'free' ? '#fff' : '#8B6F47',
-                }}
+                className={`mrn-btn mrn-btn--block ${
+                  tier.featured || tier.id === 'free' ? 'mrn-btn--primary' : 'mrn-btn--secondary'
+                }`}
+                style={{ marginTop: 28 }}
               >
                 {tier.paymentReady ? tier.cta : `${tier.cta} · скоро`}
               </button>
             </div>
           ))}
-        </div>
+        </Reveal>
 
-        <p data-anim="fade" style={{ textAlign: 'center', marginTop: 22, fontSize: 12, color: '#9A9188' }}>
-          Оформляя платный тариф, вы принимаете{' '}
-          <a href="/terms" style={{ color: '#8B6F47', textDecoration: 'underline' }}>условия использования</a>.
-        </p>
+        <Reveal style={{ marginTop: 22 }}>
+          <p className="mrn-meta">
+            Оформляя платный тариф, вы принимаете{' '}
+            <Link href="/terms" className="mrn-link" style={{ color: 'var(--color-wine)' }}>
+              условия использования
+            </Link>
+            .
+          </p>
+        </Reveal>
       </div>
     </section>
   )

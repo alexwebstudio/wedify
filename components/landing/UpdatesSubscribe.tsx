@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { subscribeToUpdates } from '@/app/actions/subscribe'
+import { Reveal } from './Reveal'
 
 // Пункт 10: получать сообщения о новых апдейтах.
 export default function UpdatesSubscribe() {
@@ -18,51 +18,50 @@ export default function UpdatesSubscribe() {
     else toast.error(res.message)
   }
 
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!sending) handle()
+  }
+
   return (
-    <section data-anim="section" style={{ padding: '72px 20px', background: 'linear-gradient(160deg,#1A1510,#0F0D0A)' }}>
-      <div
-        data-anim="fade"
-        style={{
-          maxWidth: 560, margin: '0 auto', textAlign: 'center',
-          padding: '40px 28px', borderRadius: 28,
-          background: 'rgba(255,255,255,.035)', border: '1px solid rgba(196,169,125,.16)',
-        }}
-      >
-        <div
+    <section className="mrn-section--tight mrn-tone-blush">
+      <div className="mrn-container">
+        <Reveal
+          className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end"
           style={{
-            width: 48, height: 48, borderRadius: 14, margin: '0 auto 18px', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', background: 'rgba(196,169,125,.14)', color: '#C4A97D',
+            background: 'var(--color-paper)',
+            border: '1px solid var(--mrn-line)',
+            borderRadius: 'var(--radius-lg)',
+            padding: 'clamp(26px, 4vw, 40px)',
           }}
         >
-          <Bell size={22} />
-        </div>
-        <h3 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(1.6rem,4vw,2.2rem)', fontWeight: 300, color: '#fff', marginBottom: 10 }}>
-          Узнавайте о новинках первыми
-        </h3>
-        <p style={{ color: 'rgba(255,255,255,.4)', fontSize: 14, fontWeight: 300, marginBottom: 24, lineHeight: 1.6 }}>
-          Новые шаблоны, эксклюзивные блоки и апдейты сервиса — сообщим на почту.
-        </p>
+          <div>
+            <p className="mrn-eyebrow">Обновления</p>
+            <h2 className="mrn-h3" style={{ marginTop: 12, fontSize: 'clamp(1.35rem, 2.6vw, 1.75rem)' }}>
+              Узнавайте о новых шаблонах первыми
+            </h2>
+            <p className="mrn-lead" style={{ marginTop: 10, fontSize: 15, maxWidth: '48ch' }}>
+              Новые направления, блоки и улучшения редактора — короткое письмо, когда есть что показать.
+            </p>
+          </div>
 
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            type="email"
-            style={{
-              flex: '1 1 220px', minWidth: 0, padding: '13px 16px', borderRadius: 14, fontSize: 14, outline: 'none',
-              background: 'rgba(255,255,255,.05)', border: '1px solid rgba(196,169,125,.25)', color: '#fff',
-            }}
-          />
-          <button
-            onClick={handle}
-            disabled={sending}
-            className="btn-luxury"
-            style={{ padding: '13px 26px', borderRadius: 14, fontSize: 14, fontWeight: 500, opacity: sending ? 0.6 : 1, whiteSpace: 'nowrap' }}
-          >
-            {sending ? '…' : 'Подписаться'}
-          </button>
-        </div>
+          <form onSubmit={onSubmit} className="flex flex-wrap gap-3" style={{ minWidth: 'min(100%, 340px)' }}>
+            <label className="mrn-sr" htmlFor="subscribe-email">Электронная почта</label>
+            <input
+              id="subscribe-email"
+              className="mrn-input"
+              style={{ flex: '1 1 200px', minWidth: 0 }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              type="email"
+              autoComplete="email"
+            />
+            <button type="submit" disabled={sending} className="mrn-btn mrn-btn--primary">
+              {sending ? 'Отправляем…' : 'Подписаться'}
+            </button>
+          </form>
+        </Reveal>
       </div>
     </section>
   )

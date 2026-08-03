@@ -17,6 +17,7 @@ const BlockLibraryModal = dynamic(
   { ssr: false },
 )
 import { DeleteConfirm } from '@/components/editor/DeleteConfirm'
+import { SiteFonts } from '@/components/providers/SiteFonts'
 import { makeBlockFromCatalog } from '@/lib/blockLibrary'
 import { deriveVariables, applyVariables } from '@/lib/siteVariables'
 import { usePlan, canAddBlocks } from '@/lib/subscription'
@@ -304,6 +305,9 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+      {/* Библиотека шрифтов пользовательских сайтов — нужна только здесь и в превью */}
+      <SiteFonts />
+
       {/* Top toolbar */}
       <div className="h-14 bg-white border-b border-gray-100 flex items-center px-4 gap-3 z-30 flex-shrink-0">
         {/* Left */}

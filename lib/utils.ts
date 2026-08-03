@@ -1,5 +1,5 @@
-import type { BlockData, Project, ProjectColors, ProjectFonts, ProjectMusic, TemplateId } from '@/types'
-import { PH } from './placeholders'
+import type { BlockData, ProjectColors, ProjectFonts, ProjectMusic, TemplateId } from '@/types'
+import { getTemplate, templateImage, toneBackdrop, type TemplateEntry } from './templateCatalog'
 
 export function generateSlug(name: string): string {
   return name
@@ -21,70 +21,40 @@ function transliterate(str: string): string {
   return str.split('').map(c => map[c.toLowerCase()] || c).join('')
 }
 
+/**
+ * Оформление шаблона по умолчанию.
+ * Значения берутся из единого каталога (lib/templateCatalog.ts), а не дублируются здесь.
+ */
 export function getTemplateDefaults(templateId: TemplateId): {
   colors: ProjectColors
   fonts: ProjectFonts
 } {
-  const templates: Record<TemplateId, { colors: ProjectColors; fonts: ProjectFonts }> = {
-    'classic-luxury': {
-      colors: {
-        primary: '#C4A97D',
-        secondary: '#8B6F47',
-        accent: '#F5EDD6',
-        background: '#FAF8F5',
-        text: '#2C2017',
-      },
-      fonts: { heading: 'Great Vibes', body: 'Lato' },
-    },
-    'minimal-white': {
-      colors: {
-        primary: '#1A1A1A',
-        secondary: '#666666',
-        accent: '#E8E0D8',
-        background: '#FFFFFF',
-        text: '#1A1A1A',
-      },
-      fonts: { heading: 'Playfair Display', body: 'Source Sans Pro' },
-    },
-    'dark-elegant': {
-      colors: {
-        primary: '#D4AF7A',
-        secondary: '#A0896A',
-        accent: '#3D3025',
-        background: '#1C1812',
-        text: '#F0E8D8',
-      },
-      fonts: { heading: 'Cinzel', body: 'Raleway' },
-    },
-    'sage-garden': {
-      colors: {
-        primary: '#7E8E6A',
-        secondary: '#526044',
-        accent: '#DDE4D2',
-        background: '#F5F7F0',
-        text: '#2D3520',
-      },
-      fonts: { heading: 'Playfair Display', body: 'Lato' },
-    },
-    'rose-blush': {
-      colors: {
-        primary: '#D4829A',
-        secondary: '#A85C72',
-        accent: '#FCF0F4',
-        background: '#FFF8FA',
-        text: '#2A1520',
-      },
-      fonts: { heading: 'Cormorant Garamond', body: 'Lato' },
-    },
-  }
-  return templates[templateId] || templates['classic-luxury']
+  const tpl = getTemplate(templateId)
+  return { colors: tpl.colors, fonts: tpl.fonts }
 }
 
-export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> = {}): BlockData[] {
-  const bride = vars.bride || 'Александр'
-  const groom = vars.groom || 'Мария'
-  const weddingDate = vars.date || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  const time = vars.time || '16:00'
+/**
+ * Стартовое наполнение сайта.
+ *
+ * Изображения и композиция берутся из того же шаблона, что показан в каталоге,
+ * поэтому созданный сайт выглядит так же, как превью. Раньше здесь стояли
+ * контурные SVG-заглушки (пара, кольца, торт) — они и создавали расхождение.
+ */
+export function getDefaultBlocks(
+  vars: Partial<import('@/types').SiteVariables> = {},
+  template?: TemplateEntry,
+): BlockData[] {
+  const tpl = template ?? getTemplate('classic-luxury')
+  const heroVariant = tpl.heroVariant
+
+  // Тональные подложки в палитре шаблона — те же, что в превью каталога
+  const heroImage = templateImage(tpl, 0)
+  const softImage = (seed: number) => toneBackdrop(tpl.colors, seed, false)
+
+  const bride = vars.bride || tpl.demo.bride
+  const groom = vars.groom || tpl.demo.groom
+  const weddingDate = vars.date || tpl.demo.date
+  const time = vars.time || tpl.demo.time
   const venue = vars.venue || 'Grand Palace Hotel'
   const address = vars.address || 'ул. Достык 1, Алматы'
   const mapUrl = vars.mapUrl || vars.coords || 'https://maps.google.com'
@@ -98,13 +68,16 @@ export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> 
       enabled: true,
       order: 0,
       content: {
-        variant: '1',
+        variant: heroVariant,
         bride,
         groom,
         date: weddingDate,
         time,
-        tagline: 'Приглашаем вас разделить с нами этот особенный день',
-        backgroundImage: PH.heroCouple(),
+        tagline: tpl.demo.tagline,
+        backgroundImage: heroImage,
+        // Коллажный первый экран использует три кадра
+        image2: heroImage ? softImage(3) : '',
+        image3: heroImage ? softImage(7) : '',
       },
     },
     {
@@ -116,7 +89,7 @@ export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> 
         variant: '1',
         title: 'Наша история',
         text: 'Мы встретились случайно, но поняли — это судьба. С тех пор каждый день с тобой — это подарок.',
-        image: PH.storyPortrait(0),
+        image: softImage(2),
         meetDate: '12 мая 2022',
         proposeDate: '14 февраля 2024',
       },
@@ -129,12 +102,7 @@ export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> 
       content: {
         variant: 'masonry',
         title: 'Наши моменты',
-        images: JSON.stringify([
-          PH.galleryTile(0),
-          PH.galleryTile(1),
-          PH.galleryTile(2),
-          PH.galleryTile(3),
-        ]),
+        images: JSON.stringify([softImage(1), softImage(4), softImage(6), softImage(9)]),
       },
     },
     {
@@ -192,6 +160,22 @@ export function getDefaultBlocks(vars: Partial<import('@/types').SiteVariables> 
       },
     },
   ]
+}
+
+/**
+ * Минимальный старт — «собрать самостоятельно».
+ * Только главный экран и подвал: остальное пользователь добавляет
+ * из библиотеки блоков редактора.
+ */
+export function getBlankBlocks(
+  vars: Partial<import('@/types').SiteVariables> = {},
+  template?: TemplateEntry,
+): BlockData[] {
+  const full = getDefaultBlocks(vars, template)
+  const keep = new Set(['hero', 'footer'])
+  return full
+    .filter((b) => keep.has(b.id))
+    .map((b, i) => ({ ...b, order: i }))
 }
 
 export function getDefaultMusic(): ProjectMusic {

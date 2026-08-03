@@ -1,6 +1,14 @@
 export type Language = 'ru' | 'kz'
 
-export type TemplateId = 'classic-luxury' | 'minimal-white' | 'dark-elegant' | 'sage-garden' | 'rose-blush'
+// Значения совпадают с колонкой projects.template. Существующие id не переименовываются:
+// человеческие названия и сценарии живут в lib/templateCatalog.ts.
+export type TemplateId =
+  | 'classic-luxury'
+  | 'minimal-white'
+  | 'modern-editorial'
+  | 'dark-elegant'
+  | 'sage-garden'
+  | 'rose-blush'
 
 export type BlockType =
   | 'hero'

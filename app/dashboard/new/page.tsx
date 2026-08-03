@@ -1,53 +1,34 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Check, Heart } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Eye, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
 import { usePlan, PLAN_META } from '@/lib/subscription'
 import { createProject, getProjects } from '@/lib/projects'
+import { TEMPLATE_CATALOG, CATALOG_FONT_FAMILIES, DEFAULT_TEMPLATE_ID, getTemplate, type TemplateEntry } from '@/lib/templateCatalog'
+import { TemplatePreview } from '@/components/templates/TemplatePreview'
+import { TemplateDemoModal } from '@/components/templates/TemplateDemoModal'
+import { SiteFonts } from '@/components/providers/SiteFonts'
 import type { TemplateId, Language } from '@/types'
 import toast from 'react-hot-toast'
 
-const TEMPLATES: { id: TemplateId; name: string; desc: string; bg: string; bg2: string; accent: string; text: string }[] = [
-  {
-    id: 'classic-luxury',
-    name: 'Classic Luxury',
-    desc: 'Золото, кремовые тона, изысканная типографика',
-    bg: '#FAF8F5', bg2: '#F5EDD6', accent: '#C4A97D', text: '#2C2017',
-  },
-  {
-    id: 'minimal-white',
-    name: 'Minimal White',
-    desc: 'Чистота, лаконичность, современный стиль',
-    bg: '#FFFFFF', bg2: '#F5F5F5', accent: '#1A1A1A', text: '#1A1A1A',
-  },
-  {
-    id: 'dark-elegant',
-    name: 'Dark Elegant',
-    desc: 'Тёмный фон, золотые акценты, кинематографичность',
-    bg: '#1C1812', bg2: '#3D3025', accent: '#D4AF7A', text: '#F0E8D8',
-  },
-  {
-    id: 'sage-garden',
-    name: 'Sage Garden',
-    desc: 'Природные тона, шалфей, тепло',
-    bg: '#F5F7F0', bg2: '#DDE4D2', accent: '#7E8E6A', text: '#2D3520',
-  },
-  {
-    id: 'rose-blush',
-    name: 'Rose Blush',
-    desc: 'Нежные розовые тона, романтика',
-    bg: '#FFF8FA', bg2: '#FCF0F4', accent: '#D4829A', text: '#2A1520',
-  },
-]
+function NewProjectForm() {
+  const searchParams = useSearchParams()
+  // Шаблон, выбранный в каталоге (?template=...), — иначе выбор пользователя терялся
+  const preselected = searchParams.get('template')
+  const initialTemplate = TEMPLATE_CATALOG.some((t) => t.id === preselected)
+    ? (preselected as TemplateId)
+    : DEFAULT_TEMPLATE_ID
 
-export default function NewProjectPage() {
   const [step, setStep] = useState<1 | 2>(1)
-  const [template, setTemplate] = useState<TemplateId>('classic-luxury')
+  const [template, setTemplate] = useState<TemplateId>(initialTemplate)
+  // «Собрать самостоятельно»: сайт создаётся только с главным экраном и подвалом
+  const [blank, setBlank] = useState(false)
+  const [demo, setDemo] = useState<TemplateEntry | null>(null)
   const [title, setTitle] = useState('')
   const [language, setLanguage] = useState<Language>('ru')
   const [loading, setLoading] = useState(false)
@@ -97,7 +78,7 @@ export default function NewProjectPage() {
         venue: venue.trim(), address: address.trim(), mapUrl: mapUrl.trim(), coords: mapUrl.trim(),
         dresscode: dresscode.trim(), contactName: contactName.trim(), contactPhone: contactPhone.trim(),
         gifts: gifts.trim(), instagram: instagram.trim(), telegram: telegram.trim(), whatsapp: whatsapp.trim(),
-      })
+      }, { blank })
       toast.success('Приглашение создано! 🎉')
       router.push(`/dashboard/edit/${project.id}`)
     } catch (err: unknown) {
@@ -108,12 +89,13 @@ export default function NewProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
-      <Navbar dark={false} />
+    <div className="min-h-screen" style={{ background: 'var(--color-paper-2)' }}>
+      <SiteFonts families={CATALOG_FONT_FAMILIES} />
+      <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-20">
         {/* Back */}
-        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-[#2C2017]/50 hover:text-[#2C2017] mb-8 transition-colors">
+        <Link href="/dashboard" className="mrn-link inline-flex items-center gap-2 text-sm mb-8" style={{ color: 'var(--color-ink-600)' }}>
           <ArrowLeft size={14} /> Назад
         </Link>
 
@@ -122,16 +104,16 @@ export default function NewProjectPage() {
           {[1, 2].map((s) => (
             <div key={s} className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
-                step > s ? 'bg-[#C4A97D] text-white' :
-                step === s ? 'bg-[#2C2017] text-white' :
-                'bg-gray-100 text-gray-400'
+                step > s ? 'bg-wine text-paper' :
+                step === s ? 'bg-ink text-paper' :
+                'bg-paper-3 text-ink-400'
               }`}>
                 {step > s ? <Check size={14} /> : s}
               </div>
-              <span className={`text-sm ${step === s ? 'text-[#2C2017] font-medium' : 'text-gray-400'}`}>
+              <span className={`text-sm ${step === s ? 'text-ink font-medium' : 'text-ink-400'}`}>
                 {s === 1 ? 'Шаблон' : 'Детали'}
               </span>
-              {s < 2 && <div className="w-8 h-px bg-gray-200 ml-0" />}
+              {s < 2 && <div className="w-8 h-px" style={{ background: 'var(--mrn-line-strong)' }} />}
             </div>
           ))}
         </div>
@@ -143,52 +125,119 @@ export default function NewProjectPage() {
               key="step1"
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
             >
-              <h1 className="text-3xl md:text-4xl font-light text-[#2C2017] mb-2"
-                style={{ fontFamily: 'Cormorant Garamond, serif' }}>
-                Выберите шаблон
-              </h1>
-              <p className="text-[#2C2017]/40 text-sm mb-8">Всё можно изменить позже в редакторе</p>
+              <h1 className="mrn-h2">Выберите шаблон</h1>
+              <p className="mrn-lead" style={{ marginTop: 10, marginBottom: 32, fontSize: 15 }}>
+                Оформление можно изменить позже в редакторе — выбор ни к чему не обязывает.
+              </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
-                {TEMPLATES.map((tpl) => (
-                  <button
-                    key={tpl.id}
-                    onClick={() => setTemplate(tpl.id)}
-                    className={`template-card text-left transition-all ${template === tpl.id ? 'selected' : ''}`}
-                  >
-                    {/* Preview */}
-                    <div className="aspect-[3/4] relative flex items-center justify-center overflow-hidden"
-                      style={{ background: `linear-gradient(135deg, ${tpl.bg}, ${tpl.bg2})` }}>
-                      <div className="text-center px-4">
-                        <div className="w-6 h-px mx-auto mb-4" style={{ background: tpl.accent }} />
-                        <p className="text-2xl font-light mb-0.5" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Александр
-                        </p>
-                        <p className="text-sm mb-0.5" style={{ color: tpl.accent }}>♥</p>
-                        <p className="text-2xl font-light" style={{ color: tpl.text, fontFamily: 'Cormorant Garamond, serif' }}>
-                          Мария
-                        </p>
-                        <div className="w-6 h-px mx-auto mt-4" style={{ background: tpl.accent }} />
-                        <p className="text-xs mt-3 tracking-widest uppercase opacity-40" style={{ color: tpl.text }}>
-                          15.08.2026
-                        </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {TEMPLATE_CATALOG.map((tpl) => {
+                  const selected = template === tpl.id && !blank
+                  return (
+                    <div
+                      key={tpl.id}
+                      className={`template-card mrn-tpl flex flex-col ${selected ? 'selected' : ''}`}
+                      style={{ background: 'var(--color-paper)' }}
+                    >
+                      <div className="relative">
+                        <TemplatePreview template={tpl} ratio="3 / 4" />
+                        {selected && (
+                          <span
+                            className="absolute top-3 right-3 flex items-center justify-center"
+                            style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--color-wine)', zIndex: 3 }}
+                          >
+                            <Check size={15} color="#fff" aria-hidden="true" />
+                          </span>
+                        )}
                       </div>
-                      {/* Selected overlay */}
-                      {template === tpl.id && (
-                        <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-[#C4A97D] flex items-center justify-center shadow-lg">
-                          <Check size={14} className="text-white" />
+
+                      <div className="flex-1 flex flex-col" style={{ padding: '16px 18px 18px', textAlign: 'left' }}>
+                        <div className="flex items-start justify-between gap-2">
+                          <h2 className="mrn-h3" style={{ fontSize: 17 }}>{tpl.name}</h2>
+                          <span className="mrn-tag" style={{ flexShrink: 0 }}>{tpl.formality}</span>
                         </div>
-                      )}
+                        <p className="mrn-meta" style={{ marginTop: 6 }}>{tpl.tagline}</p>
+
+                        <ul className="flex flex-wrap gap-1.5" style={{ marginTop: 12, listStyle: 'none', padding: 0 }}>
+                          {tpl.tags.map((tag) => (
+                            <li key={tag} className="mrn-tag" style={{ borderColor: 'transparent', background: 'var(--color-paper-2)' }}>
+                              {tag}
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div
+                          className="flex items-center justify-between gap-2"
+                          style={{ marginTop: 'auto', paddingTop: 16 }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setDemo(tpl)}
+                            className="mrn-btn mrn-btn--sm mrn-btn--ghost mrn-above"
+                          >
+                            <Eye size={15} aria-hidden="true" /> Посмотреть демо
+                          </button>
+                          {/* Растянутая кнопка: выбрать можно кликом по всей карточке */}
+                          <button
+                            type="button"
+                            onClick={() => { setTemplate(tpl.id); setBlank(false) }}
+                            aria-pressed={selected}
+                            className="mrn-stretch mrn-btn mrn-btn--sm mrn-btn--ghost"
+                            style={{ color: 'var(--color-wine)' }}
+                          >
+                            {selected ? 'Выбран' : 'Выбрать'}
+                            <span className="mrn-sr">— дизайн «{tpl.name}»</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-4 bg-white">
-                      <p className="font-semibold text-[#2C2017]" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 17 }}>
-                        {tpl.name}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{tpl.desc}</p>
-                    </div>
-                  </button>
-                ))}
+                  )
+                })}
               </div>
+
+              {/* Старт без шаблона */}
+              <button
+                type="button"
+                onClick={() => setBlank(true)}
+                aria-pressed={blank}
+                className={`template-card w-full ${blank ? 'selected' : ''}`}
+                style={{
+                  marginTop: 16,
+                  padding: 'clamp(20px, 3vw, 26px)',
+                  background: 'var(--color-paper)',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 16,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: 44, height: 44, borderRadius: 'var(--radius-sm)',
+                    border: '1px dashed var(--mrn-line-strong)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--color-ink-400)', flexShrink: 0,
+                  }}
+                >
+                  <Plus size={20} />
+                </span>
+                <span style={{ flex: '1 1 220px' }}>
+                  <span className="mrn-h3 block" style={{ fontSize: 17 }}>Собрать самостоятельно</span>
+                  <span className="mrn-meta block" style={{ marginTop: 4 }}>
+                    Главный экран и подвал — остальные блоки добавите в редакторе
+                  </span>
+                </span>
+                {blank && (
+                  <span
+                    className="flex items-center justify-center"
+                    style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--color-wine)' }}
+                  >
+                    <Check size={15} color="#fff" aria-hidden="true" />
+                  </span>
+                )}
+              </button>
 
               <div className="mt-8 flex justify-end">
                 <button
@@ -314,19 +363,46 @@ export default function NewProjectPage() {
                   </div>
                 </div>
 
-                {/* Selected template preview */}
-                <div className="p-4 rounded-xl bg-[#C4A97D]/5 border border-[#C4A97D]/15 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${TEMPLATES.find(t => t.id === template)?.bg}, ${TEMPLATES.find(t => t.id === template)?.bg2})` }}>
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Heart size={16} style={{ color: TEMPLATES.find(t => t.id === template)?.accent }} />
+                {/* Выбранный шаблон */}
+                <div
+                  className="flex items-center gap-3"
+                  style={{
+                    padding: 14,
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'var(--color-paper-2)',
+                    border: '1px solid var(--mrn-line)',
+                  }}
+                >
+                  {blank ? (
+                    <span
+                      aria-hidden="true"
+                      className="flex-shrink-0 flex items-center justify-center"
+                      style={{
+                        width: 44, height: 56, borderRadius: 'var(--radius-xs)',
+                        border: '1px dashed var(--mrn-line-strong)', color: 'var(--color-ink-400)',
+                      }}
+                    >
+                      <Plus size={18} />
+                    </span>
+                  ) : (
+                    <div
+                      className="flex-shrink-0 overflow-hidden"
+                      style={{ width: 44, height: 56, borderRadius: 'var(--radius-xs)' }}
+                    >
+                      <TemplatePreview template={getTemplate(template)} ratio="44 / 56" eager />
                     </div>
-                  </div>
+                  )}
                   <div>
-                    <p className="text-xs text-[#2C2017]/40 uppercase tracking-widest">Выбранный шаблон</p>
-                    <p className="text-sm font-medium text-[#2C2017]">{TEMPLATES.find(t => t.id === template)?.name}</p>
+                    <p className="mrn-eyebrow">{blank ? 'Старт' : 'Выбранный шаблон'}</p>
+                    <p style={{ fontSize: 15, fontWeight: 500, marginTop: 4 }}>
+                      {blank ? 'Собрать самостоятельно' : getTemplate(template).name}
+                    </p>
                   </div>
-                  <button onClick={() => setStep(1)} className="ml-auto text-xs text-[#C4A97D] hover:underline">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="mrn-btn mrn-btn--sm mrn-btn--ghost"
+                    style={{ marginLeft: 'auto' }}
+                  >
                     Изменить
                   </button>
                 </div>
@@ -361,6 +437,30 @@ export default function NewProjectPage() {
           )}
         </AnimatePresence>
       </main>
+
+      <TemplateDemoModal
+        template={demo}
+        onClose={() => setDemo(null)}
+        onChoose={(tpl) => { setTemplate(tpl.id); setBlank(false) }}
+      />
     </div>
+  )
+}
+
+/**
+ * useSearchParams требует границы Suspense — иначе страница не проходит
+ * пререндер при сборке. Шаблон приходит из каталога параметром ?template=.
+ */
+export default function NewProjectPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen" style={{ background: 'var(--color-paper-2)' }}>
+          <Navbar />
+        </div>
+      }
+    >
+      <NewProjectForm />
+    </Suspense>
   )
 }
