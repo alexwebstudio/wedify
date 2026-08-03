@@ -81,6 +81,14 @@ export interface ProjectMusic {
   accessPin?: string // PIN-код доступа к сайту (хранится тут, чтобы не требовать миграции БД)
 }
 
+/** Содержимое сайта: то, что редактируется и то, что публикуется. */
+export interface SiteContent {
+  blocks: BlockData[]
+  colors: ProjectColors
+  fonts: ProjectFonts
+  music: ProjectMusic
+}
+
 export interface Project {
   id: string
   user_id: string
@@ -88,14 +96,29 @@ export interface Project {
   slug: string
   template: TemplateId
   language: Language
+  /** Черновик. Сюда пишет автосохранение редактора. */
   colors: ProjectColors
   fonts: ProjectFonts
   music: ProjectMusic
   blocks: BlockData[]
   published: boolean
+  /**
+   * Снимок содержимого на момент последней публикации — именно его видят гости.
+   * NULL у сайтов, которые ещё ни разу не публиковались.
+   */
+  published_snapshot: SiteContent | null
+  published_at: string | null
+  archived_at: string | null
   created_at: string
   updated_at: string
 }
+
+/** Статус проекта вычисляется из данных, а не хранится отдельной строкой. */
+export type ProjectStatus =
+  | 'draft'
+  | 'published'
+  | 'unpublished-changes'
+  | 'archived'
 
 export interface Template {
   id: TemplateId

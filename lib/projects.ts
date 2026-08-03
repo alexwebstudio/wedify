@@ -1,5 +1,5 @@
 import { createClient } from './supabase/client'
-import type { Project, TemplateId } from '@/types'
+import type { Project, SiteContent, TemplateId } from '@/types'
 import { generateSlug, getBlankBlocks, getDefaultBlocks, getDefaultMusic, getTemplateDefaults } from './utils'
 import { getTemplate } from './templateCatalog'
 
@@ -102,10 +102,109 @@ export async function deleteProject(id: string): Promise<void> {
   if (error) throw error
 }
 
-export async function publishProject(id: string, publish: boolean): Promise<void> {
+/** Черновая часть проекта — то, что редактируется и потом публикуется. */
+export function draftContent(project: Project): SiteContent {
+  return {
+    blocks: project.blocks,
+    colors: project.colors,
+    fonts: project.fonts,
+    music: project.music,
+  }
+}
+
+/**
+ * Содержимое, которое видят гости.
+ *
+ * Совместимость: у сайтов, опубликованных до появления снимка, он может быть
+ * пустым — тогда показываем черновик, как это и работало раньше. Ни один
+ * уже опубликованный сайт не «исчезнет».
+ */
+export function publishedContent(project: Project): SiteContent {
+  return project.published_snapshot ?? draftContent(project)
+}
+
+/**
+ * Публикация — единственное действие, которое меняет то, что видят гости.
+ * Копирует текущий черновик в снимок и проставляет время публикации.
+ * Повторная публикация обновляет ту же строку и не создаёт дубликатов.
+ */
+export async function publishProject(id: string): Promise<Project> {
+  const project = await getProjectById(id)
+  if (!project) throw new Error('Проект не найден')
+
+  const now = new Date().toISOString()
+  const { data, error } = await supabase
+    .from('projects')
+    .update({
+      published: true,
+      published_snapshot: draftContent(project),
+      published_at: now,
+      archived_at: null,
+      updated_at: now,
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    // Частая причина на новом окружении — не применена миграция 20260804_publish_snapshot.sql
+    if (/published_snapshot|published_at/.test(error.message)) {
+      throw new Error(
+        'В базе нет колонок для публикации. Примените supabase/migrations/20260804_publish_snapshot.sql',
+      )
+    }
+    throw error
+  }
+  return data
+}
+
+/** Снять сайт с публикации. Черновик и снимок сохраняются. */
+export async function unpublishProject(id: string): Promise<void> {
   const { error } = await supabase
     .from('projects')
-    .update({ published: publish, updated_at: new Date().toISOString() })
+    .update({ published: false, updated_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (error) throw error
+}
+
+/**
+ * Вернуть черновик к последней опубликованной версии.
+ * Нужна, когда правки завели не туда, а на сайте всё было хорошо.
+ */
+export async function restorePublishedVersion(id: string): Promise<Project> {
+  const project = await getProjectById(id)
+  if (!project) throw new Error('Проект не найден')
+  if (!project.published_snapshot) throw new Error('Сайт ещё ни разу не публиковался')
+
+  const snap = project.published_snapshot
+  const { data, error } = await supabase
+    .from('projects')
+    .update({
+      blocks: snap.blocks,
+      colors: snap.colors,
+      fonts: snap.fonts,
+      music: snap.music,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+/** Архивация и возврат из архива. Проект и его данные остаются на месте. */
+export async function setProjectArchived(id: string, archived: boolean): Promise<void> {
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      archived_at: archived ? new Date().toISOString() : null,
+      // Архивный сайт не должен оставаться доступным гостям
+      ...(archived ? { published: false } : {}),
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
 
   if (error) throw error

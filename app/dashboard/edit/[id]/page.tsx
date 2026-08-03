@@ -9,6 +9,8 @@ import {
 import { useAuth } from '@/lib/hooks/useAuth'
 import { loadUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userSettings'
 import { getProjectById, updateProject, publishProject } from '@/lib/projects'
+import { hasUnpublishedChanges, formatMoment } from '@/lib/projectStatus'
+import { PublishPanel } from '@/components/editor/PublishPanel'
 import { WeddingSite } from '@/components/templates/WeddingSite'
 import { EditorSidebar } from '@/components/editor/EditorSidebar'
 import dynamic from 'next/dynamic'
@@ -49,12 +51,20 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  // Явные состояния автосохранения вместо одного флага
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const saving = saveState === 'saving'
   const [publishing, setPublishing] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('desktop')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [previewMode, setPreviewMode] = useState(false)
+  // Из кабинета можно открыть сразу предпросмотр: /dashboard/edit/<id>?preview=1
+  const [previewMode, setPreviewMode] = useState(
+    () => typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === '1',
+  )
+  const [publishPanel, setPublishPanel] = useState(false)
+  // Публиковали впервые или обновляли уже живой сайт — запоминаем до вызова
+  const [publishedFirstTime, setPublishedFirstTime] = useState(false)
 
   // history
   const [past, setPast] = useState<Snap[]>([])
@@ -224,9 +234,15 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
     return () => window.removeEventListener('keydown', onKey)
   }, [undo, redo])
 
-  const handleSave = useCallback(async () => {
-    if (!project) return
-    setSaving(true)
+  /**
+   * Автосохранение пишет ТОЛЬКО в черновик.
+   * Гости продолжают видеть последнюю опубликованную версию, пока автор
+   * не нажмёт «Опубликовать». Тост здесь не показываем — при автосохранении
+   * он всплывал бы каждые несколько секунд; состояние видно в шапке.
+   */
+  const handleSave = useCallback(async (opts: { silent?: boolean } = {}) => {
+    if (!project) return false
+    setSaveState('saving')
     try {
       await updateProject(project.id, {
         blocks: project.blocks,
@@ -235,45 +251,57 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
         music: project.music,
       })
       setIsDirty(false)
-      toast.success('Сохранено ✓')
+      setSaveState('saved')
+      if (!opts.silent) toast.success('Сохранено в черновик')
+      return true
     } catch {
-      toast.error('Ошибка сохранения')
-    } finally {
-      setSaving(false)
+      setSaveState('error')
+      toast.error('Не удалось сохранить. Проверьте соединение')
+      return false
     }
   }, [project])
 
+  // Автосохранение с задержкой: правки не летят в базу на каждое нажатие
   useEffect(() => {
     if (!isDirty || !project) return
-    const timer = setTimeout(() => { handleSave() }, 3000)
+    const timer = setTimeout(() => { handleSave({ silent: true }) }, 1500)
     return () => clearTimeout(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDirty, project?.blocks, project?.colors, project?.fonts, project?.music])
 
+  // Предупреждение при закрытии вкладки, пока правки не доехали до базы
+  useEffect(() => {
+    if (!isDirty) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [isDirty])
+
+  /**
+   * Публикация — единственное действие, меняющее то, что видят гости.
+   * Сначала фиксируем черновик, затем копируем его в опубликованный снимок.
+   */
   const handlePublish = async () => {
     if (!project) return
-    await handleSave()
+    if (isDirty) {
+      const ok = await handleSave({ silent: true })
+      if (!ok) return
+    }
+    const wasLive = project.published
     setPublishing(true)
     try {
-      await publishProject(project.id, !project.published)
-      setProject((prev) => prev ? { ...prev, published: !prev.published } : null)
-      if (!project.published) {
-        const url = `${window.location.origin}/${project.slug}`
-        toast.success(
-          <span>
-            Опубликовано! 🎉{' '}
-            <a href={url} target="_blank" className="underline">{project.slug}</a>
-          </span>
-        )
-      } else {
-        toast.success('Сайт скрыт')
-      }
+      const updated = await publishProject(project.id)
+      setPublishedFirstTime(!wasLive)
+      setProject((prev) => (prev ? { ...prev, ...updated } : updated))
+      setPublishPanel(true)
     } catch {
-      toast.error('Ошибка')
+      toast.error('Публикация не удалась. Попробуйте ещё раз через минуту')
     } finally {
       setPublishing(false)
     }
   }
+
+
 
   const sidebarProps = {
     onUpdate: handleProjectUpdate,
@@ -353,47 +381,102 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
         {/* Right: actions */}
         <div className="flex items-center gap-2 flex-1 justify-end">
-          <button onClick={() => setPreviewMode(!previewMode)}
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-              previewMode ? 'bg-gray-100 text-gray-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-            }`}>
-            {previewMode ? <EyeOff size={13} /> : <Eye size={13} />}
-            <span className="hidden md:inline">{previewMode ? 'Редактор' : 'Просмотр'}</span>
+          {/* Состояние черновика: пользователь всегда видит, сохранены ли правки */}
+          <span
+            className="hidden sm:flex items-center gap-1.5 text-xs"
+            style={{ color: saveState === 'error' ? 'var(--color-wine)' : 'var(--color-ink-400)' }}
+            role="status"
+            aria-live="polite"
+          >
+            {saveState === 'saving' && (
+              <><span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" /> Сохраняем…</>
+            )}
+            {saveState === 'saved' && !isDirty && (<><Check size={13} /> Сохранено</>)}
+            {saveState === 'error' && (<>Ошибка сохранения</>)}
+            {saveState === 'idle' && !isDirty && (<>Черновик</>)}
+            {isDirty && saveState !== 'saving' && saveState !== 'error' && (<>Есть несохранённые правки</>)}
+          </span>
+
+          {/* Предпросмотр черновика — публичную версию не трогает */}
+          <button
+            onClick={() => setPreviewMode(!previewMode)}
+            className="mrn-btn mrn-btn--sm mrn-btn--ghost"
+            aria-pressed={previewMode}
+          >
+            {previewMode ? <EyeOff size={14} /> : <Eye size={14} />}
+            <span className="hidden md:inline">{previewMode ? 'Редактор' : 'Предпросмотр'}</span>
           </button>
 
           {project.published && (
-            <Link href={`/${project.slug}`} target="_blank"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
-              <Globe size={13} /> Открыть
-            </Link>
+            <a
+              href={`/${project.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mrn-btn mrn-btn--sm mrn-btn--ghost hidden md:inline-flex"
+            >
+              <Globe size={14} /> Открыть сайт
+            </a>
           )}
 
-          <button onClick={handleSave} disabled={saving || !isDirty}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all border border-gray-100 hover:border-[#C4A97D]/40 disabled:opacity-40">
-            {saving ? (
-              <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />
-            ) : isDirty ? (
-              <Save size={13} className="text-[#C4A97D]" />
-            ) : (
-              <Check size={13} className="text-green-500" />
-            )}
-            <span className="hidden sm:inline">{saving ? 'Сохраняем...' : isDirty ? 'Сохранить' : 'Сохранено'}</span>
+          <button
+            onClick={() => handleSave()}
+            disabled={saving || !isDirty}
+            className="mrn-btn mrn-btn--sm mrn-btn--secondary"
+          >
+            <Save size={14} />
+            <span className="hidden sm:inline">Сохранить</span>
           </button>
 
-          <button onClick={handlePublish} disabled={publishing}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-medium transition-all ${
-              project.published ? 'bg-green-50 text-green-600 border border-green-100 hover:bg-green-100' : 'btn-luxury'
-            }`}>
+          {/* Публикация — единственное действие, меняющее то, что видят гости */}
+          <button
+            onClick={handlePublish}
+            disabled={publishing}
+            className="mrn-btn mrn-btn--sm mrn-btn--primary"
+          >
             {publishing ? (
-              <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-            ) : project.published ? (
-              <><Eye size={13} /> <span className="hidden sm:inline">Опубликован</span></>
+              <span className="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin" />
             ) : (
-              <><Globe size={13} /> <span>Опубликовать</span></>
+              <Globe size={14} />
             )}
+            <span>
+              {publishing
+                ? 'Публикуем…'
+                : project.published
+                  ? 'Опубликовать изменения'
+                  : 'Опубликовать'}
+            </span>
           </button>
         </div>
       </div>
+
+      {/* Правки сохранены в черновике, но гости пока видят прошлую версию */}
+      {project.published && (hasUnpublishedChanges(project) || isDirty) && (
+        <div
+          className="flex flex-wrap items-center gap-x-3 gap-y-1"
+          style={{
+            padding: '10px clamp(12px, 3vw, 20px)',
+            background: 'var(--color-blush)',
+            borderBottom: '1px solid var(--mrn-line)',
+            fontSize: 13,
+          }}
+          role="status"
+        >
+          <strong style={{ color: 'var(--color-wine)', fontWeight: 600 }}>
+            Есть неопубликованные изменения
+          </strong>
+          <span style={{ color: 'var(--color-ink-600)' }}>
+            Гости видят версию от {formatMoment(project.published_at) ?? 'прошлой публикации'}
+          </span>
+        </div>
+      )}
+
+      <PublishPanel
+        open={publishPanel}
+        slug={project.slug}
+        publishedAt={project.published_at}
+        firstTime={publishedFirstTime}
+        onClose={() => setPublishPanel(false)}
+      />
 
       {/* Main layout */}
       <div className="flex flex-1 overflow-hidden">

@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Heart, Settings2, ChevronRight } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Globe, Heart, Settings2, ChevronRight } from 'lucide-react'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
-import { getProjects, deleteProject, publishProject } from '@/lib/projects'
+import { getProjects, deleteProject, publishProject, unpublishProject } from '@/lib/projects'
+import { getProjectStatus, STATUS_META, formatMoment } from '@/lib/projectStatus'
 import { usePlan, PLAN_META } from '@/lib/subscription'
 import type { Project } from '@/types'
 import toast from 'react-hot-toast'
@@ -82,13 +83,25 @@ export default function DashboardPage() {
     }
   }
 
+  // Публикация обновляет опубликованный снимок. Раньше эта же кнопка
+  // на живом сайте снимала его с публикации — отсюда путаница.
   const handlePublish = async (project: Project) => {
     try {
-      await publishProject(project.id, !project.published)
-      setProjects((p) => p.map((pr) => pr.id === project.id ? { ...pr, published: !pr.published } : pr))
-      toast.success(project.published ? 'Скрыто' : 'Опубликовано! 🎉')
+      const updated = await publishProject(project.id)
+      setProjects((p) => p.map((pr) => (pr.id === project.id ? { ...pr, ...updated } : pr)))
+      toast.success(project.published ? 'Изменения опубликованы' : 'Приглашение опубликовано')
     } catch {
-      toast.error('Ошибка')
+      toast.error('Публикация не удалась. Попробуйте ещё раз')
+    }
+  }
+
+  const handleUnpublish = async (project: Project) => {
+    try {
+      await unpublishProject(project.id)
+      setProjects((p) => p.map((pr) => (pr.id === project.id ? { ...pr, published: false } : pr)))
+      toast.success('Сайт снят с публикации — гости его больше не увидят')
+    } catch {
+      toast.error('Не удалось снять с публикации')
     }
   }
 
@@ -240,14 +253,30 @@ export default function DashboardPage() {
                       </p>
                     </div>
 
-                    {/* Status badge */}
-                    <div className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium ${
-                      project.published
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-500'
-                    }`}>
-                      {project.published ? '🟢 Опубликован' : '⚫ Черновик'}
-                    </div>
+                    {/* Статус считается из данных: черновик / опубликован /
+                        есть неопубликованные изменения / архив */}
+                    {(() => {
+                      const meta = STATUS_META[getProjectStatus(project)]
+                      return (
+                        <span
+                          className="absolute top-3 left-3"
+                          title={meta.hint}
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 6,
+                            padding: '4px 10px', borderRadius: 999,
+                            fontSize: 11.5, fontWeight: 500, lineHeight: 1.3,
+                            color: meta.color, background: meta.background,
+                            maxWidth: 'calc(100% - 24px)',
+                          }}
+                        >
+                          <span
+                            aria-hidden="true"
+                            style={{ width: 6, height: 6, borderRadius: 999, background: 'currentColor', flexShrink: 0 }}
+                          />
+                          {meta.label}
+                        </span>
+                      )
+                    })()}
 
                     {/* Quick edit overlay on hover */}
                     <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
@@ -263,8 +292,14 @@ export default function DashboardPage() {
                   {/* Card body */}
                   <div className="px-4 pt-3 pb-1">
                     <h3 className="font-semibold text-[#2C2017] truncate text-sm">{project.title}</h3>
-                    <p className="text-xs text-[#C4A97D] mt-0.5 font-mono truncate">
+                    <p className="text-xs mt-0.5 font-mono truncate" style={{ color: 'var(--color-wine)' }}>
                       /{project.slug}
+                    </p>
+                    <p className="mrn-meta" style={{ fontSize: 11.5, marginTop: 6 }}>
+                      Изменён: {formatMoment(project.updated_at) ?? '—'}
+                      {project.published_at && (
+                        <> · Опубликован: {formatMoment(project.published_at)}</>
+                      )}
                     </p>
                   </div>
 
@@ -276,6 +311,22 @@ export default function DashboardPage() {
                     >
                       <Edit2 size={11} /> Редактировать
                     </Link>
+
+                    <Link
+                      href={`/dashboard/edit/${project.id}?preview=1`}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] text-[#2C2017] text-xs font-medium hover:bg-[#C4A97D]/10 transition-colors"
+                    >
+                      <Eye size={11} /> Предпросмотр
+                    </Link>
+
+                    <button
+                      onClick={() => handlePublish(project)}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                      style={{ background: 'var(--color-ink)', color: 'var(--color-paper)' }}
+                    >
+                      <Globe size={11} />
+                      {project.published ? 'Опубликовать изменения' : 'Опубликовать'}
+                    </button>
 
                     {project.published ? (
                       <>
@@ -297,18 +348,16 @@ export default function DashboardPage() {
 
                     {/* Right-side actions */}
                     <div className="ml-auto flex items-center gap-1.5">
-                      <button
-                        onClick={() => handlePublish(project)}
-                        aria-label={project.published ? 'Скрыть сайт' : 'Опубликовать сайт'}
-                        className={`p-2.5 rounded-xl transition-colors ${
-                          project.published
-                            ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                            : 'bg-gray-50 text-gray-400 hover:bg-[#C4A97D]/10 hover:text-[#C4A97D]'
-                        }`}
-                        title={project.published ? 'Скрыть сайт' : 'Опубликовать сайт'}
-                      >
-                        {project.published ? <Eye size={16} /> : <EyeOff size={16} />}
-                      </button>
+                      {project.published ? (
+                        <button
+                          onClick={() => handleUnpublish(project)}
+                          aria-label="Снять сайт с публикации"
+                          title="Снять с публикации — гости перестанут видеть сайт"
+                          className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                        >
+                          <EyeOff size={16} />
+                        </button>
+                      ) : null}
 
                       <button
                         onClick={() => handleDuplicate(project)}
