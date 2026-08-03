@@ -46,16 +46,16 @@ export function DeleteConfirm({ open, blockName, onConfirm, onCancel }: Props) {
               >
                 <AlertTriangle size={26} className="text-red-500" />
               </div>
-              <h3 className="text-lg font-semibold text-[#2C2017] mb-1.5">Удалить блок?</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                {blockName ? <>Блок <span className="font-medium text-[#2C2017]">«{blockName}»</span> будет удалён из сайта.</> : 'Этот блок будет удалён из сайта.'}
+              <h3 className="text-lg font-semibold text-[#16130F] mb-1.5">Удалить блок?</h3>
+              <p className="text-sm text-ink-400 leading-relaxed">
+                {blockName ? <>Блок <span className="font-medium text-[#16130F]">«{blockName}»</span> будет удалён из сайта.</> : 'Этот блок будет удалён из сайта.'}
                 {' '}Действие можно отменить через «Отменить» (Ctrl+Z).
               </p>
             </div>
             <div className="flex gap-2.5 px-5 pb-5">
               <button
                 onClick={onCancel}
-                className="flex-1 py-3 rounded-2xl text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="flex-1 py-3 rounded-2xl text-sm font-medium text-ink-600 bg-paper-2 hover:bg-paper-3 transition-colors"
               >
                 Отмена
               </button>

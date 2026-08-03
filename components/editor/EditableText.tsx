@@ -70,7 +70,7 @@ export function EditableText({
       onKeyDown: handleKeyDown,
       placeholder,
       className: cn(
-        'bg-white/10 border-b-2 border-[#C4A97D] outline-none rounded-sm w-full resize-none',
+        'bg-white/10 border-b-2 border-[#6E2B34] outline-none rounded-sm w-full resize-none',
         className
       ),
       style: inheritStyle,
@@ -96,7 +96,7 @@ export function EditableText({
       title="Нажмите для редактирования"
     >
       {value || <span className="opacity-40 italic">{placeholder}</span>}
-      <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-[#C4A97D] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+      <span className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-[#6E2B34] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
     </Tag>
   )
 }

@@ -6,17 +6,18 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
+import { AccountCard } from '@/components/dashboard/AccountCard'
 import {
   loadUserSettings, saveUserSettings, DEFAULT_SETTINGS,
   type UserSettings, type PaletteId,
 } from '@/lib/userSettings'
 import {
   Settings2, Shield, Mail, HelpCircle, Check, Link2, Lock, EyeOff,
-  Smartphone, Monitor, Send, ChevronRight, Save,
+  Smartphone, Monitor, Send, ChevronRight, Save, UserRound,
 } from 'lucide-react'
 
 const PALETTES: { id: PaletteId; name: string; colors: string[] }[] = [
-  { id: 'gold',      name: 'Золотая',        colors: ['#0F0D0A', '#C4A97D', '#F0E8D8'] },
+  { id: 'gold',      name: 'Золотая',        colors: ['#0F0D0A', '#6E2B34', '#F0E8D8'] },
   { id: 'ivory',     name: 'Айвори',          colors: ['#FAF8F3', '#C9A96A', '#8A7F6E'] },
   { id: 'burgundy',  name: 'Бордовая',        colors: ['#5A1A22', '#C08552', '#F3E7D8'] },
   { id: 'pastel',    name: 'Пастельная',      colors: ['#FBEFF1', '#D4829A', '#7C6E74'] },
@@ -36,7 +37,7 @@ function Seg<T extends string>({ value, options, onChange }: { value: T; options
               fontWeight: active ? 600 : 400,
               background: active ? '#1E1610' : '#fff',
               color: active ? '#F0E4D0' : '#5A4E40',
-              border: `1px solid ${active ? '#1E1610' : 'rgba(196,169,125,.3)'}`,
+              border: `1px solid ${active ? '#1E1610' : 'rgba(110, 43, 52,.3)'}`,
               transition: 'all .2s',
             }}>
             {o.icon}{o.label}
@@ -50,7 +51,7 @@ function Seg<T extends string>({ value, options, onChange }: { value: T; options
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
     <button onClick={() => onChange(!on)}
-      style={{ width: 46, height: 26, borderRadius: 100, border: 'none', cursor: 'pointer', position: 'relative', background: on ? '#C4A97D' : '#DDD5C9', transition: 'background .2s', flexShrink: 0 }}>
+      style={{ width: 46, height: 26, borderRadius: 100, border: 'none', cursor: 'pointer', position: 'relative', background: on ? '#6E2B34' : '#DDD5C9', transition: 'background .2s', flexShrink: 0 }}>
       <span style={{ position: 'absolute', top: 3, left: on ? 23 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left .2s', boxShadow: '0 1px 3px rgba(0,0,0,.2)' }} />
     </button>
   )
@@ -58,10 +59,10 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 20, borderBottom: '1px solid rgba(196,169,125,.12)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 20, borderBottom: '1px solid rgba(110, 43, 52,.12)' }}>
       <div>
-        <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2017' }}>{label}</p>
-        {hint && <p style={{ fontSize: 12.5, color: '#9A8B76', marginTop: 3, lineHeight: 1.5 }}>{hint}</p>}
+        <p style={{ fontSize: 14, fontWeight: 600, color: '#16130F' }}>{label}</p>
+        {hint && <p style={{ fontSize: 12.5, color: '#6F655B', marginTop: 3, lineHeight: 1.5 }}>{hint}</p>}
       </div>
       {children}
     </div>
@@ -70,12 +71,12 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 
 function Card({ id, icon, title, desc, children }: { id: string; icon: React.ReactNode; title: string; desc: string; children: React.ReactNode }) {
   return (
-    <section id={id} style={{ scrollMarginTop: 90, background: '#fff', borderRadius: 22, border: '1px solid rgba(196,169,125,.16)', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '22px 24px', borderBottom: '1px solid rgba(196,169,125,.12)', background: 'linear-gradient(120deg,#FBF8F3,#F6EFE3)' }}>
-        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(196,169,125,.16)', color: '#8B6F47', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
+    <section id={id} style={{ scrollMarginTop: 90, background: '#fff', borderRadius: 22, border: '1px solid rgba(110, 43, 52,.16)', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '22px 24px', borderBottom: '1px solid rgba(110, 43, 52,.12)', background: 'linear-gradient(120deg,#FBF8F3,#F6EFE3)' }}>
+        <div style={{ width: 42, height: 42, borderRadius: 12, background: 'rgba(110, 43, 52,.16)', color: '#4A1A22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{icon}</div>
         <div>
-          <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontWeight: 500, color: '#2C2017', lineHeight: 1 }}>{title}</h2>
-          <p style={{ fontSize: 12.5, color: '#9A8B76', marginTop: 4 }}>{desc}</p>
+          <h2 className="mrn-h3" style={{ fontSize: 19 }}>{title}</h2>
+          <p style={{ fontSize: 12.5, color: '#6F655B', marginTop: 4 }}>{desc}</p>
         </div>
       </div>
       <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>{children}</div>
@@ -123,8 +124,8 @@ export default function SettingsPage() {
 
   if (loading || !ready) {
     return (
-      <div style={{ minHeight: '100vh', background: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 40, height: 40, border: '2px solid #C4A97D', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <div style={{ minHeight: '100vh', background: '#FBF8F4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 40, height: 40, border: '2px solid #6E2B34', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
       </div>
     )
   }
@@ -137,21 +138,21 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAF8F5' }}>
+    <div style={{ minHeight: '100vh', background: '#FBF8F4' }}>
       <Navbar dark={false} />
 
       <main style={{ maxWidth: 920, margin: '0 auto', padding: '96px 18px 130px' }}>
         {/* header */}
         <div style={{ marginBottom: 24 }}>
-          <Link href="/dashboard" style={{ color: '#8B6F47', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>← Мои сайты</Link>
-          <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 'clamp(2rem,5vw,2.8rem)', fontWeight: 300, color: '#2C2017' }}>Настройки кабинета</h1>
-          <p style={{ color: '#9A8B76', fontSize: 14, marginTop: 4 }}>Задайте параметры, которые применяются к новым приглашениям, и настройте доступ и уведомления.</p>
+          <Link href="/dashboard" style={{ color: '#4A1A22', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>← Мои сайты</Link>
+          <h1 className="mrn-h1" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.6rem)' }}>Настройки кабинета</h1>
+          <p style={{ color: '#6F655B', fontSize: 14, marginTop: 4 }}>Задайте параметры, которые применяются к новым приглашениям, и настройте доступ и уведомления.</p>
         </div>
 
         {/* быстрые ссылки-якоря */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 26 }}>
           {NAV.map((n) => (
-            <a key={n.href} href={n.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 15px', borderRadius: 100, background: '#fff', border: '1px solid rgba(196,169,125,.25)', color: '#5A4E40', fontSize: 13, textDecoration: 'none' }}>
+            <a key={n.href} href={n.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '9px 15px', borderRadius: 100, background: '#fff', border: '1px solid rgba(110, 43, 52,.25)', color: '#5A4E40', fontSize: 13, textDecoration: 'none' }}>
               {n.icon}{n.label}
             </a>
           ))}
@@ -159,6 +160,17 @@ export default function SettingsPage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* ── НАСТРОЙКИ САЙТА ПО УМОЛЧАНИЮ ── */}
+          {user && (
+            <Card
+              id="account"
+              icon={<UserRound size={20} />}
+              title="Аккаунт"
+              desc="Имя, пароль, сессии и удаление профиля"
+            >
+              <AccountCard user={user} />
+            </Card>
+          )}
+
           <Card id="defaults" icon={<Settings2 size={20} />} title="Настройки сайта по умолчанию" desc="Применяются как старт для новых приглашений">
             <Field label="Базовый размер шрифта">
               <Seg value={s.defaults.fontSize}
@@ -190,12 +202,12 @@ export default function SettingsPage() {
                   const active = s.defaults.palette === p.id
                   return (
                     <button key={p.id} onClick={() => patch((d) => { d.defaults.palette = p.id })}
-                      style={{ textAlign: 'left', padding: 12, borderRadius: 14, cursor: 'pointer', background: '#fff', border: `1.5px solid ${active ? '#C4A97D' : 'rgba(196,169,125,.2)'}`, position: 'relative' }}>
+                      style={{ textAlign: 'left', padding: 12, borderRadius: 14, cursor: 'pointer', background: '#fff', border: `1.5px solid ${active ? '#6E2B34' : 'rgba(110, 43, 52,.2)'}`, position: 'relative' }}>
                       <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
                         {p.colors.map((c) => <span key={c} style={{ width: 22, height: 22, borderRadius: 6, background: c, border: '1px solid rgba(0,0,0,.06)' }} />)}
                       </div>
-                      <span style={{ fontSize: 12.5, fontWeight: active ? 600 : 400, color: '#2C2017' }}>{p.name}</span>
-                      {active && <span style={{ position: 'absolute', top: 10, right: 10, color: '#C4A97D' }}><Check size={15} /></span>}
+                      <span style={{ fontSize: 12.5, fontWeight: active ? 600 : 400, color: '#16130F' }}>{p.name}</span>
+                      {active && <span style={{ position: 'absolute', top: 10, right: 10, color: '#6E2B34' }}><Check size={15} /></span>}
                     </button>
                   )
                 })}
@@ -210,8 +222,8 @@ export default function SettingsPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2017' }}>Собирать в первую очередь</p>
-                <p style={{ fontSize: 12.5, color: '#9A8B76', marginTop: 3 }}>С какой версии вы начинаете верстать приглашение</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#16130F' }}>Собирать в первую очередь</p>
+                <p style={{ fontSize: 12.5, color: '#6F655B', marginTop: 3 }}>С какой версии вы начинаете верстать приглашение</p>
               </div>
               <Seg value={s.defaults.buildFirst}
                 options={[{ v: 'mobile', label: 'Мобильная', icon: <Smartphone size={14} /> }, { v: 'desktop', label: 'Десктопная', icon: <Monitor size={14} /> }]}
@@ -230,13 +242,13 @@ export default function SettingsPage() {
                 const active = s.security.access === o.v
                 return (
                   <button key={o.v} onClick={() => patch((d) => { d.security.access = o.v; if (o.v === 'hidden') d.security.noindex = true })}
-                    style={{ display: 'flex', alignItems: 'flex-start', gap: 12, textAlign: 'left', padding: '14px 16px', borderRadius: 14, cursor: 'pointer', background: active ? 'rgba(196,169,125,.08)' : '#fff', border: `1.5px solid ${active ? '#C4A97D' : 'rgba(196,169,125,.2)'}` }}>
-                    <span style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(196,169,125,.14)', color: '#8B6F47', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{o.icon}</span>
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 12, textAlign: 'left', padding: '14px 16px', borderRadius: 14, cursor: 'pointer', background: active ? 'rgba(110, 43, 52,.08)' : '#fff', border: `1.5px solid ${active ? '#6E2B34' : 'rgba(110, 43, 52,.2)'}` }}>
+                    <span style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(110, 43, 52,.14)', color: '#4A1A22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{o.icon}</span>
                     <span style={{ flex: 1 }}>
-                      <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#2C2017' }}>{o.t}</span>
-                      <span style={{ display: 'block', fontSize: 12.5, color: '#9A8B76', marginTop: 2, lineHeight: 1.5 }}>{o.d}</span>
+                      <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#16130F' }}>{o.t}</span>
+                      <span style={{ display: 'block', fontSize: 12.5, color: '#6F655B', marginTop: 2, lineHeight: 1.5 }}>{o.d}</span>
                     </span>
-                    {active && <Check size={17} color="#C4A97D" style={{ marginTop: 4 }} />}
+                    {active && <Check size={17} color="#6E2B34" style={{ marginTop: 4 }} />}
                   </button>
                 )
               })}
@@ -247,28 +259,28 @@ export default function SettingsPage() {
                 <input value={s.security.pin} inputMode="numeric" maxLength={8}
                   onChange={(e) => patch((d) => { d.security.pin = e.target.value.replace(/\D/g, '') })}
                   placeholder="например 2608"
-                  style={{ width: 180, padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3', fontSize: 16, letterSpacing: '.3em', outline: 'none', color: '#2C2017' }} />
+                  style={{ width: 180, padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3', fontSize: 16, letterSpacing: '.3em', outline: 'none', color: '#16130F' }} />
               </Field>
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2017' }}>Скрыть от индексации (noindex)</p>
-                <p style={{ fontSize: 12.5, color: '#9A8B76', marginTop: 3 }}>Приглашение не будет находиться в поисковиках</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#16130F' }}>Скрыть от индексации (noindex)</p>
+                <p style={{ fontSize: 12.5, color: '#6F655B', marginTop: 3 }}>Приглашение не будет находиться в поисковиках</p>
               </div>
               <Toggle on={s.security.noindex} onChange={(v) => patch((d) => { d.security.noindex = v })} />
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#2C2017' }}>Сложная приватная ссылка</p>
-                <p style={{ fontSize: 12.5, color: '#9A8B76', marginTop: 3 }}>Неугадываемый адрес вместо простого имени</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#16130F' }}>Сложная приватная ссылка</p>
+                <p style={{ fontSize: 12.5, color: '#6F655B', marginTop: 3 }}>Неугадываемый адрес вместо простого имени</p>
               </div>
               <Toggle on={s.security.privateSlug} onChange={(v) => patch((d) => { d.security.privateSlug = v })} />
             </div>
 
-            <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 14, background: 'rgba(196,169,125,.08)', border: '1px solid rgba(196,169,125,.2)' }}>
-              <Shield size={17} color="#8B6F47" style={{ flexShrink: 0, marginTop: 1 }} />
+            <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 14, background: 'rgba(110, 43, 52,.08)', border: '1px solid rgba(110, 43, 52,.2)' }}>
+              <Shield size={17} color="#4A1A22" style={{ flexShrink: 0, marginTop: 1 }} />
               <p style={{ fontSize: 12.5, color: '#6A5D4C', lineHeight: 1.6 }}>
                 Самый безопасный вариант для свадебного приглашения — <b>ссылка + PIN-код</b>. Настройки сохраняются в вашем аккаунте и применяются к сайту при публикации.
               </p>
@@ -288,7 +300,7 @@ export default function SettingsPage() {
                 <input value={s.messages.email} type="email"
                   onChange={(e) => patch((d) => { d.messages.email = e.target.value })}
                   placeholder={user?.email || 'you@example.com'}
-                  style={{ width: '100%', maxWidth: 360, padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3', fontSize: 14, outline: 'none', color: '#2C2017' }} />
+                  style={{ width: '100%', maxWidth: 360, padding: '11px 14px', borderRadius: 12, border: '1px solid #e5ddd3', fontSize: 14, outline: 'none', color: '#16130F' }} />
               </Field>
             )}
 
@@ -307,8 +319,8 @@ export default function SettingsPage() {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 14, background: 'rgba(196,169,125,.08)', border: '1px solid rgba(196,169,125,.2)' }}>
-              <Mail size={17} color="#8B6F47" style={{ flexShrink: 0, marginTop: 1 }} />
+            <div style={{ display: 'flex', gap: 10, padding: '14px 16px', borderRadius: 14, background: 'rgba(110, 43, 52,.08)', border: '1px solid rgba(110, 43, 52,.2)' }}>
+              <Mail size={17} color="#4A1A22" style={{ flexShrink: 0, marginTop: 1 }} />
               <p style={{ fontSize: 12.5, color: '#6A5D4C', lineHeight: 1.6 }}>
                 Когда гость заполняет форму на сайте, ответ приходит выбранным способом. Ничего настраивать вручную в коде не нужно.
               </p>
@@ -323,15 +335,15 @@ export default function SettingsPage() {
               { q: 'Где ответы гостей?', a: 'В разделе «Сообщения с форм» выше выберите email или Telegram — туда придут все RSVP.' },
               { q: 'Как закрыть сайт паролем?', a: 'В разделе «Безопасность и доступ» выберите «Доступ по паролю / PIN» и задайте код.' },
             ].map((it) => (
-              <details key={it.q} style={{ borderBottom: '1px solid rgba(196,169,125,.12)', paddingBottom: 12 }}>
-                <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 600, color: '#2C2017', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  {it.q} <ChevronRight size={16} color="#C4A97D" />
+              <details key={it.q} style={{ borderBottom: '1px solid rgba(110, 43, 52,.12)', paddingBottom: 12 }}>
+                <summary style={{ cursor: 'pointer', fontSize: 14, fontWeight: 600, color: '#16130F', listStyle: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  {it.q} <ChevronRight size={16} color="#6E2B34" />
                 </summary>
                 <p style={{ fontSize: 13, color: '#6A5D4C', lineHeight: 1.65, marginTop: 8 }}>{it.a}</p>
               </details>
             ))}
             <a href="https://t.me/sanyamaster200" target="_blank" rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', padding: '11px 20px', borderRadius: 12, background: '#fff', border: '1px solid rgba(196,169,125,.3)', color: '#8B6F47', fontSize: 13.5, fontWeight: 500, textDecoration: 'none' }}>
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', padding: '11px 20px', borderRadius: 12, background: '#fff', border: '1px solid rgba(110, 43, 52,.3)', color: '#4A1A22', fontSize: 13.5, fontWeight: 500, textDecoration: 'none' }}>
               <Send size={15} /> Написать в поддержку
             </a>
           </Card>
@@ -339,9 +351,9 @@ export default function SettingsPage() {
       </main>
 
       {/* sticky save bar */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, background: 'rgba(255,255,255,.94)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(196,169,125,.2)', padding: '12px 18px' }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40, background: 'rgba(255,255,255,.94)', backdropFilter: 'blur(10px)', borderTop: '1px solid rgba(110, 43, 52,.2)', padding: '12px 18px' }}>
         <div style={{ maxWidth: 920, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-          <p style={{ fontSize: 13, color: dirty ? '#8B6F47' : '#9A8B76' }}>{dirty ? 'Есть несохранённые изменения' : 'Все изменения сохранены'}</p>
+          <p style={{ fontSize: 13, color: dirty ? '#4A1A22' : '#6F655B' }}>{dirty ? 'Есть несохранённые изменения' : 'Все изменения сохранены'}</p>
           <button onClick={handleSave} disabled={saving || !dirty} className="btn-luxury"
             style={{ padding: '12px 26px', borderRadius: 14, fontSize: 14, fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 8, opacity: saving || !dirty ? 0.5 : 1 }}>
             <Save size={15} /> {saving ? 'Сохраняем…' : 'Сохранить'}

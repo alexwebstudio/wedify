@@ -51,7 +51,7 @@ export function BlockCustomizer({ blockId, settings, onChange, isEditing, colors
       {content}
 
       {open && (
-        <div className="absolute top-3 right-3 z-40 w-64 p-4 rounded-2xl space-y-3.5" style={{ background: '#2C2017', boxShadow: '0 20px 60px rgba(0,0,0,.45)' }}>
+        <div className="absolute top-3 right-3 z-40 w-64 p-4 rounded-2xl space-y-3.5" style={{ background: '#16130F', boxShadow: '0 20px 60px rgba(0,0,0,.45)' }}>
           <div className="flex items-center justify-between">
             <p className="font-medium text-white" style={{ fontSize: 12 }}>Настройки блока</p>
             <button onClick={onClose} className="text-white/50 hover:text-white"><X size={15} /></button>

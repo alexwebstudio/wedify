@@ -59,37 +59,37 @@ export function BlockWrapper({
               {onSettings && (
                 <button
                   onClick={onSettings}
-                  className="p-1.5 rounded-lg hover:bg-[#C4A97D]/10 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-[#6E2B34]/10 transition-colors"
                   title="Настройки блока"
                 >
-                  <Settings size={14} className="text-[#8B6F47]" />
+                  <Settings size={14} className="text-[#4A1A22]" />
                 </button>
               )}
               <button
                 onClick={onMoveUp}
                 disabled={!canMoveUp}
-                className="p-1.5 rounded-lg hover:bg-[#C4A97D]/10 transition-colors disabled:opacity-30"
+                className="p-1.5 rounded-lg hover:bg-[#6E2B34]/10 transition-colors disabled:opacity-30"
                 title="Переместить вверх"
               >
-                <ChevronUp size={14} className="text-[#8B6F47]" />
+                <ChevronUp size={14} className="text-[#4A1A22]" />
               </button>
               <button
                 onClick={onMoveDown}
                 disabled={!canMoveDown}
-                className="p-1.5 rounded-lg hover:bg-[#C4A97D]/10 transition-colors disabled:opacity-30"
+                className="p-1.5 rounded-lg hover:bg-[#6E2B34]/10 transition-colors disabled:opacity-30"
                 title="Переместить вниз"
               >
-                <ChevronDown size={14} className="text-[#8B6F47]" />
+                <ChevronDown size={14} className="text-[#4A1A22]" />
               </button>
-              <div className="w-px h-4 bg-[#C4A97D]/20 mx-0.5" />
+              <div className="w-px h-4 bg-[#6E2B34]/20 mx-0.5" />
               <button
                 onClick={onToggle}
-                className="p-1.5 rounded-lg hover:bg-[#C4A97D]/10 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-[#6E2B34]/10 transition-colors"
                 title={block.enabled ? 'Скрыть блок' : 'Показать блок'}
               >
                 {block.enabled
-                  ? <Eye size={14} className="text-[#C4A97D]" />
-                  : <EyeOff size={14} className="text-gray-400" />
+                  ? <Eye size={14} className="text-[#6E2B34]" />
+                  : <EyeOff size={14} className="text-ink-400" />
                 }
               </button>
             </div>

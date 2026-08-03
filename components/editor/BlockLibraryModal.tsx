@@ -169,7 +169,7 @@ function MiniMockup({ layout, colors: c }: { layout: LayoutKind; colors: Project
     case 'cinematic':
       return <div style={{ ...box }}><div style={{ position: 'absolute', inset: 0, background: `linear-gradient(135deg,${c.primary},${c.secondary})` }} /><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,rgba(0,0,0,.75),transparent 60%)' }} /><div style={{ position: 'absolute', left: 12, bottom: 12, display: 'flex', flexDirection: 'column', gap: 3 }}><Bar w={70} h={9} cl="#fff" /><Bar w={44} h={3} cl="#fff" op={.6} /></div></div>
     case 'dresscode':
-      return <div style={{ ...box, display: 'flex', gap: 8, padding: 10, alignItems: 'center' }}><div style={{ width: '42%', height: '80%', borderRadius: 6, background: `linear-gradient(135deg,${c.primary}55,${c.secondary}55)` }} /><div style={{ width: '58%', display: 'flex', flexDirection: 'column', gap: 4 }}><Bar w={'70%'} h={5} /><Bar w={'90%'} h={2} op={.4} /><div style={{ display: 'flex', gap: 3, marginTop: 2 }}>{['#E8DED2', '#C9B79C', '#8B6F47', '#5A4A3A'].map((col, i) => <div key={i} style={{ width: 12, height: 12, borderRadius: '50%', background: col, border: '1px solid #fff' }} />)}</div></div></div>
+      return <div style={{ ...box, display: 'flex', gap: 8, padding: 10, alignItems: 'center' }}><div style={{ width: '42%', height: '80%', borderRadius: 6, background: `linear-gradient(135deg,${c.primary}55,${c.secondary}55)` }} /><div style={{ width: '58%', display: 'flex', flexDirection: 'column', gap: 4 }}><Bar w={'70%'} h={5} /><Bar w={'90%'} h={2} op={.4} /><div style={{ display: 'flex', gap: 3, marginTop: 2 }}>{['#E8DED2', '#C9B79C', '#4A1A22', '#5A4A3A'].map((col, i) => <div key={i} style={{ width: 12, height: 12, borderRadius: '50%', background: col, border: '1px solid #fff' }} />)}</div></div></div>
     case 'custom':
       return <div style={{ ...box, display: 'flex', gap: 8, padding: 10, alignItems: 'center' }}><div style={{ width: '50%', display: 'flex', flexDirection: 'column', gap: 3 }}><Bar w={'70%'} h={5} />{[0, 1, 2].map(i => <Bar key={i} w={i === 2 ? '55%' : '95%'} h={2} op={.4} />)}</div><div style={{ width: '50%', height: '70%', borderRadius: 6, background: `linear-gradient(135deg,${c.primary}33,${c.secondary}33)` }} /><div style={{ position: 'absolute', top: 6, right: 6, width: 14, height: 8, borderRadius: 3, background: c.primary }} /></div>
     case 'loc-card':
@@ -273,45 +273,45 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
           <motion.div initial={{ opacity: 0, scale: 0.97, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.98, y: 10 }} transition={{ type: 'spring', damping: 30, stiffness: 300 }}
             className="relative bg-white w-full h-full sm:h-[88vh] sm:rounded-3xl overflow-hidden flex flex-col" style={{ maxWidth: 1160, boxShadow: '0 40px 100px rgba(0,0,0,.4)' }}>
             {/* Header */}
-            <div className="flex items-center gap-3 px-5 sm:px-6 h-16 border-b border-gray-100 flex-shrink-0">
+            <div className="flex items-center gap-3 px-5 sm:px-6 h-16 border-b border-paper-3 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}><Sparkles size={16} className="text-white" /></div>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Sparkles size={16} className="text-white" /></div>
                 <div>
-                  <p className="text-sm font-semibold text-[#2C2017] leading-none">Библиотека блоков</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{CATALOG_COUNT} готовых блоков</p>
+                  <p className="text-sm font-semibold text-[#16130F] leading-none">Библиотека блоков</p>
+                  <p className="text-[11px] text-ink-400 mt-0.5">{CATALOG_COUNT} готовых блоков</p>
                 </div>
               </div>
               <div className="flex-1 max-w-sm mx-auto relative">
-                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск блока..." className="w-full pl-9 pr-3 py-2 rounded-xl bg-gray-50 text-sm outline-none focus:ring-2 focus:ring-[#C4A97D]/30 transition" />
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Поиск блока..." className="w-full pl-9 pr-3 py-2 rounded-xl bg-paper-2 text-sm outline-none focus:ring-2 focus:ring-[#6E2B34]/30 transition" />
               </div>
-              <button onClick={onClose} className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors flex-shrink-0"><X size={18} /></button>
+              <button onClick={onClose} className="w-9 h-9 rounded-xl flex items-center justify-center text-ink-400 hover:bg-paper-2 transition-colors flex-shrink-0"><X size={18} /></button>
             </div>
 
             <div className="flex flex-1 min-h-0">
               {/* Category rail */}
-              <div className="hidden sm:flex flex-col w-48 border-r border-gray-100 p-3 gap-1 overflow-y-auto flex-shrink-0" data-lenis-prevent>
+              <div className="hidden sm:flex flex-col w-48 border-r border-paper-3 p-3 gap-1 overflow-y-auto flex-shrink-0" data-lenis-prevent>
                 {rail.map((r) => (
                   <button key={r.id} onClick={() => setCat(r.id)}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left transition-colors ${cat === r.id ? 'bg-[#C4A97D]/12 text-[#8B6F47] font-medium' : 'text-gray-500 hover:bg-gray-50'}`}>
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-left transition-colors ${cat === r.id ? 'bg-[#6E2B34]/12 text-[#4A1A22] font-medium' : 'text-ink-400 hover:bg-paper-2'}`}>
                     <span className="text-[13px] w-4 text-center">{r.icon}</span>
                     <span className="truncate">{r.label}</span>
-                    {r.id === 'fav' && favs.length > 0 && <span className="ml-auto text-[10px] bg-[#C4A97D]/15 text-[#8B6F47] rounded-full px-1.5 py-0.5">{favs.length}</span>}
+                    {r.id === 'fav' && favs.length > 0 && <span className="ml-auto text-[10px] bg-[#6E2B34]/15 text-[#4A1A22] rounded-full px-1.5 py-0.5">{favs.length}</span>}
                   </button>
                 ))}
               </div>
 
               {/* Mobile chips */}
-              <div className="sm:hidden absolute top-16 left-0 right-0 z-10 bg-white border-b border-gray-100 px-3 py-2 flex gap-1.5 overflow-x-auto" data-lenis-prevent>
+              <div className="sm:hidden absolute top-16 left-0 right-0 z-10 bg-white border-b border-paper-3 px-3 py-2 flex gap-1.5 overflow-x-auto" data-lenis-prevent>
                 {rail.map((r) => (
-                  <button key={r.id} onClick={() => setCat(r.id)} className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors ${cat === r.id ? 'bg-[#C4A97D]/15 text-[#8B6F47] font-medium' : 'bg-gray-50 text-gray-500'}`}>{r.icon} {r.label}</button>
+                  <button key={r.id} onClick={() => setCat(r.id)} className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition-colors ${cat === r.id ? 'bg-[#6E2B34]/15 text-[#4A1A22] font-medium' : 'bg-paper-2 text-ink-400'}`}>{r.icon} {r.label}</button>
                 ))}
               </div>
 
               {/* Cards grid */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-5 pt-16 sm:pt-5" data-lenis-prevent>
                 {items.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center text-gray-400 py-20"><Star size={30} className="mb-3 opacity-40" /><p className="text-sm">{cat === 'fav' ? 'Пока нет избранных блоков' : 'Ничего не найдено'}</p></div>
+                  <div className="h-full flex flex-col items-center justify-center text-center text-ink-400 py-20"><Star size={30} className="mb-3 opacity-40" /><p className="text-sm">{cat === 'fav' ? 'Пока нет избранных блоков' : 'Ничего не найдено'}</p></div>
                 ) : (
                   <div className="grid gap-3.5" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
                     {items.map((it) => {
@@ -321,7 +321,7 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                       return (
                         <motion.div key={it.id} layout onMouseEnter={() => setSelected(it)} onClick={() => setSelected(it)}
                           className="group relative rounded-2xl border bg-white overflow-hidden cursor-pointer transition-all"
-                          style={{ borderColor: it.premium ? '#D4AF37' : isSel ? '#C4A97D' : '#eee', boxShadow: isSel ? '0 8px 24px rgba(196,169,125,.18)' : it.premium ? '0 4px 16px rgba(212,175,55,.14)' : 'none' }} whileHover={{ y: -3 }}>
+                          style={{ borderColor: it.premium ? '#D4AF37' : isSel ? '#6E2B34' : '#eee', boxShadow: isSel ? '0 8px 24px rgba(110, 43, 52,.18)' : it.premium ? '0 4px 16px rgba(212,175,55,.14)' : 'none' }} whileHover={{ y: -3 }}>
                           {/* mini-mockup */}
                           <div className="relative" style={{ height: 128, background: '#f4f2ef' }}>
                             <div className="absolute inset-2 rounded-lg overflow-hidden shadow-sm" style={{ border: '1px solid rgba(0,0,0,.05)' }}>
@@ -332,14 +332,14 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                             )}
                             {locked && <div className="absolute inset-2 rounded-lg flex items-center justify-center" style={{ background: 'rgba(28,24,18,.42)' }}><Lock size={20} className="text-white/90" /></div>}
                             <button onClick={(e) => { e.stopPropagation(); toggleFav(it.id) }} className="absolute top-2.5 right-2.5 w-7 h-7 rounded-lg flex items-center justify-center backdrop-blur-sm transition-colors" style={{ background: 'rgba(255,255,255,.85)' }} title={isFav ? 'Убрать из избранного' : 'В избранное'}>
-                              <Star size={13} className={isFav ? 'text-[#C4A97D]' : 'text-gray-300'} fill={isFav ? '#C4A97D' : 'none'} />
+                              <Star size={13} className={isFav ? 'text-[#6E2B34]' : 'text-ink-300'} fill={isFav ? '#6E2B34' : 'none'} />
                             </button>
                           </div>
                           <div className="p-3">
-                            <p className="text-[13px] font-medium text-[#2C2017] truncate">{it.name}</p>
-                            <p className="text-[11px] text-gray-400 leading-snug mt-0.5 line-clamp-2" style={{ minHeight: 28 }}>{it.desc}</p>
+                            <p className="text-[13px] font-medium text-[#16130F] truncate">{it.name}</p>
+                            <p className="text-[11px] text-ink-400 leading-snug mt-0.5 line-clamp-2" style={{ minHeight: 28 }}>{it.desc}</p>
                             <button onClick={(e) => { e.stopPropagation(); tryAdd(it) }} className="mt-2 w-full py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all"
-                              style={{ background: locked ? '#EFEAE0' : it.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : '#C4A97D', color: locked ? '#9A8B76' : '#fff' }}>
+                              style={{ background: locked ? '#EFEAE0' : it.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : '#6E2B34', color: locked ? '#6F655B' : '#fff' }}>
                               {locked ? <><Lock size={12} /> Премиум</> : <><Plus size={13} /> Добавить</>}
                             </button>
                           </div>
@@ -351,28 +351,28 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
               </div>
 
               {/* Live preview pane with device toggle */}
-              <div className="hidden lg:flex flex-col w-[380px] border-l border-gray-100 flex-shrink-0">
-                <div className="px-4 h-11 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
-                  <span className="text-xs font-medium text-gray-500">Живой предпросмотр</span>
-                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
-                    <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded-md transition-colors ${device === 'desktop' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`} title="Desktop"><Monitor size={13} /></button>
-                    <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded-md transition-colors ${device === 'mobile' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`} title="Mobile"><Smartphone size={13} /></button>
+              <div className="hidden lg:flex flex-col w-[380px] border-l border-paper-3 flex-shrink-0">
+                <div className="px-4 h-11 flex items-center justify-between border-b border-paper-3 flex-shrink-0">
+                  <span className="text-xs font-medium text-ink-400">Живой предпросмотр</span>
+                  <div className="flex items-center gap-1 bg-paper-2 rounded-lg p-0.5">
+                    <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded-md transition-colors ${device === 'desktop' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`} title="Desktop"><Monitor size={13} /></button>
+                    <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded-md transition-colors ${device === 'mobile' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`} title="Mobile"><Smartphone size={13} /></button>
                   </div>
                 </div>
-                <div className="flex-1 overflow-hidden bg-gray-100 relative flex items-start justify-center p-3">
-                  <div className="w-full h-full overflow-y-auto rounded-xl" data-lenis-prevent style={device === 'mobile' ? { width: 300, flex: 'none', background: '#fff', boxShadow: '0 0 0 8px #1c1812, 0 20px 40px rgba(0,0,0,.3)', borderRadius: 24 } : { background: '#fff' }}>
+                <div className="flex-1 overflow-hidden bg-paper-2 relative flex items-start justify-center p-3">
+                  <div className="w-full h-full overflow-y-auto rounded-xl" data-lenis-prevent style={device === 'mobile' ? { width: 300, flex: 'none', background: '#fff', boxShadow: '0 0 0 8px #16130F, 0 20px 40px rgba(0,0,0,.3)', borderRadius: 24 } : { background: '#fff' }}>
                     <div style={{ width: device === 'mobile' ? 390 : 1100, transform: `scale(${device === 'mobile' ? 0.72 : 0.31})`, transformOrigin: 'top left', pointerEvents: 'none' }}>
                       <PreviewBlock item={selected} colors={colors} fonts={fonts} />
                     </div>
                   </div>
                 </div>
-                <div className="p-3 border-t border-gray-100 flex-shrink-0">
-                  <p className="text-[13px] font-medium text-[#2C2017] mb-0.5 flex items-center gap-1.5">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</p>
-                  <p className="text-[11px] text-gray-400 mb-2.5 leading-snug">{selected.desc}</p>
+                <div className="p-3 border-t border-paper-3 flex-shrink-0">
+                  <p className="text-[13px] font-medium text-[#16130F] mb-0.5 flex items-center gap-1.5">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</p>
+                  <p className="text-[11px] text-ink-400 mb-2.5 leading-snug">{selected.desc}</p>
                   {selected.premium && !premiumUnlocked ? (
-                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#9A8B76' }}><Lock size={14} /> Доступно на Премиум</button>
+                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#6F655B' }}><Lock size={14} /> Доступно на Премиум</button>
                   ) : (
-                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}><Plus size={15} /> Добавить на сайт</button>
+                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
                   )}
                 </div>
               </div>
@@ -381,34 +381,34 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
             {/* Мобильный предпросмотр: кнопка + полноэкранный лист */}
             <button onClick={() => setMobilePreview(true)}
               className="lg:hidden absolute bottom-4 right-4 z-30 flex items-center gap-2 px-4 py-2.5 rounded-full text-white text-sm font-medium shadow-lg"
-              style={{ background: 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}>
+              style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}>
               <Smartphone size={15} /> Предпросмотр
             </button>
             <AnimatePresence>
               {mobilePreview && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="lg:hidden absolute inset-0 z-40 bg-white flex flex-col">
-                  <div className="flex items-center justify-between px-4 h-14 border-b border-gray-100 flex-shrink-0">
-                    <span className="text-sm font-medium text-[#2C2017] flex items-center gap-2">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</span>
+                  <div className="flex items-center justify-between px-4 h-14 border-b border-paper-3 flex-shrink-0">
+                    <span className="text-sm font-medium text-[#16130F] flex items-center gap-2">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</span>
                     <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-0.5">
-                        <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded-md ${device === 'desktop' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`}><Monitor size={13} /></button>
-                        <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded-md ${device === 'mobile' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`}><Smartphone size={13} /></button>
+                      <div className="flex items-center gap-1 bg-paper-2 rounded-lg p-0.5">
+                        <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded-md ${device === 'desktop' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`}><Monitor size={13} /></button>
+                        <button onClick={() => setDevice('mobile')} className={`p-1.5 rounded-md ${device === 'mobile' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`}><Smartphone size={13} /></button>
                       </div>
-                      <button onClick={() => setMobilePreview(false)} className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100"><X size={18} /></button>
+                      <button onClick={() => setMobilePreview(false)} className="w-9 h-9 rounded-xl flex items-center justify-center text-ink-400 hover:bg-paper-2"><X size={18} /></button>
                     </div>
                   </div>
-                  <div className="flex-1 overflow-hidden bg-gray-100 flex items-start justify-center p-3">
-                    <div className="w-full h-full overflow-y-auto rounded-xl" data-lenis-prevent style={device === 'mobile' ? { maxWidth: 320, background: '#fff', boxShadow: '0 0 0 8px #1c1812', borderRadius: 24 } : { background: '#fff' }}>
+                  <div className="flex-1 overflow-hidden bg-paper-2 flex items-start justify-center p-3">
+                    <div className="w-full h-full overflow-y-auto rounded-xl" data-lenis-prevent style={device === 'mobile' ? { maxWidth: 320, background: '#fff', boxShadow: '0 0 0 8px #16130F', borderRadius: 24 } : { background: '#fff' }}>
                       <div style={{ width: device === 'mobile' ? 390 : 1100, transform: `scale(${device === 'mobile' ? 0.8 : 0.34})`, transformOrigin: 'top left', pointerEvents: 'none' }}>
                         <PreviewBlock item={selected} colors={colors} fonts={fonts} />
                       </div>
                     </div>
                   </div>
-                  <div className="p-3 border-t border-gray-100 flex-shrink-0">
+                  <div className="p-3 border-t border-paper-3 flex-shrink-0">
                     {selected.premium && !premiumUnlocked ? (
-                      <button onClick={() => tryAdd(selected)} className="w-full py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#9A8B76' }}><Lock size={14} /> Доступно на Премиум</button>
+                      <button onClick={() => tryAdd(selected)} className="w-full py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#6F655B' }}><Lock size={14} /> Доступно на Премиум</button>
                     ) : (
-                      <button onClick={() => { tryAdd(selected); setMobilePreview(false) }} className="w-full py-3 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#C4A97D,#8B6F47)' }}><Plus size={15} /> Добавить на сайт</button>
+                      <button onClick={() => { tryAdd(selected); setMobilePreview(false) }} className="w-full py-3 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
                     )}
                   </div>
                 </motion.div>

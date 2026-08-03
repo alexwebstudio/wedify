@@ -24,10 +24,10 @@ function PlanCard() {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <p className="text-sm font-semibold text-[#2C2017]">Тариф: {meta.label}</p>
+            <p className="text-sm font-semibold text-[#16130F]">Тариф: {meta.label}</p>
             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full text-white whitespace-nowrap" style={{ background: meta.color }}>{priceLabel}</span>
           </div>
-          <p className="text-xs text-[#9A8B76] mt-0.5 leading-snug">{meta.desc}</p>
+          <p className="text-xs text-[#6F655B] mt-0.5 leading-snug">{meta.desc}</p>
         </div>
       </div>
 
@@ -41,10 +41,10 @@ function PlanCard() {
         )}
         {plan === 'standard' && (
           <button onClick={() => { setPlan('start'); toast('Возвращён базовый тариф', { icon: 'ℹ️' }) }}
-            className="text-xs text-gray-400 hover:text-gray-600 underline">Вернуться на базовый</button>
+            className="text-xs text-ink-400 hover:text-ink-600 underline">Вернуться на базовый</button>
         )}
       </div>
-      <p className="text-[10px] text-gray-300 mt-2.5">Премиум-тариф скоро — блоки Premium пока в разработке.</p>
+      <p className="text-[10px] text-ink-300 mt-2.5">Премиум-тариф скоро — блоки Premium пока в разработке.</p>
     </div>
   )
 }
@@ -111,13 +111,6 @@ export default function DashboardPage() {
     toast.success('Ссылка скопирована! 🔗')
   }
 
-  const TEMPLATE_COLORS: Record<string, { bg: string; bg2: string; accent: string; text: string }> = {
-    'classic-luxury':  { bg: '#FAF8F5', bg2: '#F5EDD6', accent: '#C4A97D', text: '#2C2017' },
-    'minimal-white':   { bg: '#FFFFFF', bg2: '#F5F5F5', accent: '#1A1A1A', text: '#1A1A1A' },
-    'dark-elegant':    { bg: '#1C1812', bg2: '#3D3025', accent: '#D4AF7A', text: '#F0E8D8' },
-    'sage-garden':     { bg: '#F5F7F0', bg2: '#DDE4D2', accent: '#7E8E6A', text: '#2D3520' },
-    'rose-blush':      { bg: '#FFF8FA', bg2: '#FCF0F4', accent: '#D4829A', text: '#2A1520' },
-  }
 
   const handleDuplicate = async (project: Project) => {
     if (!user) return
@@ -150,28 +143,27 @@ export default function DashboardPage() {
 
   if (loading || fetching) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FBF8F4] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#C4A97D] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-[#2C2017]/40 text-sm">Загружаем...</p>
+          <div className="w-10 h-10 border-2 border-[#6E2B34] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-[#16130F]/40 text-sm">Загружаем...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
+    <div className="min-h-screen bg-[#FBF8F4]">
       <Navbar dark={false} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-3xl md:text-4xl font-light text-[#2C2017]"
-              style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h1 className="mrn-h1" style={{ fontSize: 'clamp(1.9rem, 4vw, 2.6rem)' }}>
               {t('dashboard_title')}
             </h1>
-            <p className="text-[#2C2017]/40 text-sm mt-1">
+            <p className="text-[#16130F]/40 text-sm mt-1">
               {projects.length === 0 ? 'Начните создавать' : `${projects.length} приглашени${projects.length === 1 ? 'е' : 'й'}`}
             </p>
           </div>
@@ -183,16 +175,16 @@ export default function DashboardPage() {
         {/* Единая кнопка настроек сайта */}
         <div className="mb-10">
           <Link href="/dashboard/settings"
-            className="group bg-white rounded-2xl border border-[#C4A97D]/15 p-4 flex items-center gap-4 hover:border-[#C4A97D]/40 hover:shadow-sm transition-all">
+            className="group bg-white rounded-2xl border border-[#6E2B34]/15 p-4 flex items-center gap-4 hover:border-[#6E2B34]/40 hover:shadow-sm transition-all">
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(196,169,125,.14)', color: '#8B6F47' }}>
+              style={{ background: 'rgba(110, 43, 52,.14)', color: '#4A1A22' }}>
               <Settings2 size={20} />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-[#2C2017]">Настройки сайта</p>
-              <p className="text-xs text-[#9A8B76]">Шрифты и палитра, безопасность и доступ, сообщения с форм, помощь</p>
+              <p className="text-sm font-semibold text-[#16130F]">Настройки сайта</p>
+              <p className="text-xs text-[#6F655B]">Шрифты и палитра, безопасность и доступ, сообщения с форм, помощь</p>
             </div>
-            <ChevronRight size={18} className="text-[#C4A97D] opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight size={18} className="text-[#6E2B34] opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
           </Link>
         </div>
 
@@ -203,21 +195,21 @@ export default function DashboardPage() {
           >
             {/* иллюстрация: мини-приглашение */}
             <div className="mx-auto mb-8" style={{ width: 150 }}>
-              <div className="relative mx-auto rounded-2xl" style={{ width: 150, height: 196, background: 'linear-gradient(170deg,#FBF8F3,#F1E7D6)', boxShadow: '0 24px 50px -24px rgba(196,169,125,.6), 0 0 0 1px rgba(196,169,125,.25)', transform: 'rotate(-4deg)' }}>
+              <div className="relative mx-auto rounded-2xl" style={{ width: 150, height: 196, background: 'linear-gradient(170deg,#FBF8F3,#F1E7D6)', boxShadow: '0 24px 50px -24px rgba(110, 43, 52,.6), 0 0 0 1px rgba(110, 43, 52,.25)', transform: 'rotate(-4deg)' }}>
                 <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-                  <Heart size={20} className="text-[#C4A97D] mb-3" fill="#C4A97D" />
-                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>Имена</div>
-                  <div style={{ color: '#C4A97D', fontSize: 12, margin: '4px 0' }}>♥</div>
-                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>пары</div>
+                  <Heart size={20} className="text-[#6E2B34] mb-3" fill="#6E2B34" />
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>Имена</div>
+                  <div style={{ color: '#6E2B34', fontSize: 12, margin: '4px 0' }}>♥</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>пары</div>
                   <div style={{ width: 34, height: 1, background: 'rgba(184,149,106,.5)', margin: '10px 0 8px' }} />
-                  <div style={{ color: '#9A8B76', fontSize: 10, letterSpacing: '.15em' }}>ДД · ММ · 2026</div>
+                  <div style={{ color: '#6F655B', fontSize: 10, letterSpacing: '.15em' }}>ДД · ММ · 2026</div>
                 </div>
               </div>
             </div>
-            <h2 className="text-2xl font-light text-[#2C2017] mb-2" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+            <h2 className="mrn-h2 mb-2" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}>
               Здесь появятся ваши приглашения
             </h2>
-            <p className="text-[#2C2017]/40 text-sm mb-8">Создайте первое — это займёт пару минут</p>
+            <p className="text-[#16130F]/40 text-sm mb-8">Создайте первое — это займёт пару минут</p>
             <Link href="/dashboard/new"
               className="btn-luxury px-8 py-3.5 rounded-xl font-medium inline-flex items-center gap-2">
               <span className="flex items-center gap-2">
@@ -229,25 +221,28 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {projects.map((project, i) => {
-              const colors = TEMPLATE_COLORS[project.template] || TEMPLATE_COLORS['classic-luxury']
+              // Миниатюра берёт оформление самого проекта: после правок в редакторе
+              // палитра могла уйти далеко от исходного шаблона
+              const colors = project.colors
+              const headingFont = project.fonts?.heading || 'Prata'
               return (
                 <motion.div
                   key={project.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#C4A97D]/10 proj-card-hover"
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#6E2B34]/10 proj-card-hover"
                 >
                   {/* Preview thumbnail */}
                   <div
                     className="h-40 relative flex items-center justify-center overflow-hidden"
-                    style={{ background: `linear-gradient(145deg, ${colors.bg}, ${colors.bg2})` }}
+                    style={{ background: `linear-gradient(145deg, ${colors.background}, ${colors.accent})` }}
                   >
                     <div className="text-center px-4">
-                      <p className="text-xl font-light leading-tight" style={{ color: colors.accent, fontFamily: 'Cormorant Garamond, serif' }}>
+                      <p className="text-xl font-light leading-tight" style={{ color: colors.primary, fontFamily: `'${headingFont}', serif` }}>
                         {project.title}
                       </p>
-                      <div className="w-8 h-px mx-auto mt-2 opacity-60" style={{ background: colors.accent }} />
+                      <div className="w-8 h-px mx-auto mt-2 opacity-60" style={{ background: colors.primary }} />
                       <p className="text-xs mt-2 tracking-widest uppercase opacity-40" style={{ color: colors.text }}>
                         {project.template?.replace('-', ' ')}
                       </p>
@@ -282,7 +277,7 @@ export default function DashboardPage() {
                     <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
                       <Link
                         href={`/dashboard/edit/${project.id}`}
-                        className="px-4 py-2 bg-white rounded-xl text-sm font-medium text-[#2C2017] shadow-lg"
+                        className="px-4 py-2 bg-white rounded-xl text-sm font-medium text-[#16130F] shadow-lg"
                       >
                         ✏️ Редактировать
                       </Link>
@@ -291,7 +286,7 @@ export default function DashboardPage() {
 
                   {/* Card body */}
                   <div className="px-4 pt-3 pb-1">
-                    <h3 className="font-semibold text-[#2C2017] truncate text-sm">{project.title}</h3>
+                    <h3 className="font-semibold text-[#16130F] truncate text-sm">{project.title}</h3>
                     <p className="text-xs mt-0.5 font-mono truncate" style={{ color: 'var(--color-wine)' }}>
                       /{project.slug}
                     </p>
@@ -307,14 +302,14 @@ export default function DashboardPage() {
                   <div className="px-4 pb-3 pt-2 flex items-center gap-1.5 flex-wrap">
                     <Link
                       href={`/dashboard/edit/${project.id}`}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] text-[#2C2017] text-xs font-medium hover:bg-[#C4A97D]/10 transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FBF8F4] text-[#16130F] text-xs font-medium hover:bg-[#6E2B34]/10 transition-colors"
                     >
                       <Edit2 size={11} /> Редактировать
                     </Link>
 
                     <Link
                       href={`/dashboard/edit/${project.id}?preview=1`}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] text-[#2C2017] text-xs font-medium hover:bg-[#C4A97D]/10 transition-colors"
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FBF8F4] text-[#16130F] text-xs font-medium hover:bg-[#6E2B34]/10 transition-colors"
                     >
                       <Eye size={11} /> Предпросмотр
                     </Link>
@@ -333,13 +328,13 @@ export default function DashboardPage() {
                         <Link
                           href={`/${project.slug}`}
                           target="_blank"
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] text-[#2C2017] text-xs font-medium hover:bg-[#C4A97D]/10 transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FBF8F4] text-[#16130F] text-xs font-medium hover:bg-[#6E2B34]/10 transition-colors"
                         >
                           <ExternalLink size={11} /> Открыть
                         </Link>
                         <button
                           onClick={() => copyLink(project.slug)}
-                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] text-[#2C2017] text-xs font-medium hover:bg-[#C4A97D]/10 transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FBF8F4] text-[#16130F] text-xs font-medium hover:bg-[#6E2B34]/10 transition-colors"
                         >
                           <Copy size={11} /> Ссылка
                         </button>
@@ -353,7 +348,7 @@ export default function DashboardPage() {
                           onClick={() => handleUnpublish(project)}
                           aria-label="Снять сайт с публикации"
                           title="Снять с публикации — гости перестанут видеть сайт"
-                          className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                          className="p-2.5 rounded-xl bg-paper-2 text-ink-400 hover:bg-paper-2 hover:text-ink-600 transition-colors"
                         >
                           <EyeOff size={16} />
                         </button>
@@ -362,7 +357,7 @@ export default function DashboardPage() {
                       <button
                         onClick={() => handleDuplicate(project)}
                         aria-label="Дублировать"
-                        className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors"
+                        className="p-2.5 rounded-xl bg-paper-2 text-ink-400 hover:bg-blue-50 hover:text-blue-500 transition-colors"
                         title="Дублировать"
                       >
                         <Copy size={16} />
@@ -372,7 +367,7 @@ export default function DashboardPage() {
                         onClick={() => handleDelete(project.id)}
                         disabled={deletingId === project.id}
                         aria-label="Удалить"
-                        className="p-2.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-400 transition-colors disabled:opacity-40"
+                        className="p-2.5 rounded-xl bg-paper-2 text-ink-400 hover:bg-red-50 hover:text-red-400 transition-colors disabled:opacity-40"
                         title="Удалить"
                       >
                         <Trash2 size={16} />
@@ -391,14 +386,14 @@ export default function DashboardPage() {
             >
               <Link
                 href="/dashboard/new"
-                className="h-full min-h-[220px] rounded-2xl border-2 border-dashed border-[#C4A97D]/25 flex flex-col items-center justify-center gap-3 hover:border-[#C4A97D] hover:bg-[#C4A97D]/5 transition-all group block"
+                className="h-full min-h-[220px] rounded-2xl border-2 border-dashed border-[#6E2B34]/25 flex flex-col items-center justify-center gap-3 hover:border-[#6E2B34] hover:bg-[#6E2B34]/5 transition-all group block"
               >
-                <div className="w-12 h-12 rounded-full bg-[#C4A97D]/10 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:bg-[#C4A97D]/20">
-                  <Plus size={22} className="text-[#C4A97D]" />
+                <div className="w-12 h-12 rounded-full bg-[#6E2B34]/10 flex items-center justify-center group-hover:scale-110 transition-transform group-hover:bg-[#6E2B34]/20">
+                  <Plus size={22} className="text-[#6E2B34]" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-[#2C2017]">Новое приглашение</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Нажмите для создания</p>
+                  <p className="text-sm font-medium text-[#16130F]">Новое приглашение</p>
+                  <p className="text-xs text-ink-400 mt-0.5">Нажмите для создания</p>
                 </div>
               </Link>
             </motion.div>

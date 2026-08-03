@@ -320,10 +320,10 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FBF8F4] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-[#C4A97D] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-[#2C2017]/40 text-sm">Загружаем редактор...</p>
+          <div className="w-10 h-10 border-2 border-[#6E2B34] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-[#16130F]/40 text-sm">Загружаем редактор...</p>
         </div>
       </div>
     )
@@ -332,49 +332,49 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
   if (!project) return null
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+    <div className="h-screen flex flex-col overflow-hidden bg-paper-2">
       {/* Библиотека шрифтов пользовательских сайтов — нужна только здесь и в превью */}
       <SiteFonts />
 
       {/* Top toolbar */}
-      <div className="h-14 bg-white border-b border-gray-100 flex items-center px-4 gap-3 z-30 flex-shrink-0">
+      <div className="h-14 bg-white border-b border-paper-3 flex items-center px-4 gap-3 z-30 flex-shrink-0">
         {/* Left */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink transition-colors">
             <ArrowLeft size={14} /> <span className="hidden sm:inline">Назад</span>
           </Link>
-          <div className="w-px h-5 bg-gray-100" />
+          <div className="w-px h-5 bg-paper-2" />
           <button onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={`p-1.5 rounded-lg transition-colors ${sidebarOpen ? 'bg-[#C4A97D]/10 text-[#C4A97D]' : 'text-gray-400 hover:text-gray-600'}`}>
+            className={`p-1.5 rounded-lg transition-colors ${sidebarOpen ? 'bg-[#6E2B34]/10 text-[#6E2B34]' : 'text-ink-400 hover:text-ink-600'}`}>
             <PanelLeft size={16} />
           </button>
 
           {/* Undo / Redo */}
           <div className="flex items-center gap-0.5">
             <button onClick={undo} disabled={!canUndo} title="Отменить (Ctrl+Z)"
-              className="p-1.5 rounded-lg transition-colors text-gray-400 enabled:hover:text-gray-700 enabled:hover:bg-gray-100 disabled:opacity-30">
+              className="p-1.5 rounded-lg transition-colors text-ink-400 enabled:hover:text-ink-700 enabled:hover:bg-paper-2 disabled:opacity-30">
               <Undo2 size={16} />
             </button>
             <button onClick={redo} disabled={!canRedo} title="Повторить (Ctrl+Shift+Z)"
-              className="p-1.5 rounded-lg transition-colors text-gray-400 enabled:hover:text-gray-700 enabled:hover:bg-gray-100 disabled:opacity-30">
+              className="p-1.5 rounded-lg transition-colors text-ink-400 enabled:hover:text-ink-700 enabled:hover:bg-paper-2 disabled:opacity-30">
               <Redo2 size={16} />
             </button>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-50 min-w-0">
-            <span className="text-xs text-gray-500 font-medium truncate max-w-[130px]">{project.title}</span>
-            {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-[#C4A97D] ml-1 flex-shrink-0" title="Несохранённые изменения" />}
+          <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-paper-2 min-w-0">
+            <span className="text-xs text-ink-400 font-medium truncate max-w-[130px]">{project.title}</span>
+            {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-[#6E2B34] ml-1 flex-shrink-0" title="Несохранённые изменения" />}
           </div>
         </div>
 
         {/* Center: view mode */}
-        <div className="flex items-center gap-1 bg-gray-50 rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-paper-2 rounded-xl p-1">
           <button onClick={() => setViewMode('desktop')}
-            className={`p-1.5 rounded-lg transition-all ${viewMode === 'desktop' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`}>
+            className={`p-1.5 rounded-lg transition-all ${viewMode === 'desktop' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`}>
             <Monitor size={15} />
           </button>
           <button onClick={() => setViewMode('mobile')}
-            className={`p-1.5 rounded-lg transition-all ${viewMode === 'mobile' ? 'bg-white shadow-sm text-[#2C2017]' : 'text-gray-400'}`}>
+            className={`p-1.5 rounded-lg transition-all ${viewMode === 'mobile' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`}>
             <Smartphone size={15} />
           </button>
         </div>
@@ -488,7 +488,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
               animate={{ width: 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="hidden md:block flex-shrink-0 border-r border-gray-100 overflow-hidden"
+              className="hidden md:block flex-shrink-0 border-r border-paper-3 overflow-hidden"
               style={{ width: 280 }}
             >
               <EditorSidebar project={project} projectId={project.id} {...sidebarProps} />
@@ -497,14 +497,14 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
         </AnimatePresence>
 
         {/* Preview canvas */}
-        <div className="flex-1 overflow-auto bg-gray-100 flex items-start justify-center p-4 md:p-8" data-lenis-prevent>
+        <div className="flex-1 overflow-auto bg-paper-2 flex items-start justify-center p-4 md:p-8" data-lenis-prevent>
           <div
             className={`bg-white shadow-2xl overflow-hidden transition-all duration-300 ${viewMode === 'mobile' ? 'rounded-[2rem]' : 'rounded-xl'}`}
             style={{
               width: viewMode === 'mobile' ? 390 : '100%',
               maxWidth: viewMode === 'desktop' ? 1200 : 390,
               minHeight: '100vh',
-              ...(viewMode === 'mobile' ? { boxShadow: '0 0 0 12px #1C1812, 0 40px 80px rgba(0,0,0,0.4)' } : {}),
+              ...(viewMode === 'mobile' ? { boxShadow: '0 0 0 12px #16130F, 0 40px 80px rgba(0,0,0,0.4)' } : {}),
             }}
           >
             <WeddingSite
@@ -535,12 +535,12 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
               style={{ maxHeight: '72dvh' }}
             >
               <div className="flex justify-center pt-3 pb-1">
-                <div className="w-9 h-1 bg-gray-200 rounded-full" />
+                <div className="w-9 h-1 bg-paper-3 rounded-full" />
               </div>
-              <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
-                <span className="font-medium text-[#2C2017] text-sm">⚙️ Настройки сайта</span>
-                <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                  <X size={16} className="text-gray-400" />
+              <div className="flex items-center justify-between px-4 py-2 border-b border-paper-3">
+                <span className="font-medium text-[#16130F] text-sm">⚙️ Настройки сайта</span>
+                <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-paper-2 transition-colors">
+                  <X size={16} className="text-ink-400" />
                 </button>
               </div>
               <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(72dvh - 72px)' }} data-lenis-prevent>
@@ -554,7 +554,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
       {/* Mobile FAB */}
       <button onClick={() => setSidebarOpen(true)}
         className="md:hidden fixed bottom-5 right-4 z-30 flex items-center gap-2 px-4 py-3 rounded-2xl text-white text-sm font-medium shadow-xl active:scale-95 transition-transform"
-        style={{ background: 'linear-gradient(135deg, #C4A97D, #8B6F47)' }}>
+        style={{ background: 'linear-gradient(135deg, #6E2B34, #4A1A22)' }}>
         ⚙️ Настройки
       </button>
 

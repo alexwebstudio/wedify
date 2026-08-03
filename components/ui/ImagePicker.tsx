@@ -88,17 +88,17 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
         className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h3 className="font-semibold text-[#2C2017]" style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20 }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-paper-3">
+          <h3 className="font-semibold text-[#16130F]" style={{ fontFamily: 'var(--font-display)', fontSize: 20 }}>
             Выбрать изображение
           </h3>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
-            <X size={18} className="text-gray-500" />
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-paper-2 transition-colors">
+            <X size={18} className="text-ink-400" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-100">
+        <div className="flex border-b border-paper-3">
           {[
             { key: 'preset', label: '✨ Готовые' },
             { key: 'upload', label: '📸 Загрузить своё' },
@@ -108,8 +108,8 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
               onClick={() => setTab(t.key as 'preset' | 'upload')}
               className={`flex-1 py-3 text-sm font-medium transition-colors ${
                 tab === t.key
-                  ? 'text-[#C4A97D] border-b-2 border-[#C4A97D]'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'text-[#6E2B34] border-b-2 border-[#6E2B34]'
+                  : 'text-ink-400 hover:text-ink-700'
               }`}
             >
               {t.label}
@@ -120,14 +120,14 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
         <div className="p-4">
           {tab === 'preset' ? (
             <>
-              <p className="text-xs text-gray-400 mb-3">Нажмите на фото чтобы выбрать</p>
+              <p className="text-xs text-ink-400 mb-3">Нажмите на фото чтобы выбрать</p>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
                 {PRESET_IMAGES.map((img) => (
                   <button
                     key={img.url}
                     onClick={() => setSelected(img.url)}
                     className={`relative aspect-square rounded-xl overflow-hidden group ring-2 transition-all ${
-                      selected === img.url ? 'ring-[#C4A97D] scale-95' : 'ring-transparent hover:ring-[#C4A97D]/50'
+                      selected === img.url ? 'ring-[#6E2B34] scale-95' : 'ring-transparent hover:ring-[#6E2B34]/50'
                     }`}
                   >
                     <img
@@ -137,9 +137,9 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
                       loading="lazy"
                     />
                     {selected === img.url && (
-                      <div className="absolute inset-0 bg-[#C4A97D]/40 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-[#6E2B34]/40 flex items-center justify-center">
                         <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                          <Check size={14} className="text-[#C4A97D]" />
+                          <Check size={14} className="text-[#6E2B34]" />
                         </div>
                       </div>
                     )}
@@ -154,32 +154,32 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
             <div>
               <div
                 onClick={() => fileRef.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#C4A97D]', 'bg-[#C4A97D]/5') }}
-                onDragLeave={(e) => { e.currentTarget.classList.remove('border-[#C4A97D]', 'bg-[#C4A97D]/5') }}
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[#6E2B34]', 'bg-[#6E2B34]/5') }}
+                onDragLeave={(e) => { e.currentTarget.classList.remove('border-[#6E2B34]', 'bg-[#6E2B34]/5') }}
                 onDrop={(e) => {
                   e.preventDefault()
-                  e.currentTarget.classList.remove('border-[#C4A97D]', 'bg-[#C4A97D]/5')
+                  e.currentTarget.classList.remove('border-[#6E2B34]', 'bg-[#6E2B34]/5')
                   const file = e.dataTransfer.files[0]
                   if (file && file.type.startsWith('image/')) {
                     const fakeEvent = { target: { files: [file] } } as unknown as React.ChangeEvent<HTMLInputElement>
                     handleUpload(fakeEvent)
                   }
                 }}
-                className="border-2 border-dashed border-[#C4A97D]/30 rounded-xl p-10 text-center cursor-pointer hover:border-[#C4A97D] hover:bg-[#C4A97D]/5 transition-all"
+                className="border-2 border-dashed border-[#6E2B34]/30 rounded-xl p-10 text-center cursor-pointer hover:border-[#6E2B34] hover:bg-[#6E2B34]/5 transition-all"
               >
                 {uploading ? (
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-8 h-8 border-2 border-[#C4A97D] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm text-gray-500">Загружаем...</p>
+                    <div className="w-8 h-8 border-2 border-[#6E2B34] border-t-transparent rounded-full animate-spin" />
+                    <p className="text-sm text-ink-400">Загружаем...</p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-[#C4A97D]/10 flex items-center justify-center">
-                      <Upload size={20} className="text-[#C4A97D]" />
+                    <div className="w-12 h-12 rounded-full bg-[#6E2B34]/10 flex items-center justify-center">
+                      <Upload size={20} className="text-[#6E2B34]" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#2C2017]">Нажмите или перетащите</p>
-                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP до 10MB</p>
+                      <p className="text-sm font-medium text-[#16130F]">Нажмите или перетащите</p>
+                      <p className="text-xs text-ink-400 mt-1">JPG, PNG, WebP до 10MB</p>
                     </div>
                   </div>
                 )}
@@ -192,14 +192,14 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
         {/* Footer */}
         {tab === 'preset' && (
           <div className="px-4 pb-4 flex gap-2">
-            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+            <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border border-paper-3 text-sm font-medium text-ink-600 hover:bg-paper-2 transition-colors">
               Отмена
             </button>
             <button
               onClick={() => { if (selected) { onSelect(selected); onClose() } }}
               disabled={!selected}
               className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-all disabled:opacity-40"
-              style={{ background: selected ? 'linear-gradient(135deg, #C4A97D, #8B6F47)' : '#ccc' }}
+              style={{ background: selected ? 'linear-gradient(135deg, #6E2B34, #4A1A22)' : '#ccc' }}
             >
               Выбрать
             </button>

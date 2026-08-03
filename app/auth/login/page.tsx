@@ -90,7 +90,16 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">Пароль</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs uppercase tracking-widest text-white/40">Пароль</label>
+                <Link
+                  href="/auth/forgot"
+                  className="text-xs transition-colors"
+                  style={{ color: 'var(--color-champagne)' }}
+                >
+                  Забыли пароль?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}

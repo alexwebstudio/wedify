@@ -259,73 +259,73 @@ function NewProjectForm() {
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               className="max-w-lg"
             >
-              <h1 className="text-3xl md:text-4xl font-light text-[#2C2017] mb-2"
-                style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+              <h1 className="text-3xl md:text-4xl font-light text-[#16130F] mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}>
                 Последний шаг
               </h1>
-              <p className="text-[#2C2017]/40 text-sm mb-8">Заполните основные данные</p>
+              <p className="text-[#16130F]/40 text-sm mb-8">Заполните основные данные</p>
 
               <div className="space-y-6">
                 {/* Имена молодожёнов */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя невесты *</label>
-                    <input type="text" value={bride} onChange={(e) => setBride(e.target.value)} placeholder="Айгерім" className="input-luxury text-[#2C2017]" autoFocus />
+                    <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-2">Имя невесты *</label>
+                    <input type="text" value={bride} onChange={(e) => setBride(e.target.value)} placeholder="Айгерім" className="input-luxury text-[#16130F]" autoFocus />
                   </div>
                   <div>
-                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Имя жениха *</label>
-                    <input type="text" value={groom} onChange={(e) => setGroom(e.target.value)} placeholder="Дамир" className="input-luxury text-[#2C2017]" />
+                    <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-2">Имя жениха *</label>
+                    <input type="text" value={groom} onChange={(e) => setGroom(e.target.value)} placeholder="Дамир" className="input-luxury text-[#16130F]" />
                   </div>
                 </div>
 
                 {/* Дата и время */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Дата свадьбы *</label>
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="input-luxury text-[#2C2017]" />
+                    <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-2">Дата свадьбы *</label>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="input-luxury text-[#16130F]" />
                   </div>
                   <div>
-                    <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Время начала *</label>
-                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="input-luxury text-[#2C2017]" />
+                    <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-2">Время начала *</label>
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="input-luxury text-[#16130F]" />
                   </div>
                 </div>
 
                 {/* Название (необязательно) */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-2">Название приглашения</label>
+                  <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-2">Название приглашения</label>
                   <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                    placeholder={autoTitle || 'Например: Айгерім и Дамир'} className="input-luxury text-[#2C2017]"
+                    placeholder={autoTitle || 'Например: Айгерім и Дамир'} className="input-luxury text-[#16130F]"
                     onKeyDown={(e) => e.key === 'Enter' && handleCreate()} />
                   {autoTitle && (
-                    <p className="text-xs text-[#2C2017]/40 mt-2">Ссылка: <span className="font-mono text-[#C4A97D]">site.com/{autoTitle.toLowerCase().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30)}</span></p>
+                    <p className="text-xs text-[#16130F]/40 mt-2">Ссылка: <span className="font-mono text-[#6E2B34]">site.com/{autoTitle.toLowerCase().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '').replace(/\s+/g, '-').substring(0, 30)}</span></p>
                   )}
                 </div>
 
                 {/* Доп. данные (глобальные переменные сайта) */}
-                <div className="rounded-xl border border-gray-100 overflow-hidden">
+                <div className="rounded-xl border border-paper-3 overflow-hidden">
                   <button type="button" onClick={() => setShowMore((s) => !s)}
-                    className="w-full flex items-center justify-between px-4 py-3 text-sm text-[#2C2017] hover:bg-gray-50 transition-colors">
-                    <span className="font-medium">Детали свадьбы <span className="text-[#2C2017]/40 font-normal">— можно заполнить позже</span></span>
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm text-[#16130F] hover:bg-paper-2 transition-colors">
+                    <span className="font-medium">Детали свадьбы <span className="text-[#16130F]/40 font-normal">— можно заполнить позже</span></span>
                     <span className={`transition-transform ${showMore ? 'rotate-180' : ''}`}>⌄</span>
                   </button>
                   {showMore && (
                     <div className="p-4 pt-0 space-y-3">
-                      <p className="text-xs text-[#2C2017]/40 leading-relaxed pt-1">Эти данные автоматически подставятся в блоки локации, контактов, подарков и футер.</p>
+                      <p className="text-xs text-[#16130F]/40 leading-relaxed pt-1">Эти данные автоматически подставятся в блоки локации, контактов, подарков и футер.</p>
                       <div className="grid grid-cols-2 gap-3">
-                        <input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Место (ресторан)" className="input-luxury text-[#2C2017] text-sm" />
-                        <input value={dresscode} onChange={(e) => setDresscode(e.target.value)} placeholder="Дресс-код" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Место (ресторан)" className="input-luxury text-[#16130F] text-sm" />
+                        <input value={dresscode} onChange={(e) => setDresscode(e.target.value)} placeholder="Дресс-код" className="input-luxury text-[#16130F] text-sm" />
                       </div>
-                      <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Адрес" className="input-luxury text-[#2C2017] text-sm" />
-                      <input value={mapUrl} onChange={(e) => setMapUrl(e.target.value)} placeholder="Ссылка на карты / координаты" className="input-luxury text-[#2C2017] text-sm" />
+                      <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Адрес" className="input-luxury text-[#16130F] text-sm" />
+                      <input value={mapUrl} onChange={(e) => setMapUrl(e.target.value)} placeholder="Ссылка на карты / координаты" className="input-luxury text-[#16130F] text-sm" />
                       <div className="grid grid-cols-2 gap-3">
-                        <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Контакт (имя)" className="input-luxury text-[#2C2017] text-sm" />
-                        <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Телефон" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Контакт (имя)" className="input-luxury text-[#16130F] text-sm" />
+                        <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Телефон" className="input-luxury text-[#16130F] text-sm" />
                       </div>
-                      <input value={gifts} onChange={(e) => setGifts(e.target.value)} placeholder="Пожелания по подаркам" className="input-luxury text-[#2C2017] text-sm" />
+                      <input value={gifts} onChange={(e) => setGifts(e.target.value)} placeholder="Пожелания по подаркам" className="input-luxury text-[#16130F] text-sm" />
                       <div className="grid grid-cols-3 gap-3">
-                        <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="Instagram" className="input-luxury text-[#2C2017] text-sm" />
-                        <input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="Telegram" className="input-luxury text-[#2C2017] text-sm" />
-                        <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" className="input-luxury text-[#2C2017] text-sm" />
+                        <input value={instagram} onChange={(e) => setInstagram(e.target.value)} placeholder="Instagram" className="input-luxury text-[#16130F] text-sm" />
+                        <input value={telegram} onChange={(e) => setTelegram(e.target.value)} placeholder="Telegram" className="input-luxury text-[#16130F] text-sm" />
+                        <input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="WhatsApp" className="input-luxury text-[#16130F] text-sm" />
                       </div>
                     </div>
                   )}
@@ -333,7 +333,7 @@ function NewProjectForm() {
 
                 {/* Language */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-[#2C2017]/40 mb-3">
+                  <label className="block text-xs uppercase tracking-widest text-[#16130F]/40 mb-3">
                     Язык сайта
                   </label>
                   <div className="grid grid-cols-2 gap-3">
@@ -346,17 +346,17 @@ function NewProjectForm() {
                         }}
                         className={`relative flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                           language === code
-                            ? 'border-[#C4A97D] bg-[#C4A97D]/5'
-                            : 'border-gray-100 hover:border-[#C4A97D]/30'
+                            ? 'border-[#6E2B34] bg-[#6E2B34]/5'
+                            : 'border-paper-3 hover:border-[#6E2B34]/30'
                         } ${code === 'kz' ? 'opacity-70' : ''}`}
                       >
                         <span className="text-2xl">{flag}</span>
                         <div className="text-left">
-                          <p className="text-sm font-medium text-[#2C2017]">{name}</p>
-                          {code === 'kz' && <p className="text-[10px] text-[#C4A97D]">Скоро</p>}
+                          <p className="text-sm font-medium text-[#16130F]">{name}</p>
+                          {code === 'kz' && <p className="text-[10px] text-[#6E2B34]">Скоро</p>}
                         </div>
                         {language === code && code === 'ru' && (
-                          <Check size={14} className="text-[#C4A97D] ml-auto" />
+                          <Check size={14} className="text-[#6E2B34] ml-auto" />
                         )}
                       </button>
                     ))}
@@ -410,7 +410,7 @@ function NewProjectForm() {
 
               <div className="mt-8 flex items-center justify-between">
                 <button onClick={() => setStep(1)}
-                  className="flex items-center gap-2 text-sm text-[#2C2017]/50 hover:text-[#2C2017] transition-colors">
+                  className="flex items-center gap-2 text-sm text-[#16130F]/50 hover:text-[#16130F] transition-colors">
                   <ArrowLeft size={14} /> Назад
                 </button>
                 <button
