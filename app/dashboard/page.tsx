@@ -1,15 +1,20 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Globe, Heart, Settings2, ChevronRight } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye, EyeOff, ExternalLink, Copy, Globe, Settings2, ChevronRight } from 'lucide-react'
 import { Navbar } from '@/components/ui/Navbar'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
 import { getProjects, deleteProject, publishProject, unpublishProject } from '@/lib/projects'
 import { getProjectStatus, STATUS_META, formatMoment } from '@/lib/projectStatus'
 import { usePlan, PLAN_META } from '@/lib/subscription'
+import { loadUserSettings, saveUserSettings, DEFAULT_SETTINGS, type UserSettings } from '@/lib/userSettings'
+import { getOnboardingProgress, shouldShowOnboarding } from '@/lib/onboarding'
+import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
+import { Assistant } from '@/components/onboarding/Assistant'
+import { EmptyState } from '@/components/dashboard/EmptyState'
 import type { Project } from '@/types'
 import toast from 'react-hot-toast'
 
@@ -56,17 +61,49 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [fetching, setFetching] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  // Загрузка может не удаться — тогда показываем состояние с повтором,
+  // а не пустой экран «сайтов нет»
+  const [loadFailed, setLoadFailed] = useState(false)
+  const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
 
   useEffect(() => {
     if (!loading && !user) router.push('/auth/login')
   }, [user, loading, router])
 
+  const fetchProjects = useCallback(async (userId: string) => {
+    try {
+      const rows = await getProjects(userId)
+      setProjects(rows)
+      setLoadFailed(false)
+    } catch {
+      setLoadFailed(true)
+    } finally {
+      setFetching(false)
+    }
+  }, [])
+
   useEffect(() => {
     if (!user) return
+    // Промис-цепочка, а не прямой вызов async-функции: так состояние
+    // не обновляется синхронно в теле эффекта
     getProjects(user.id)
-      .then(setProjects)
-      .catch(() => toast.error('Ошибка загрузки'))
+      .then((rows) => { setProjects(rows); setLoadFailed(false) })
+      .catch(() => setLoadFailed(true))
       .finally(() => setFetching(false))
+    loadUserSettings(user.id, user.email || '').then(setSettings)
+  }, [user])
+
+  // Прогресс обучения считается из данных проектов, а не из отдельного счётчика
+  const progress = getOnboardingProgress(projects, settings.onboarding)
+  const showOnboarding = shouldShowOnboarding(settings.onboarding, progress)
+
+  const patchOnboarding = useCallback(async (patch: Partial<UserSettings['onboarding']>) => {
+    if (!user) return
+    setSettings((prev) => {
+      const next = { ...prev, onboarding: { ...prev.onboarding, ...patch } }
+      saveUserSettings(user.id, next)
+      return next
+    })
   }, [user])
 
   const handleDelete = async (id: string) => {
@@ -188,36 +225,21 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {projects.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
-          >
-            {/* иллюстрация: мини-приглашение */}
-            <div className="mx-auto mb-8" style={{ width: 150 }}>
-              <div className="relative mx-auto rounded-2xl" style={{ width: 150, height: 196, background: 'linear-gradient(170deg,#FBF8F3,#F1E7D6)', boxShadow: '0 24px 50px -24px rgba(110, 43, 52,.6), 0 0 0 1px rgba(110, 43, 52,.25)', transform: 'rotate(-4deg)' }}>
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
-                  <Heart size={20} className="text-[#6E2B34] mb-3" fill="#6E2B34" />
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>Имена</div>
-                  <div style={{ color: '#6E2B34', fontSize: 12, margin: '4px 0' }}>♥</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: '#1E1610', lineHeight: 1 }}>пары</div>
-                  <div style={{ width: 34, height: 1, background: 'rgba(184,149,106,.5)', margin: '10px 0 8px' }} />
-                  <div style={{ color: '#6F655B', fontSize: 10, letterSpacing: '.15em' }}>ДД · ММ · 2026</div>
-                </div>
-              </div>
-            </div>
-            <h2 className="mrn-h2 mb-2" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}>
-              Здесь появятся ваши приглашения
-            </h2>
-            <p className="text-[#16130F]/40 text-sm mb-8">Создайте первое — это займёт пару минут</p>
-            <Link href="/dashboard/new"
-              className="btn-luxury px-8 py-3.5 rounded-xl font-medium inline-flex items-center gap-2">
-              <span className="flex items-center gap-2">
-                <Plus size={16} />
-                Создать первый свадебный сайт
-              </span>
-            </Link>
-          </motion.div>
+        {/* Чек-лист первого сайта. Скрывается, когда обучение пройдено или отключено */}
+        {showOnboarding && projects.length > 0 && (
+          <OnboardingChecklist progress={progress} onSkip={() => patchOnboarding({ finished: true })} />
+        )}
+
+        {loadFailed ? (
+          <EmptyState
+            kind={typeof navigator !== 'undefined' && !navigator.onLine ? 'offline' : 'load-error'}
+            onRetry={() => { if (user) { setFetching(true); fetchProjects(user.id) } }}
+          />
+        ) : projects.length === 0 ? (
+          <EmptyState
+            kind="no-projects"
+            onStartTour={() => patchOnboarding({ finished: false, hintsEnabled: true })}
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {projects.map((project, i) => {
@@ -400,6 +422,15 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      {/* Помощник: свёрнут в кнопку, раскрывается только по нажатию */}
+      {showOnboarding && (
+        <Assistant
+          progress={progress}
+          onSkip={() => patchOnboarding({ finished: true })}
+          onDisable={() => patchOnboarding({ hintsEnabled: false, finished: true })}
+        />
+      )}
     </div>
   )
 }

@@ -327,6 +327,38 @@ export default function SettingsPage() {
             </div>
           </Card>
 
+          {/* ── ПОДСКАЗКИ ПОМОЩНИКА ── */}
+          <Card
+            id="hints"
+            icon={<HelpCircle size={20} />}
+            title="Подсказки помощника"
+            desc="Обучение по созданию первого сайта"
+          >
+            <Field
+              label="Показывать подсказки"
+              hint="Помощник в углу кабинета подсказывает следующий шаг и объясняет разницу между сохранением, предпросмотром и публикацией."
+            >
+              <Toggle
+                on={s.onboarding.hintsEnabled}
+                onChange={(v) => patch((d) => { d.onboarding.hintsEnabled = v })}
+              />
+            </Field>
+
+            <Field
+              label="Пройти обучение заново"
+              hint="Сбрасывает отметку «пройдено». Шаги, которые уже выполнены в сайте, останутся закрытыми — список считается из ваших данных."
+            >
+              <button
+                type="button"
+                onClick={() => patch((d) => { d.onboarding.finished = false; d.onboarding.hintsEnabled = true })}
+                className="mrn-btn mrn-btn--sm mrn-btn--secondary"
+                style={{ alignSelf: 'flex-start' }}
+              >
+                Показать подсказки снова
+              </button>
+            </Field>
+          </Card>
+
           {/* ── ПОМОЩЬ ── */}
           <Card id="help" icon={<HelpCircle size={20} />} title="Помощь и инструкция" desc="Короткие ответы на частые вопросы">
             {[

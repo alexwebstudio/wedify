@@ -12,6 +12,20 @@ export type BuildFirst = 'mobile' | 'desktop'
 export type AccessMode = 'link' | 'password' | 'hidden'
 export type MsgChannel = 'email' | 'telegram' | 'both'
 
+/**
+ * Прогресс обучения. Живёт в том же jsonb, что и остальные настройки,
+ * поэтому отдельная миграция не нужна: merge() ниже добавляет секцию
+ * к записям, созданным до этого патча.
+ */
+export interface OnboardingState {
+  /** Подсказки помощника включены. Выключается кнопкой «Больше не показывать». */
+  hintsEnabled: boolean
+  /** Обучение пройдено или пропущено — автоматически больше не запускается. */
+  finished: boolean
+  /** Шаги, которые нельзя вывести из данных проекта (например, «открыл предпросмотр»). */
+  seenSteps: string[]
+}
+
 export interface UserSettings {
   defaults: {
     fontSize: FontSize
@@ -33,6 +47,7 @@ export interface UserSettings {
     email: string
     telegramConnected: boolean
   }
+  onboarding: OnboardingState
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -56,6 +71,11 @@ export const DEFAULT_SETTINGS: UserSettings = {
     email: '',
     telegramConnected: false,
   },
+  onboarding: {
+    hintsEnabled: true,
+    finished: false,
+    seenSteps: [],
+  },
 }
 
 const LS_KEY = 'wedify:user-settings'
@@ -74,6 +94,7 @@ function merge(base: UserSettings, patch: Partial<UserSettings> | null | undefin
     defaults: { ...base.defaults, ...(patch.defaults || {}) },
     security: { ...base.security, ...(patch.security || {}) },
     messages: { ...base.messages, ...(patch.messages || {}) },
+    onboarding: { ...base.onboarding, ...(patch.onboarding || {}) },
   }
 }
 

@@ -669,6 +669,74 @@ img, svg, video { max-width: 100%; }
 .mrn-dark .mrn-icon-btn:hover { background: rgba(251, 248, 244, 0.1); color: var(--color-paper); }
 
 /* ─────────────────────────────────────────────
+   ПОМОЩНИК
+   Свёрнут в компактную кнопку в углу; панель раскрывается только
+   по нажатию и никогда не перекрывает интерфейс сама по себе.
+   ───────────────────────────────────────────── */
+.mrn-assistant {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+.mrn-assistant > * { pointer-events: auto; }
+
+.mrn-assistant-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding-inline: 8px 18px;
+  border: 1px solid var(--mrn-line);
+  border-radius: var(--radius-full);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--mrn-shadow);
+  transition: border-color var(--mrn-t) var(--mrn-ease), box-shadow var(--mrn-t) var(--mrn-ease);
+}
+.mrn-assistant-toggle:hover { border-color: var(--mrn-line-strong); box-shadow: var(--mrn-shadow-lift); }
+
+.mrn-assistant-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding-inline: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-wine);
+  color: var(--color-paper);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mrn-assistant-panel {
+  width: min(340px, calc(100vw - 32px));
+  box-shadow: var(--mrn-shadow-lift);
+  animation: mrn-assistant-in var(--mrn-t) var(--mrn-ease);
+}
+@keyframes mrn-assistant-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* На узких экранах подпись прячем — остаётся компактный счётчик */
+@media (max-width: 480px) {
+  .mrn-assistant-label { display: none; }
+  .mrn-assistant-toggle { padding-inline: 7px; }
+}
+
+/* ─────────────────────────────────────────────
    5. LEGACY — используются редактором, кабинетом
    и блоками опубликованных сайтов.
    Значения блоков намеренно оставлены прежними,
