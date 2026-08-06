@@ -9,6 +9,8 @@ export type TemplateId =
   | 'dark-elegant'
   | 'sage-garden'
   | 'rose-blush'
+  | 'bright-modern'
+  | 'national-toi'
 
 export type BlockType =
   | 'hero'

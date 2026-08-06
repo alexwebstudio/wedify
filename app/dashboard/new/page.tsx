@@ -9,7 +9,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
 import { usePlan, PLAN_META } from '@/lib/subscription'
 import { createProject, getProjects } from '@/lib/projects'
-import { TEMPLATE_CATALOG, CATALOG_FONT_FAMILIES, DEFAULT_TEMPLATE_ID, getTemplate, type TemplateEntry } from '@/lib/templateCatalog'
+import { ACTIVE_TEMPLATES, CATALOG_FONT_FAMILIES, DEFAULT_TEMPLATE_ID, getTemplate, type TemplateEntry } from '@/lib/templateCatalog'
 import { TemplatePreview } from '@/components/templates/TemplatePreview'
 import { TemplateDemoModal } from '@/components/templates/TemplateDemoModal'
 import { SiteFonts } from '@/components/providers/SiteFonts'
@@ -20,7 +20,7 @@ function NewProjectForm() {
   const searchParams = useSearchParams()
   // Шаблон, выбранный в каталоге (?template=...), — иначе выбор пользователя терялся
   const preselected = searchParams.get('template')
-  const initialTemplate = TEMPLATE_CATALOG.some((t) => t.id === preselected)
+  const initialTemplate = ACTIVE_TEMPLATES.some((t) => t.id === preselected)
     ? (preselected as TemplateId)
     : DEFAULT_TEMPLATE_ID
 
@@ -131,7 +131,7 @@ function NewProjectForm() {
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {TEMPLATE_CATALOG.map((tpl) => {
+                {ACTIVE_TEMPLATES.map((tpl) => {
                   const selected = template === tpl.id && !blank
                   return (
                     <div

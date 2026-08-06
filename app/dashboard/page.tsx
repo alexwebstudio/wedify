@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/hooks/useAuth'
 import { useAppStore } from '@/lib/store'
 import { getProjects, deleteProject, publishProject, unpublishProject } from '@/lib/projects'
 import { getProjectStatus, STATUS_META, formatMoment } from '@/lib/projectStatus'
+import { reportError } from '@/lib/errors'
 import { usePlan, PLAN_META } from '@/lib/subscription'
 import { loadUserSettings, saveUserSettings, DEFAULT_SETTINGS, type UserSettings } from '@/lib/userSettings'
 import { getOnboardingProgress, shouldShowOnboarding } from '@/lib/onboarding'
@@ -127,8 +128,9 @@ export default function DashboardPage() {
       const updated = await publishProject(project.id)
       setProjects((p) => p.map((pr) => (pr.id === project.id ? { ...pr, ...updated } : pr)))
       toast.success(project.published ? 'Изменения опубликованы' : 'Приглашение опубликовано')
-    } catch {
-      toast.error('Публикация не удалась. Попробуйте ещё раз')
+    } catch (err) {
+      reportError(err, { action: 'project.publish', meta: { projectId: project.id } },
+        'Публикация не удалась. Попробуйте ещё раз')
     }
   }
 
@@ -137,8 +139,9 @@ export default function DashboardPage() {
       await unpublishProject(project.id)
       setProjects((p) => p.map((pr) => (pr.id === project.id ? { ...pr, published: false } : pr)))
       toast.success('Сайт снят с публикации — гости его больше не увидят')
-    } catch {
-      toast.error('Не удалось снять с публикации')
+    } catch (err) {
+      reportError(err, { action: 'project.unpublish', meta: { projectId: project.id } },
+        'Не удалось снять с публикации')
     }
   }
 

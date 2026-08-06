@@ -11,6 +11,7 @@ import { loadUserSettings, saveUserSettings, type ButtonStyle, type ImageStyle }
 import { getProjectById, updateProject, publishProject } from '@/lib/projects'
 import { hasUnpublishedChanges, formatMoment } from '@/lib/projectStatus'
 import { PublishPanel } from '@/components/editor/PublishPanel'
+import { reportError } from '@/lib/errors'
 import { WeddingSite } from '@/components/templates/WeddingSite'
 import { EditorSidebar } from '@/components/editor/EditorSidebar'
 import dynamic from 'next/dynamic'
@@ -254,9 +255,10 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
       setSaveState('saved')
       if (!opts.silent) toast.success('Сохранено в черновик')
       return true
-    } catch {
+    } catch (err) {
       setSaveState('error')
-      toast.error('Не удалось сохранить. Проверьте соединение')
+      reportError(err, { action: 'draft.save', meta: { projectId: project.id } },
+        'Не удалось сохранить черновик')
       return false
     }
   }, [project])
@@ -308,8 +310,9 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
       setPublishedFirstTime(!wasLive)
       setProject((prev) => (prev ? { ...prev, ...updated } : updated))
       setPublishPanel(true)
-    } catch {
-      toast.error('Публикация не удалась. Попробуйте ещё раз через минуту')
+    } catch (err) {
+      reportError(err, { action: 'project.publish', meta: { projectId: project.id } },
+        'Публикация не удалась. Попробуйте ещё раз через минуту')
     } finally {
       setPublishing(false)
     }

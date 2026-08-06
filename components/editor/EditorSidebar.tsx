@@ -7,9 +7,10 @@ import {
 } from 'lucide-react'
 import type { Project, ProjectColors, BlockData, BlockType, SiteVariables } from '@/types'
 import { deriveVariables, applyVariables } from '@/lib/siteVariables'
+import { ApplyStyleConfirm } from './ApplyStyleConfirm'
 import { libraryForPlan } from '@/lib/musicLibrary'
 import {
-  WEDDING_FONTS, fontFamilyValue, STYLE_PRESETS, COLOR_PRESETS,
+  WEDDING_FONTS, fontFamilyValue, STYLE_PRESETS, COLOR_PRESETS, type StylePreset,
   hexToRgb, rgbToHex, normalizeHex, BUTTON_SHAPES, IMAGE_SHAPES,
   type ButtonShape, type ImageShape,
 } from '@/lib/editorPresets'
@@ -60,6 +61,9 @@ export function EditorSidebar({
   project, onUpdate, onBlockToggle, onBlockDuplicate, onBlockDelete, onBlockReorder, onAddBlock,
   canAddBlocks = true, plan = 'standard',
 }: EditorSidebarProps) {
+  // Смена стиля переписывает палитру и шрифты целиком — спрашиваем подтверждение
+  const [pendingStyle, setPendingStyle] = useState<StylePreset | null>(null)
+
   const [tab, setTab] = useState<Tab>('blocks')
   const sorted = [...project.blocks].sort((a, b) => a.order - b.order)
 
@@ -207,7 +211,7 @@ export function EditorSidebar({
                 return (
                   <button
                     key={s.id}
-                    onClick={() => onUpdate({ colors: s.colors, fonts: { ...project.fonts, ...s.fonts } })}
+                    onClick={() => setPendingStyle(s)}
                     className={`w-full p-3 rounded-xl border text-left transition-all ${
                       active ? 'border-[#6E2B34] ring-1 ring-[#6E2B34]/30' : 'border-paper-3 hover:border-[#6E2B34]/40'
                     }`}
@@ -426,6 +430,17 @@ export function EditorSidebar({
 
         </AnimatePresence>
       </div>
+
+      <ApplyStyleConfirm
+        preset={pendingStyle}
+        onClose={() => setPendingStyle(null)}
+        onConfirm={() => {
+          if (pendingStyle) {
+            onUpdate({ colors: pendingStyle.colors, fonts: { ...project.fonts, ...pendingStyle.fonts } })
+          }
+          setPendingStyle(null)
+        }}
+      />
     </div>
   )
 }

@@ -61,6 +61,14 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '48x48' },
+    ],
+    apple: '/icon.svg',
+  },
+  manifest: '/manifest.webmanifest',
 }
 
 export const viewport: Viewport = {
@@ -78,6 +86,34 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${prata.variable} ${onest.variable} ${caveat.variable}`}>
       <body className="antialiased">
+        {/* Разметка для поисковых систем: что за сервис и кому принадлежит */}
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: SITE_NAME,
+              url: SITE_URL,
+              applicationCategory: 'DesignApplication',
+              operatingSystem: 'Web',
+              inLanguage: 'ru-RU',
+              description: DESCRIPTION,
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'KZT',
+                description: 'Базовый тариф — создание и публикация приглашения без оплаты',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'AlexWebStudio',
+                url: 'https://alexwebstudio.ru',
+              },
+            }),
+          }}
+        />
         <SmoothScroll>{children}</SmoothScroll>
         <Toaster
           position="top-center"

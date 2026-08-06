@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Check, Image as ImageIcon } from 'lucide-react'
 import { uploadMedia } from '@/lib/projects'
+import { logError, reportError } from '@/lib/errors'
 import { PLACEHOLDER_PRESETS } from '@/lib/placeholders'
 import toast from 'react-hot-toast'
 
@@ -65,14 +66,16 @@ export function ImagePicker({ onSelect, onClose, userId, projectId }: ImagePicke
       onSelect(dataUrl)
       onClose()
     } catch (err) {
-      console.warn('Upload to storage failed, fallback to data-URL:', err)
+      logError(err, { action: 'media.upload.storage', meta: { size: file.size } })
       try {
         // ВАЖНО: fallback именно в base64, НЕ в blob: — иначе у гостей будет «?»
         const dataUrl = await fileToDataUrl(file)
         onSelect(dataUrl)
         onClose()
-      } catch {
-        toast.error('Не удалось загрузить фото. Попробуйте другое.')
+      } catch (fallbackErr) {
+        // Не сработала ни загрузка в хранилище, ни запасное чтение файла
+        reportError(fallbackErr, { action: 'media.upload.fallback', meta: { size: file.size } },
+          'Не удалось загрузить фото. Попробуйте другое')
       }
     } finally {
       setUploading(false)

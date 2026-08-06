@@ -7,7 +7,7 @@ import { Reveal } from './Reveal'
 import { TemplateCard } from './TemplateCard'
 import { TemplateDemoModal } from '@/components/templates/TemplateDemoModal'
 import { SiteFonts } from '@/components/providers/SiteFonts'
-import { TEMPLATE_CATALOG, CATALOG_FONT_FAMILIES, type TemplateEntry } from '@/lib/templateCatalog'
+import { ACTIVE_TEMPLATES, CATALOG_FONT_FAMILIES, type TemplateEntry } from '@/lib/templateCatalog'
 
 interface TemplateShowcaseProps {
   /** Куда ведёт карточка: вошедшего — сразу в мастер с выбранным шаблоном. */
@@ -32,7 +32,7 @@ export function TemplateShowcase({
 }: TemplateShowcaseProps) {
   const [demo, setDemo] = useState<TemplateEntry | null>(null)
 
-  const list = limit ? TEMPLATE_CATALOG.slice(0, limit) : TEMPLATE_CATALOG
+  const list = limit ? ACTIVE_TEMPLATES.slice(0, limit)  : ACTIVE_TEMPLATES
   const [lead, ...rest] = list
 
   return (

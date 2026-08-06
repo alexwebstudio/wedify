@@ -1,4 +1,4 @@
-import type { ProjectColors, ProjectFonts, TemplateId, SiteVariables } from '@/types'
+import type { BlockType, ProjectColors, ProjectFonts, TemplateId, SiteVariables } from '@/types'
 
 /**
  * ЕДИНЫЙ КАТАЛОГ ШАБЛОНОВ — источник правды и для превью, и для создания сайта.
@@ -18,8 +18,32 @@ import type { ProjectColors, ProjectFonts, TemplateId, SiteVariables } from '@/t
 /** Насколько формальным ощущается шаблон — помогает выбирать, а не листать. */
 export type Formality = 'камерно' | 'спокойно' | 'торжественно'
 
+/** Направление события. Задел под Birthday и Gender Reveal — см. docs/ACCOUNTS_ARCHITECTURE.md */
+export type EventType = 'wedding'
+
+/** Стилистическая категория внутри направления. */
+export type TemplateStyle =
+  | 'минимализм'
+  | 'классика'
+  | 'editorial'
+  | 'luxury'
+  | 'природа'
+  | 'современная'
+  | 'яркая'
+  | 'национальная'
+
+/** Тариф, на котором шаблон доступен. */
+export type TemplatePlan = 'free' | 'standard' | 'premium'
+
+/** draft — виден только в разработке, published — в каталоге. */
+export type TemplateStatus = 'draft' | 'published'
+
 export interface TemplateEntry {
   id: TemplateId
+  /** Адрес шаблона в каталоге и в ссылках на демо. */
+  slug: string
+  eventType: EventType
+  style: TemplateStyle
   /** Название для человека: сценарий свадьбы, а не «Шаблон 3». */
   name: string
   /** Одна строка о том, кому он подойдёт. */
@@ -33,6 +57,16 @@ export interface TemplateEntry {
   includes: string[]
   /** Композиция первого экрана — вариант HeroBlock из библиотеки редактора. */
   heroVariant: string
+  /** Типы блоков, которые шаблон ставит при создании. Только реально существующие. */
+  supportedBlocks: BlockType[]
+  plan: TemplatePlan
+  status: TemplateStatus
+  /** Порядок показа в каталоге. Меньше — выше. */
+  sortOrder: number
+  /** Дата последнего изменения оформления шаблона. */
+  updatedAt: string
+  /** Выключенный шаблон не показывается и не выбирается. */
+  active: boolean
   colors: ProjectColors
   fonts: ProjectFonts
   /**
@@ -118,6 +152,9 @@ export function templateImage(tpl: TemplateEntry, seed = 0): string {
 export const TEMPLATE_CATALOG: TemplateEntry[] = [
   {
     id: 'minimal-white',
+    slug: 'tihiy-svet',
+    eventType: 'wedding',
+    style: 'минимализм',
     name: 'Тихий свет',
     tagline: 'Ничего лишнего: имена, дата и воздух',
     description:
@@ -126,6 +163,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['минимализм', 'светлый', 'без фото'],
     includes: ['Главный экран', 'История', 'Галерея', 'Таймер', 'Локация', 'RSVP'],
     heroVariant: '5',
+    supportedBlocks: ['hero', 'story', 'gallery', 'timer', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 1,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#1A1A1A', secondary: '#6B6B6B', accent: '#EFEBE5', background: '#FFFFFF', text: '#1A1A1A' },
     fonts: { heading: 'Manrope', body: 'Inter', buttonStyle: 'sharp', imageStyle: 'square' },
     demo: {
@@ -135,6 +178,9 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
   },
   {
     id: 'modern-editorial',
+    slug: 'pervaya-polosa',
+    eventType: 'wedding',
+    style: 'editorial',
     name: 'Первая полоса',
     tagline: 'Журнальная подача с крупной типографикой',
     description:
@@ -143,6 +189,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['editorial', 'контрастный', 'крупный шрифт'],
     includes: ['Главный экран', 'История', 'Галерея', 'Тайминг дня', 'Локация', 'RSVP'],
     heroVariant: 'cinematic',
+    supportedBlocks: ['hero', 'story', 'gallery', 'schedule', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 2,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#B08D57', secondary: '#5A5A5A', accent: '#E6E2DC', background: '#F7F6F4', text: '#141414' },
     fonts: { heading: 'Playfair Display', body: 'Inter', buttonStyle: 'sharp', imageStyle: 'square' },
     demo: {
@@ -152,6 +204,9 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
   },
   {
     id: 'sage-garden',
+    slug: 'polevaya-svadba',
+    eventType: 'wedding',
+    style: 'природа',
     name: 'Полевая свадьба',
     tagline: 'Дневное торжество за городом',
     description:
@@ -160,6 +215,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['природа', 'дневной', 'зелёный'],
     includes: ['Главный экран', 'История', 'Галерея', 'Тайминг дня', 'Локация', 'RSVP'],
     heroVariant: '3',
+    supportedBlocks: ['hero', 'story', 'gallery', 'schedule', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 3,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#6E8060', secondary: '#4F5F49', accent: '#DCE4D2', background: '#F6F8F2', text: '#232B1D' },
     fonts: { heading: 'Cormorant Garamond', body: 'Raleway', buttonStyle: 'pill', imageStyle: 'rounded' },
     demo: {
@@ -169,6 +230,9 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
   },
   {
     id: 'classic-luxury',
+    slug: 'vecherniy-priyom',
+    eventType: 'wedding',
+    style: 'классика',
     name: 'Вечерний приём',
     tagline: 'Классическое приглашение-карточка',
     description:
@@ -177,6 +241,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['классика', 'тёплый', 'церемония'],
     includes: ['Главный экран', 'История', 'Галерея', 'Таймер', 'Локация', 'RSVP'],
     heroVariant: '8',
+    supportedBlocks: ['hero', 'story', 'gallery', 'timer', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 4,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#B08D57', secondary: '#8B6F47', accent: '#F1E7D6', background: '#FBF8F3', text: '#2C2017' },
     fonts: { heading: 'Cormorant Garamond', body: 'Lato', buttonStyle: 'rounded', imageStyle: 'rounded' },
     demo: {
@@ -186,6 +256,9 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
   },
   {
     id: 'dark-elegant',
+    slug: 'posle-zakata',
+    eventType: 'wedding',
+    style: 'luxury',
     name: 'После заката',
     tagline: 'Вечерняя свадьба, приглушённый свет',
     description:
@@ -194,6 +267,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['вечерний', 'тёмный', 'шампань'],
     includes: ['Главный экран', 'История', 'Галерея', 'Таймер', 'Локация', 'RSVP'],
     heroVariant: '6',
+    supportedBlocks: ['hero', 'story', 'gallery', 'timer', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 5,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#D9C3A5', secondary: '#A0896A', accent: '#2A241C', background: '#15120E', text: '#F2EBDF' },
     fonts: { heading: 'Prata', body: 'Manrope', buttonStyle: 'sharp', imageStyle: 'square' },
     demo: {
@@ -203,6 +282,9 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
   },
   {
     id: 'rose-blush',
+    slug: 'domashnee-torzhestvo',
+    eventType: 'wedding',
+    style: 'современная',
     name: 'Домашнее торжество',
     tagline: 'Камерно, для двадцати самых близких',
     description:
@@ -211,6 +293,12 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
     tags: ['камерный', 'пудровый', 'коллаж'],
     includes: ['Главный экран', 'История', 'Галерея', 'Таймер', 'Локация', 'RSVP'],
     heroVariant: '9',
+    supportedBlocks: ['hero', 'story', 'gallery', 'timer', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 6,
+    updatedAt: '2026-08-06',
+    active: true,
     colors: { primary: '#B8737F', secondary: '#8E4750', accent: '#F5E6E2', background: '#FDF8F6', text: '#2A1B1D' },
     fonts: { heading: 'Lora', body: 'Inter', buttonStyle: 'pill', imageStyle: 'circle' },
     demo: {
@@ -218,9 +306,66 @@ export const TEMPLATE_CATALOG: TemplateEntry[] = [
       tagline: 'Хотим отметить этот день в кругу самых близких',
     },
   },
+  {
+    id: 'bright-modern',
+    slug: 'yarkiy-den',
+    eventType: 'wedding',
+    style: 'яркая',
+    name: 'Яркий день',
+    tagline: 'Насыщенный цвет и крупная фотография',
+    description:
+      'Тёплая терракота и кадр во всю высоту экрана. Для пары, которой не близка пастель: приглашение читается громко и сразу.',
+    formality: 'спокойно',
+    tags: ['яркий', 'терракота', 'крупное фото'],
+    includes: ['Главный экран', 'История', 'Галерея', 'Таймер', 'Локация', 'RSVP'],
+    heroVariant: '4',
+    supportedBlocks: ['hero', 'story', 'gallery', 'timer', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 7,
+    updatedAt: '2026-08-06',
+    active: true,
+    colors: { primary: '#C2542F', secondary: '#8E3B20', accent: '#F7E2D6', background: '#FFF9F5', text: '#26150E' },
+    fonts: { heading: 'Manrope', body: 'Inter', buttonStyle: 'pill', imageStyle: 'rounded' },
+    demo: {
+      bride: 'Дана', groom: 'Ислам', date: '2026-08-08', time: '16:00',
+      tagline: 'Приходите — будет громко, вкусно и по-настоящему',
+    },
+  },
+  {
+    id: 'national-toi',
+    slug: 'toy',
+    eventType: 'wedding',
+    style: 'национальная',
+    name: 'Той',
+    tagline: 'Национальная палитра для большого торжества',
+    description:
+      'Бирюза и охра вместо привычной пастели, приглашение подано карточкой. Для тоя с большим числом гостей и традиционной частью программы.',
+    formality: 'торжественно',
+    tags: ['национальный', 'бирюза', 'большой той'],
+    includes: ['Главный экран', 'История', 'Галерея', 'Тайминг дня', 'Локация', 'RSVP'],
+    heroVariant: '8',
+    supportedBlocks: ['hero', 'story', 'gallery', 'schedule', 'location', 'rsvp', 'footer'],
+    plan: 'free',
+    status: 'published',
+    sortOrder: 8,
+    updatedAt: '2026-08-06',
+    active: true,
+    colors: { primary: '#1F7A75', secondary: '#155C58', accent: '#F2E3C4', background: '#FBF6EC', text: '#1B2422' },
+    fonts: { heading: 'Playfair Display', body: 'Raleway', buttonStyle: 'rounded', imageStyle: 'rounded' },
+    demo: {
+      bride: 'Ақерке', groom: 'Нұрлан', date: '2026-09-19', time: '18:00',
+      tagline: 'Тойымызға шақырамыз — сізді күтеміз',
+    },
+  },
 ]
 
 /** Шрифты, которые нужны каталогу для живых превью. Меньше библиотеки редактора. */
+/** Шаблоны, доступные пользователю: активные, опубликованные, по порядку показа. */
+export const ACTIVE_TEMPLATES: TemplateEntry[] = TEMPLATE_CATALOG
+  .filter((t) => t.active && t.status === 'published')
+  .sort((a, b) => a.sortOrder - b.sortOrder)
+
 export const CATALOG_FONT_FAMILIES = Array.from(
   new Set(TEMPLATE_CATALOG.flatMap((t) => [t.fonts.heading, t.fonts.body])),
 )
