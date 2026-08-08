@@ -107,7 +107,7 @@ export function CustomBlock({ block, colors, fonts, isEditing, onChange, userId,
           )}
         </>
       )}
-      {picker && <ImagePicker onSelect={(url) => { set('image', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} />}
+      {picker && <ImagePicker onSelect={(url) => { set('image', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} currentUrl={String(c.image || '')} />}
     </section>
   )
 }

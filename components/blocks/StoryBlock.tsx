@@ -101,7 +101,7 @@ export function StoryBlock({ block, colors, fonts, isEditing, onChange, userId, 
             </div>
           </div>
         </div>
-        {showPicker && <ImagePicker onSelect={(url) => { update('image', url); setShowPicker(false) }} onClose={() => setShowPicker(false)} userId={userId} projectId={projectId} />}
+        {showPicker && <ImagePicker onSelect={(url) => { update('image', url); setShowPicker(false) }} onClose={() => setShowPicker(false)} userId={userId} projectId={projectId} currentUrl={String(content.image || '')} />}
       </section>
     )
   }
@@ -159,7 +159,7 @@ export function StoryBlock({ block, colors, fonts, isEditing, onChange, userId, 
         )}
       </div>
       {showPicker && (
-        <ImagePicker onSelect={(url) => { update('image', url); setShowPicker(false) }} onClose={() => setShowPicker(false)} userId={userId} projectId={projectId} />
+        <ImagePicker onSelect={(url) => { update('image', url); setShowPicker(false) }} onClose={() => setShowPicker(false)} userId={userId} projectId={projectId} currentUrl={String(content.image || '')} />
       )}
     </section>
   )

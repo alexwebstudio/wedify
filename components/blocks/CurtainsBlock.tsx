@@ -88,7 +88,7 @@ export function CurtainsBlock({ block, colors, fonts, isEditing, onChange, userI
       )}
       {isEditing && <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40 text-xs px-3 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,.5)', color: '#fff' }}>Шторы: на сайте открываются по кнопке и ведут к содержимому</div>}
 
-      {picker && <ImagePicker onSelect={(url) => { update('backgroundImage', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} />}
+      {picker && <ImagePicker onSelect={(url) => { update('backgroundImage', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} currentUrl={String(content.backgroundImage || '')} />}
     </section>
   )
 }

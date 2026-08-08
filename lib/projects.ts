@@ -93,7 +93,29 @@ export async function updateProject(
   return data
 }
 
+/**
+ * Удаление проекта вместе с его фотографиями.
+ *
+ * Файлы в хранилище не связаны с таблицей внешним ключом, поэтому раньше
+ * оставались висеть после удаления сайта и занимали место навсегда.
+ * Сначала убираем файлы, затем запись: если файлы удалить не вышло, проект
+ * всё равно удаляется — терять его из-за мусора в бакете неправильно.
+ */
 export async function deleteProject(id: string): Promise<void> {
+  const project = await getProjectById(id)
+
+  if (project) {
+    try {
+      const folder = `${project.user_id}/${project.id}`
+      const { data: files } = await supabase.storage.from('media').list(folder, { limit: 1000 })
+      if (files?.length) {
+        await supabase.storage.from('media').remove(files.map((f) => `${folder}/${f.name}`))
+      }
+    } catch {
+      // Уборка файлов не должна мешать удалению проекта
+    }
+  }
+
   const { error } = await supabase
     .from('projects')
     .delete()

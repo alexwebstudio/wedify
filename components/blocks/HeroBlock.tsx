@@ -103,6 +103,7 @@ export function HeroBlock({ block, colors, fonts, isEditing, onChange, userId, p
     <ImagePicker
       onSelect={(url) => { update(picker === 'bg' ? 'backgroundImage' : picker, url); setPicker(false) }}
       onClose={() => setPicker(false)} userId={userId} projectId={projectId}
+      currentUrl={String((picker === 'bg' ? content.backgroundImage : content[picker]) || '')}
     />
   ) : null
 

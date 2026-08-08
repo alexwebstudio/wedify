@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft, Eye, EyeOff, Save, Globe, Check,
-  Monitor, Smartphone, PanelLeft, X, Undo2, Redo2,
+  Monitor, Smartphone, PanelLeft, X, Undo2, Redo2, Settings2,
 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { loadUserSettings, saveUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userSettings'
@@ -354,7 +354,9 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
       <SiteFonts />
 
       {/* Top toolbar */}
-      <div className="h-14 bg-white border-b border-paper-3 flex items-center px-4 gap-3 z-30 flex-shrink-0">
+      <div
+        className="mrn-editor-bar bg-white border-b border-paper-3 flex items-center gap-2 sm:gap-3 z-30 flex-shrink-0"
+      >
         {/* Left */}
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <Link href="/dashboard" className="flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink transition-colors">
@@ -549,7 +551,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 32, stiffness: 300 }}
               className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl z-50"
-              style={{ maxHeight: '72dvh' }}
+              style={{ maxHeight: '78dvh', paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="flex justify-center pt-3 pb-1">
                 <div className="w-9 h-1 bg-paper-3 rounded-full" />
@@ -560,7 +562,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
                   <X size={16} className="text-ink-400" />
                 </button>
               </div>
-              <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(72dvh - 72px)' }} data-lenis-prevent>
+              <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: 'calc(78dvh - 76px)' }} data-lenis-prevent>
                 <EditorSidebar project={project} projectId={project.id} {...sidebarProps} />
               </div>
             </motion.div>
@@ -569,10 +571,20 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
       </AnimatePresence>
 
       {/* Mobile FAB */}
-      <button onClick={() => setSidebarOpen(true)}
-        className="md:hidden fixed bottom-5 right-4 z-30 flex items-center gap-2 px-4 py-3 rounded-2xl text-white text-sm font-medium shadow-xl active:scale-95 transition-transform"
-        style={{ background: 'linear-gradient(135deg, #6E2B34, #4A1A22)' }}>
-        ⚙️ Настройки
+      <button
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Открыть настройки сайта"
+        className="md:hidden fixed z-30 flex items-center gap-2 rounded-2xl text-sm font-medium shadow-xl active:scale-95 transition-transform"
+        style={{
+          right: 'max(16px, env(safe-area-inset-right))',
+          bottom: 'calc(16px + env(safe-area-inset-bottom))',
+          minHeight: 48,
+          paddingInline: 18,
+          background: 'var(--color-wine)',
+          color: 'var(--color-paper)',
+        }}
+      >
+        <Settings2 size={17} aria-hidden="true" /> Настройки
       </button>
 
       {/* Block library */}

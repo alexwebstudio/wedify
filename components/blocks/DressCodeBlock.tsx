@@ -80,7 +80,7 @@ export function DressCodeBlock({ block, colors, fonts, isEditing, onChange, user
           </div>
         </motion.div>
       </div>
-      {picker && <ImagePicker onSelect={(url) => { update('image', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} />}
+      {picker && <ImagePicker onSelect={(url) => { update('image', url); setPicker(false) }} onClose={() => setPicker(false)} userId={userId} projectId={projectId} currentUrl={String(content.image || '')} />}
     </section>
   )
 }

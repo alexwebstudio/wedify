@@ -818,7 +818,40 @@ img, svg, video { max-width: 100%; }
 @keyframes spin   { to { transform: rotate(360deg); } }
 .float { animation: float 4s ease-in-out infinite; }
 
-@media (max-width: 768px) { .editor-canvas-wrap { padding: 8px !important; padding-bottom: 80px !important; } }
+/* Полотно редактора: на мобильном оставляем место под плавающую кнопку
+   и безопасную зону, иначе последний блок закрыт кнопкой «Настройки». */
+@media (max-width: 768px) {
+  .editor-canvas-wrap {
+    padding: 8px !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Верхняя панель редактора.
+   Высота и отступы учитывают вырез экрана, а на узких экранах кнопки
+   больше не наезжают друг на друга. */
+.mrn-editor-bar {
+  height: 56px;
+  padding-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
+  padding-top: env(safe-area-inset-top);
+  box-sizing: content-box;
+}
+@media (min-width: 640px) {
+  .mrn-editor-bar { padding-inline: 16px; }
+}
+
+/* Пальцем в 28-пиксельную кнопку не попасть: на сенсорных экранах
+   увеличиваем зону нажатия у иконочных кнопок редактора. */
+@media (pointer: coarse) {
+  .mrn-editor-bar button,
+  .mrn-editor-bar a {
+    min-height: 40px;
+    min-width: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 
 /* Переключатель в редакторе */
 .toggle-fix {
