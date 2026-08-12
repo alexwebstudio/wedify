@@ -346,11 +346,19 @@ export default function SettingsPage() {
 
             <Field
               label="Пройти обучение заново"
-              hint="Сбрасывает отметку «пройдено». Шаги, которые уже выполнены в сайте, останутся закрытыми — список считается из ваших данных."
+              hint="Сбрасывает отметку «пройдено» по всем вашим сайтам. Шаги, которые уже выполнены, останутся закрытыми — список считается из ваших данных."
             >
               <button
                 type="button"
-                onClick={() => patch((d) => { d.onboarding.finished = false; d.onboarding.hintsEnabled = true })}
+                onClick={() => patch((d) => {
+                  d.onboarding.hintsEnabled = true
+                  // Прогресс хранится по каждому сайту отдельно, поэтому
+                  // «показать снова» снимает отметку у всех сразу
+                  for (const site of Object.values(d.onboarding.sites)) {
+                    site.finished = false
+                    site.congratulated = false
+                  }
+                })}
                 className="mrn-btn mrn-btn--sm mrn-btn--secondary"
                 style={{ alignSelf: 'flex-start' }}
               >

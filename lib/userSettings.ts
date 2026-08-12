@@ -17,13 +17,27 @@ export type MsgChannel = 'email' | 'telegram' | 'both'
  * поэтому отдельная миграция не нужна: merge() ниже добавляет секцию
  * к записям, созданным до этого патча.
  */
-export interface OnboardingState {
-  /** Подсказки помощника включены. Выключается кнопкой «Больше не показывать». */
-  hintsEnabled: boolean
-  /** Обучение пройдено или пропущено — автоматически больше не запускается. */
+/** Прогресс обучения по одному сайту. */
+export interface SiteOnboardingState {
+  /** Обучение по этому сайту пройдено или пропущено. */
   finished: boolean
   /** Шаги, которые нельзя вывести из данных проекта (например, «открыл предпросмотр»). */
   seenSteps: string[]
+  /** Поздравление показано — второй раз не показываем. */
+  congratulated?: boolean
+}
+
+export interface OnboardingState {
+  /** Подсказки включены целиком. Выключается кнопкой «Больше не показывать». */
+  hintsEnabled: boolean
+  /**
+   * Прогресс по каждому сайту отдельно, ключ — id проекта.
+   *
+   * Прогресс намеренно не общий на аккаунт: у второго и третьего сайта
+   * обучение начинается заново, а «Мои сайты» и редактор одного и того же
+   * сайта читают и пишут одну и ту же запись.
+   */
+  sites: Record<string, SiteOnboardingState>
 }
 
 export interface UserSettings {
@@ -73,8 +87,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   },
   onboarding: {
     hintsEnabled: true,
-    finished: false,
-    seenSteps: [],
+    sites: {},
   },
 }
 
@@ -94,7 +107,13 @@ function merge(base: UserSettings, patch: Partial<UserSettings> | null | undefin
     defaults: { ...base.defaults, ...(patch.defaults || {}) },
     security: { ...base.security, ...(patch.security || {}) },
     messages: { ...base.messages, ...(patch.messages || {}) },
-    onboarding: { ...base.onboarding, ...(patch.onboarding || {}) },
+    onboarding: {
+      ...base.onboarding,
+      ...(patch.onboarding || {}),
+      // Записи по сайтам объединяем, иначе параллельное сохранение
+      // из «Моих сайтов» и редактора затирало бы чужой прогресс
+      sites: { ...base.onboarding.sites, ...(patch.onboarding?.sites || {}) },
+    },
   }
 }
 

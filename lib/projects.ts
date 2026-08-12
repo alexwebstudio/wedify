@@ -155,6 +155,7 @@ export async function publishProject(id: string): Promise<Project> {
   if (!project) throw new Error('Проект не найден')
 
   const now = new Date().toISOString()
+
   const { data, error } = await supabase
     .from('projects')
     .update({
@@ -168,16 +169,31 @@ export async function publishProject(id: string): Promise<Project> {
     .select()
     .single()
 
-  if (error) {
-    // Частая причина на новом окружении — не применена миграция 20260804_publish_snapshot.sql
-    if (/published_snapshot|published_at/.test(error.message)) {
-      throw new Error(
-        'В базе нет колонок для публикации. Примените supabase/migrations/20260804_publish_snapshot.sql',
-      )
-    }
-    throw error
+  if (!error) return data
+
+  // Колонок снимка ещё нет — миграция 20260804_publish_snapshot.sql не применена.
+  // Публикация не должна из-за этого падать: сайт выкладываем по-старому,
+  // из черновика. Разделение черновика и публикации включится само,
+  // как только миграцию выполнят.
+  if (/published_snapshot|published_at|archived_at|column/i.test(error.message)) {
+    const { data: legacy, error: legacyError } = await supabase
+      .from('projects')
+      .update({ published: true, updated_at: now })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (legacyError) throw legacyError
+
+    console.warn(
+      '[maruno] Публикация выполнена без снимка: примените ' +
+      'supabase/migrations/20260804_publish_snapshot.sql, чтобы правки в редакторе ' +
+      'перестали сразу попадать на опубликованный сайт.',
+    )
+    return legacy
   }
-  return data
+
+  throw error
 }
 
 /** Снять сайт с публикации. Черновик и снимок сохраняются. */

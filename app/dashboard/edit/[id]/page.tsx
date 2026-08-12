@@ -7,7 +7,9 @@ import {
   Monitor, Smartphone, PanelLeft, X, Undo2, Redo2, Settings2,
 } from 'lucide-react'
 import { useAuth } from '@/lib/hooks/useAuth'
-import { loadUserSettings, saveUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userSettings'
+import { loadUserSettings, type ButtonStyle, type ImageStyle } from '@/lib/userSettings'
+import { useOnboarding } from '@/lib/hooks/useOnboarding'
+import { Assistant } from '@/components/onboarding/Assistant'
 import { getProjectById, updateProject, publishProject } from '@/lib/projects'
 import { hasUnpublishedChanges, formatMoment } from '@/lib/projectStatus'
 import { PublishPanel } from '@/components/editor/PublishPanel'
@@ -79,6 +81,10 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
   const [acctBtn, setAcctBtn] = useState<ButtonStyle>('rounded')
   const [acctImg, setAcctImg] = useState<ImageStyle>('rounded')
   const viewInit = useRef(false)
+
+  // Подсказки этого сайта. Хук читает и пишет ту же запись, что и «Мои сайты»,
+  // поэтому шаг, пройденный там, здесь уже отмечен — и наоборот.
+  const onboarding = useOnboarding(user, project)
 
   useEffect(() => {
     if (!user) return
@@ -283,19 +289,6 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
    * Публикация — единственное действие, меняющее то, что видят гости.
    * Сначала фиксируем черновик, затем копируем его в опубликованный снимок.
    */
-  /**
-   * Отмечаем шаг обучения «проверьте сайт»: открытие предпросмотра из данных
-   * проекта не видно, поэтому это единственный шаг с флагом в настройках.
-   */
-  const markPreviewSeen = useCallback(async () => {
-    if (!user) return
-    const current = await loadUserSettings(user.id, user.email || '')
-    if (current.onboarding.seenSteps.includes('preview')) return
-    await saveUserSettings(user.id, {
-      ...current,
-      onboarding: { ...current.onboarding, seenSteps: [...current.onboarding.seenSteps, 'preview'] },
-    })
-  }, [user])
 
   const handlePublish = async () => {
     if (!project) return
@@ -418,7 +411,7 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
 
           {/* Предпросмотр черновика — публичную версию не трогает */}
           <button
-            onClick={() => { setPreviewMode(!previewMode); if (!previewMode) markPreviewSeen() }}
+            onClick={() => { setPreviewMode(!previewMode); if (!previewMode) onboarding.markStep('preview') }}
             className="mrn-btn mrn-btn--sm mrn-btn--ghost"
             aria-pressed={previewMode}
           >
@@ -596,6 +589,18 @@ export default function EditPage({ params }: { params: Promise<{ id: string }> }
         onClose={() => setLibraryOpen(false)}
         onAdd={handleAddFromCatalog}
       />
+
+      {/* Помощник этого сайта. В предпросмотре скрыт: там показываем то,
+          что увидят гости, без интерфейса редактора. */}
+      {onboarding.visible && !previewMode && (
+        <Assistant
+          variant="editor"
+          progress={onboarding.progress}
+          onSkip={onboarding.skip}
+          onDisable={onboarding.disable}
+          onFinish={onboarding.markCongratulated}
+        />
+      )}
 
       {/* Delete confirm */}
       <DeleteConfirm

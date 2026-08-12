@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Check, X } from 'lucide-react'
 import type { OnboardingProgress } from '@/lib/onboarding'
@@ -11,6 +11,13 @@ interface AssistantProps {
   onSkip: () => void
   /** Больше не показывать подсказки совсем. */
   onDisable: () => void
+  /** Обучение пройдено полностью — поздравление показано и закрыто. */
+  onFinish?: () => void
+  /**
+   * В редакторе человек уже внутри инструмента, поэтому подсказка говорит,
+   * куда именно нажать, а не зачем шаг нужен.
+   */
+  variant?: 'dashboard' | 'editor'
 }
 
 /**
@@ -21,21 +28,43 @@ interface AssistantProps {
  * и никакой языковой модели: подсказка выбирается по первому незакрытому
  * шагу, который посчитан из данных сайта.
  */
-export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
+export function Assistant({
+  progress,
+  onSkip,
+  onDisable,
+  onFinish,
+  variant = 'dashboard',
+}: AssistantProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
+  const { next, doneCount, total, percent, project, complete, siteState } = progress
+  const projectId = project?.id
+  // Поздравление показываем один раз на сайт и без праздничного шума:
+  // человек только что закончил работу, ему нужен покой, а не конфетти.
+  const congratulate = complete && !siteState.congratulated
+  // Поздравление раскрывает панель само, без отдельного состояния:
+  // оно исчезнет, как только шаг отметится пройденным.
+  const panelOpen = open || congratulate
+
+  // Закрытие панели. Если это было поздравление — считаем его показанным,
+  // иначе оно возвращалось бы при каждом заходе.
+  const closePanel = useCallback(() => {
+    setOpen(false)
+    if (congratulate) onFinish?.()
+  }, [congratulate, onFinish])
+
   useEffect(() => {
-    if (!open) return
+    if (!panelOpen) return
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setOpen(false); buttonRef.current?.focus() }
+      if (e.key === 'Escape') { closePanel(); buttonRef.current?.focus() }
     }
     const onClickOutside = (e: MouseEvent) => {
       const target = e.target as Node
       if (panelRef.current?.contains(target) || buttonRef.current?.contains(target)) return
-      setOpen(false)
+      closePanel()
     }
 
     document.addEventListener('keydown', onKey)
@@ -44,14 +73,11 @@ export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('mousedown', onClickOutside)
     }
-  }, [open])
-
-  const { next, doneCount, total, percent, project, complete } = progress
-  const projectId = project?.id
+  }, [panelOpen, closePanel])
 
   return (
-    <div className="mrn-assistant">
-      {open && (
+    <div className={`mrn-assistant${variant === 'editor' ? ' mrn-assistant--editor' : ''}`}>
+      {panelOpen && (
         <div
           ref={panelRef}
           className="mrn-card mrn-assistant-panel"
@@ -65,11 +91,11 @@ export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
             <div style={{ textAlign: 'left' }}>
               <p className="mrn-eyebrow">Шаг {Math.min(doneCount + 1, total)} из {total}</p>
               <p className="mrn-h3" style={{ fontSize: 17, marginTop: 6 }}>
-                {complete ? 'Всё готово' : next?.title}
+                {congratulate ? 'Готово' : complete ? 'Всё готово' : next?.title}
               </p>
             </div>
             <button
-              onClick={() => { setOpen(false); buttonRef.current?.focus() }}
+              onClick={() => { closePanel(); buttonRef.current?.focus() }}
               className="mrn-icon-btn"
               aria-label="Свернуть помощника"
               style={{ width: 34, height: 34, flexShrink: 0 }}
@@ -80,9 +106,11 @@ export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
 
           <div style={{ padding: '12px 18px 18px' }}>
             <p className="mrn-lead" style={{ fontSize: 14.5, textAlign: 'left' }}>
-              {complete
-                ? 'Приглашение опубликовано и открывается по вашей ссылке. Правки после публикации попадают на сайт только после нажатия «Опубликовать изменения».'
-                : next?.hint}
+              {congratulate
+                ? 'Вы разобрались с основными возможностями редактора. Приглашение опубликовано и открывается по вашей ссылке.'
+                : complete
+                  ? 'Приглашение опубликовано и открывается по вашей ссылке. Правки после публикации попадают на сайт только после нажатия «Опубликовать изменения».'
+                  : variant === 'editor' ? next?.editorHint : next?.hint}
             </p>
 
             {/* Прогресс: полоса + шаги */}
@@ -105,7 +133,9 @@ export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
               Выполнено {doneCount} из {total}
             </p>
 
-            {!complete && next && (
+            {/* В редакторе большинство шагов делаются прямо здесь — ссылка
+                «перейти» вела бы на ту же страницу и сбивала с толку. */}
+            {!complete && next && (variant === 'dashboard' || next.id === 'create' || next.id === 'preview') && (
               <Link
                 href={next.href(projectId)}
                 onClick={() => setOpen(false)}
@@ -116,29 +146,41 @@ export function Assistant({ progress, onSkip, onDisable }: AssistantProps) {
               </Link>
             )}
 
-            <div
-              className="flex flex-wrap items-center justify-between gap-2"
-              style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--mrn-line)' }}
-            >
-              <button onClick={onSkip} className="mrn-btn mrn-btn--sm mrn-btn--ghost" style={{ paddingInline: 0 }}>
-                Пропустить обучение
+            {congratulate ? (
+              <button
+                onClick={() => { setOpen(false); onFinish?.() }}
+                className="mrn-btn mrn-btn--sm mrn-btn--primary mrn-btn--block"
+                style={{ marginTop: 16 }}
+              >
+                Спасибо, закрыть
               </button>
-              <button onClick={onDisable} className="mrn-btn mrn-btn--sm mrn-btn--ghost" style={{ paddingInline: 0 }}>
-                Больше не показывать
-              </button>
-            </div>
-            <p className="mrn-meta" style={{ fontSize: 11.5, marginTop: 8, textAlign: 'left' }}>
-              Вернуть подсказки можно в настройках кабинета.
-            </p>
+            ) : (
+              <>
+                <div
+                  className="flex flex-wrap items-center justify-between gap-2"
+                  style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--mrn-line)' }}
+                >
+                  <button onClick={onSkip} className="mrn-btn mrn-btn--sm mrn-btn--ghost" style={{ paddingInline: 0 }}>
+                    Пропустить обучение
+                  </button>
+                  <button onClick={onDisable} className="mrn-btn mrn-btn--sm mrn-btn--ghost" style={{ paddingInline: 0 }}>
+                    Больше не показывать
+                  </button>
+                </div>
+                <p className="mrn-meta" style={{ fontSize: 11.5, marginTop: 8, textAlign: 'left' }}>
+                  Вернуть подсказки можно в настройках кабинета.
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}
 
       <button
         ref={buttonRef}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (panelOpen ? closePanel() : setOpen(true))}
         className="mrn-assistant-toggle"
-        aria-expanded={open}
+        aria-expanded={panelOpen}
         aria-label={
           complete
             ? 'Помощник: обучение завершено'

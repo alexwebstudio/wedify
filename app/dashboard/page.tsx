@@ -11,8 +11,8 @@ import { getProjects, deleteProject, publishProject, unpublishProject } from '@/
 import { getProjectStatus, STATUS_META, formatMoment } from '@/lib/projectStatus'
 import { reportError } from '@/lib/errors'
 import { usePlan, PLAN_META } from '@/lib/subscription'
-import { loadUserSettings, saveUserSettings, DEFAULT_SETTINGS, type UserSettings } from '@/lib/userSettings'
-import { getOnboardingProgress, shouldShowOnboarding } from '@/lib/onboarding'
+import { useOnboarding } from '@/lib/hooks/useOnboarding'
+import { pickActiveProject } from '@/lib/onboarding'
 import { OnboardingChecklist } from '@/components/onboarding/OnboardingChecklist'
 import { Assistant } from '@/components/onboarding/Assistant'
 import { EmptyState } from '@/components/dashboard/EmptyState'
@@ -65,7 +65,6 @@ export default function DashboardPage() {
   // Загрузка может не удаться — тогда показываем состояние с повтором,
   // а не пустой экран «сайтов нет»
   const [loadFailed, setLoadFailed] = useState(false)
-  const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS)
 
   useEffect(() => {
     if (!loading && !user) router.push('/auth/login')
@@ -91,21 +90,15 @@ export default function DashboardPage() {
       .then((rows) => { setProjects(rows); setLoadFailed(false) })
       .catch(() => setLoadFailed(true))
       .finally(() => setFetching(false))
-    loadUserSettings(user.id, user.email || '').then(setSettings)
   }, [user])
 
-  // Прогресс обучения считается из данных проектов, а не из отдельного счётчика
-  const progress = getOnboardingProgress(projects, settings.onboarding)
-  const showOnboarding = shouldShowOnboarding(settings.onboarding, progress)
-
-  const patchOnboarding = useCallback(async (patch: Partial<UserSettings['onboarding']>) => {
-    if (!user) return
-    setSettings((prev) => {
-      const next = { ...prev, onboarding: { ...prev.onboarding, ...patch } }
-      saveUserSettings(user.id, next)
-      return next
-    })
-  }, [user])
+  // Обучение показывается по конкретному сайту — тому, с которым работали
+  // последним. Это же состояние читает и пишет редактор того же сайта,
+  // поэтому пройденный шаг сразу виден в обоих местах.
+  const activeProject = pickActiveProject(projects)
+  const onboarding = useOnboarding(user, activeProject)
+  const { progress } = onboarding
+  const showOnboarding = onboarding.visible
 
   const handleDelete = async (id: string) => {
     if (!confirm('Вы уверены, что хотите удалить сайт? Данные будут удалены без возможности восстановления.')) return
@@ -230,7 +223,7 @@ export default function DashboardPage() {
 
         {/* Чек-лист первого сайта. Скрывается, когда обучение пройдено или отключено */}
         {showOnboarding && projects.length > 0 && (
-          <OnboardingChecklist progress={progress} onSkip={() => patchOnboarding({ finished: true })} />
+          <OnboardingChecklist progress={progress} onSkip={onboarding.skip} />
         )}
 
         {loadFailed ? (
@@ -241,7 +234,7 @@ export default function DashboardPage() {
         ) : projects.length === 0 ? (
           <EmptyState
             kind="no-projects"
-            onStartTour={() => patchOnboarding({ finished: false, hintsEnabled: true })}
+            onStartTour={() => onboarding.setHintsEnabled(true)}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -430,8 +423,9 @@ export default function DashboardPage() {
       {showOnboarding && (
         <Assistant
           progress={progress}
-          onSkip={() => patchOnboarding({ finished: true })}
-          onDisable={() => patchOnboarding({ hintsEnabled: false, finished: true })}
+          onSkip={onboarding.skip}
+          onDisable={onboarding.disable}
+          onFinish={onboarding.markCongratulated}
         />
       )}
     </div>

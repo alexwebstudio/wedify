@@ -736,6 +736,14 @@ img, svg, video { max-width: 100%; }
   .mrn-assistant-toggle { padding-inline: 7px; }
 }
 
+/* В редакторе правый нижний угол занят кнопкой «Настройки»,
+   поэтому помощник уходит к левому краю. */
+.mrn-assistant--editor {
+  right: auto;
+  left: max(16px, env(safe-area-inset-left));
+  align-items: flex-start;
+}
+
 /* ─────────────────────────────────────────────
    5. LEGACY — используются редактором, кабинетом
    и блоками опубликованных сайтов.

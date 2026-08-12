@@ -1,17 +1,19 @@
 import type { BlockData, Project } from '@/types'
-import type { OnboardingState } from '@/lib/userSettings'
+import type { OnboardingState, SiteOnboardingState } from '@/lib/userSettings'
 import { deriveVariables } from '@/lib/siteVariables'
 
 /**
  * Онбординг и подсказки помощника.
  *
- * Главный принцип: шаги считаются из реальных данных сайта, а не из отдельного
- * счётчика «пользователь нажал далее». Поэтому прогресс не врёт: если человек
- * удалит фотографии, шаг снова станет невыполненным, а если заполнит всё
- * вручную мимо обучения — шаги закроются сами.
+ * Два принципа.
  *
- * Исключение — шаг «Проверьте сайт»: открытие предпросмотра из данных не видно,
- * его отмечаем флагом в настройках пользователя.
+ * 1. Шаги считаются из реальных данных сайта, а не из счётчика «нажал далее».
+ *    Поэтому прогресс не врёт: удалили фотографии — шаг снова открылся,
+ *    заполнили всё мимо обучения — шаги закрылись сами.
+ *
+ * 2. Прогресс привязан к конкретному сайту, а не к аккаунту. «Мои сайты»
+ *    и редактор одного и того же сайта читают одну запись, поэтому шаг,
+ *    пройденный в одном месте, сразу считается пройденным в другом.
  */
 
 export type StepId =
@@ -28,7 +30,8 @@ export interface OnboardingStep {
   title: string
   /** Что именно нужно сделать — короткой фразой, без общих слов. */
   hint: string
-  /** Куда ведёт действие. Подставляется id проекта, если он уже есть. */
+  /** Пояснение для редактора: там человек уже внутри и ждёт конкретики. */
+  editorHint: string
   href: (projectId?: string) => string
   action: string
 }
@@ -38,6 +41,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'create',
     title: 'Выберите шаблон',
     hint: 'С него начинается сайт: композиция первого экрана, палитра и шрифты. Всё это меняется позже.',
+    editorHint: 'Шаблон уже выбран. Оформление можно поменять на вкладке «Стиль» слева.',
     href: () => '/dashboard/new',
     action: 'Выбрать шаблон',
   },
@@ -45,6 +49,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'names',
     title: 'Впишите имена',
     hint: 'Имена подставятся сразу во все блоки — на главный экран, в подвал и в форму для гостей.',
+    editorHint: 'Нажмите прямо на имя на главном экране и напечатайте своё. Остальные блоки подхватят его сами.',
     href: (id) => (id ? `/dashboard/edit/${id}` : '/dashboard/new'),
     action: 'Открыть редактор',
   },
@@ -52,6 +57,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'date',
     title: 'Укажите дату и время',
     hint: 'Дата нужна таймеру обратного отсчёта и блоку с расписанием дня.',
+    editorHint: 'Дата на главном экране редактируется прямо на месте — нажмите на неё и выберите день.',
     href: (id) => (id ? `/dashboard/edit/${id}` : '/dashboard/new'),
     action: 'Указать дату',
   },
@@ -59,6 +65,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'details',
     title: 'Заполните место проведения',
     hint: 'Площадка и адрес попадут в блок локации и в кнопку «Открыть на карте».',
+    editorHint: 'Пролистайте до блока «Место проведения» и впишите площадку и адрес — появится кнопка на карту.',
     href: (id) => (id ? `/dashboard/edit/${id}` : '/dashboard/new'),
     action: 'Добавить площадку',
   },
@@ -66,6 +73,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'photos',
     title: 'Добавьте свои фотографии',
     hint: 'Пока стоят подложки из палитры шаблона. Свои кадры делают приглашение вашим.',
+    editorHint: 'Наведите на изображение и нажмите «Сменить фото». Крупные снимки уменьшатся автоматически.',
     href: (id) => (id ? `/dashboard/edit/${id}` : '/dashboard/new'),
     action: 'Загрузить фото',
   },
@@ -73,6 +81,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'preview',
     title: 'Проверьте, как это увидят гости',
     hint: 'Предпросмотр показывает черновик и не меняет опубликованный сайт.',
+    editorHint: 'Кнопка «Предпросмотр» вверху убирает панели редактора. Опубликованный сайт при этом не меняется.',
     href: (id) => (id ? `/dashboard/edit/${id}?preview=1` : '/dashboard'),
     action: 'Открыть предпросмотр',
   },
@@ -80,10 +89,19 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     id: 'publish',
     title: 'Опубликуйте приглашение',
     hint: 'Публикация — единственное действие, которое меняет то, что видят гости. Автосохранение этого не делает.',
+    editorHint: 'Автосохранение пишет только в черновик. Гости увидят правки после кнопки «Опубликовать».',
     href: (id) => (id ? `/dashboard/edit/${id}` : '/dashboard'),
     action: 'Перейти к публикации',
   },
 ]
+
+/** Пустой прогресс для сайта, по которому обучение ещё не начиналось. */
+export const EMPTY_SITE_STATE: SiteOnboardingState = { finished: false, seenSteps: [] }
+
+export function getSiteState(state: OnboardingState, projectId?: string): SiteOnboardingState {
+  if (!projectId) return EMPTY_SITE_STATE
+  return state.sites[projectId] ?? EMPTY_SITE_STATE
+}
 
 /** Загруженные пользователем файлы лежат в Supabase, подложки — это data-URI. */
 function isUserPhoto(value: unknown): boolean {
@@ -117,23 +135,17 @@ export interface OnboardingProgress {
   /** Первый незакрытый шаг — на него и указывает помощник. */
   next: StepState | null
   complete: boolean
-  /** Проект, к которому относится прогресс. */
   project: Project | null
+  /** Прогресс именно этого сайта. */
+  siteState: SiteOnboardingState
 }
 
-/**
- * Считает прогресс по первому (самому раннему) проекту пользователя.
- * Обучение привязано к первому сайту: дальше человек уже знает, что делать.
- */
-export function getOnboardingProgress(
-  projects: Project[],
+/** Прогресс по конкретному сайту. */
+export function getProjectProgress(
+  project: Project | null,
   state: OnboardingState,
 ): OnboardingProgress {
-  // Самый старый проект — тот, с которого человек начал
-  const project = projects.length
-    ? [...projects].sort((a, b) => (a.created_at < b.created_at ? -1 : 1))[0]
-    : null
-
+  const siteState = getSiteState(state, project?.id)
   const vars = project ? deriveVariables(project.blocks) : null
   const photos = project ? project.blocks.flatMap(blockPhotos) : []
 
@@ -144,7 +156,7 @@ export function getOnboardingProgress(
     details: !!vars?.venue?.trim() || !!vars?.address?.trim(),
     photos: photos.length > 0,
     // Открытие предпросмотра из данных не видно — отмечаем флагом
-    preview: state.seenSteps.includes('preview'),
+    preview: siteState.seenSteps.includes('preview'),
     publish: !!project?.published,
   }
 
@@ -160,12 +172,22 @@ export function getOnboardingProgress(
     next: steps.find((s) => !s.done) ?? null,
     complete: doneCount === total,
     project,
+    siteState,
   }
 }
 
-/** Показывать ли обучение: пока не пройдено, не пропущено и подсказки включены. */
+/**
+ * Сайт, по которому показываем обучение в кабинете, — последний изменённый.
+ * Именно с ним человек работает прямо сейчас.
+ */
+export function pickActiveProject(projects: Project[]): Project | null {
+  if (!projects.length) return null
+  return [...projects].sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1))[0]
+}
+
+/** Показывать ли обучение: подсказки включены, по этому сайту не пройдено. */
 export function shouldShowOnboarding(state: OnboardingState, progress: OnboardingProgress): boolean {
   if (!state.hintsEnabled) return false
-  if (state.finished) return false
-  return !progress.complete
+  if (progress.siteState.finished) return false
+  return true
 }
