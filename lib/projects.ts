@@ -245,7 +245,15 @@ export async function setProjectArchived(id: string, archived: boolean): Promise
     })
     .eq('id', id)
 
-  if (error) throw error
+  if (!error) return
+
+  // Без колонки archived_at архивация невозможна физически — говорим об этом
+  // понятной фразой вместо сообщения PostgREST про отсутствующую колонку.
+  if (/archived_at|column/i.test(error.message)) {
+    throw new Error('Архив недоступен: не применена миграция supabase/migrations/20260804_publish_snapshot.sql')
+  }
+
+  throw error
 }
 
 async function ensureUniqueSlug(baseSlug: string): Promise<string> {
