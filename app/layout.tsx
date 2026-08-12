@@ -127,9 +127,9 @@ export default function RootLayout({
               fontFamily: 'var(--font-onest), system-ui, sans-serif',
               fontSize: '14px',
             },
-            success: { iconTheme: { primary: '#D9C3A5', secondary: '#16130F' } },
+            success: { iconTheme: { primary: '#FBF8F4', secondary: '#6E2B34' } },
             error: {
-              style: { background: '#3A1219', border: '1px solid rgba(217,195,165,0.25)' },
+              style: { background: '#4A1A22', border: '1px solid rgba(251,248,244,0.22)' },
             },
           }}
         />

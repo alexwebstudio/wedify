@@ -33,7 +33,7 @@ const TIERS: Tier[] = [
   {
     id: 'standard',
     name: 'Стандарт',
-    price: '3 590 ₸',
+    price: '2 990 ₸',
     period: 'навсегда',
     note: 'Разовая покупка — доступ навсегда для этой почты',
     featured: true,
@@ -50,7 +50,7 @@ const TIERS: Tier[] = [
   {
     id: 'exclusive',
     name: 'Эксклюзив',
-    price: '7 990 ₸',
+    price: '6 990 ₸',
     period: 'навсегда',
     note: 'Разовая покупка — доступ навсегда для этой почты',
     features: [
@@ -106,7 +106,7 @@ export default function Pricing() {
                 style={{
                   fontSize: 'clamp(2.1rem, 4vw, 2.6rem)',
                   marginTop: 18,
-                  color: tier.featured ? 'var(--color-champagne)' : 'var(--color-ink)',
+                  color: tier.featured ? 'var(--color-paper)' : 'var(--color-ink)',
                 }}
               >
                 {tier.price}
@@ -124,7 +124,7 @@ export default function Pricing() {
                       style={{
                         flexShrink: 0,
                         marginTop: 3,
-                        color: tier.featured ? 'var(--color-champagne)' : 'var(--color-wine)',
+                        color: tier.featured ? 'var(--color-paper)' : 'var(--color-wine)',
                       }}
                     />
                     <span

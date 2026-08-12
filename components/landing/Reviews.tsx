@@ -170,7 +170,7 @@ export default function Reviews() {
                     width: 34, height: 34, borderRadius: 'var(--radius-full)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 14, fontWeight: 600,
-                    color: 'var(--color-wine)', background: 'var(--color-blush)',
+                    color: 'var(--color-wine)', background: 'rgba(110,43,52,.10)',
                   }}
                 >
                   {r.name.charAt(0).toUpperCase()}

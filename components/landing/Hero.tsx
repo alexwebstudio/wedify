@@ -70,7 +70,7 @@ export function Hero({ startHref }: HeroProps) {
         <p
           data-hero="eyebrow"
           className="mrn-eyebrow"
-          style={{ color: 'var(--color-champagne)' }}
+          style={{ color: 'rgba(255,255,255,.72)' }}
         >
           Конструктор свадебных сайтов
         </p>
@@ -82,19 +82,22 @@ export function Hero({ startHref }: HeroProps) {
           style={{
             marginTop: 22,
             marginInline: 'auto',
-            maxWidth: '15ch',
-            fontSize: 'clamp(2.6rem, 6.4vw, 5rem)',
+            maxWidth: '17ch',
+            fontSize: 'clamp(2.35rem, 5.8vw, 4.6rem)',
           }}
         >
-          <span className="mrn-sr">Свадебные сайты-приглашения</span>
+          <span className="mrn-sr">Создайте свой сайт-приглашение за 10 минут</span>
           <span aria-hidden="true">
             <span className="mrn-line-mask">
-              <span data-hero="line" style={{ display: 'block' }}>Свадебные сайты</span>
+              <span data-hero="line" style={{ display: 'block' }}>Создайте свой</span>
             </span>
             <span className="mrn-line-mask">
-              <span data-hero="line" className="mrn-h1-script" style={{ display: 'block' }}>
-                приглашения
+              <span data-hero="line" style={{ display: 'block' }}>
+                сайт-<span className="mrn-h1-script">приглашение</span>
               </span>
+            </span>
+            <span className="mrn-line-mask">
+              <span data-hero="line" style={{ display: 'block' }}>за 10 минут</span>
             </span>
           </span>
         </h1>
@@ -113,7 +116,9 @@ export function Hero({ startHref }: HeroProps) {
         <div
           data-hero="cta"
           className="flex flex-col sm:flex-row sm:flex-wrap sm:justify-center gap-3"
-          style={{ marginTop: 38, marginInline: 'auto', maxWidth: 420 }}
+          // Ширины хватает, чтобы на десктопе кнопки стояли в один ряд,
+          // а на узком экране — столбиком во всю ширину
+          style={{ marginTop: 38, marginInline: 'auto', maxWidth: 480 }}
         >
           <Link href={startHref} className="mrn-btn mrn-btn--lg mrn-btn--primary">
             Создать сайт <ArrowRight size={17} />
@@ -134,7 +139,7 @@ export function Hero({ startHref }: HeroProps) {
             marginTop: 'clamp(40px, 6vw, 60px)',
             transformOrigin: 'center',
             background:
-              'linear-gradient(90deg, transparent, rgba(217,195,165,.5), transparent)',
+              'linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent)',
           }}
         />
 
@@ -147,7 +152,7 @@ export function Hero({ startHref }: HeroProps) {
             <li key={item} className="mrn-meta flex items-center gap-2">
               <span
                 aria-hidden="true"
-                style={{ width: 14, height: 1, background: 'var(--color-champagne)', opacity: 0.7 }}
+                style={{ width: 14, height: 1, background: 'rgba(255,255,255,.6)', opacity: 1 }}
               />
               {item}
             </li>

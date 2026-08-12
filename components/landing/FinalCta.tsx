@@ -15,13 +15,13 @@ export function FinalCta({ startHref }: { startHref: string }) {
 
       <div className="mrn-container mrn-container--narrow" style={{ position: 'relative', textAlign: 'center' }}>
         <Reveal>
-          <p className="mrn-eyebrow" style={{ color: 'var(--color-champagne)' }}>
+          <p className="mrn-eyebrow" style={{ color: 'rgba(255,255,255,.72)' }}>
             Свободных вечеров до свадьбы меньше, чем кажется
           </p>
 
           <h2 className="mrn-h2" style={{ marginTop: 16 }}>
             Соберите приглашение{' '}
-            <span className="mrn-script" style={{ fontSize: '1.28em', color: 'var(--color-champagne)' }}>
+            <span className="mrn-script" style={{ fontSize: '1.28em' }}>
               сегодня
             </span>
           </h2>

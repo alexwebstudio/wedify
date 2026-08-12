@@ -13,10 +13,16 @@ const MAX_PUBLIC_PLAN: Plan = 'standard'
 
 export const PLAN_RANK: Record<Plan, number> = { start: 0, standard: 1, premium: 2 }
 
+/*
+ * Названия и цены совпадают с посадочной страницей: человек не должен
+ * видеть «Премиум» в кабинете и «Эксклюзив» на сайте за одни и те же деньги.
+ * Цвета — оттенки бордового: интерфейс кабинета держится на одной палитре
+ * с публичной частью, золото из ранней версии убрано.
+ */
 export const PLAN_META: Record<Plan, { label: string; short: string; color: string; desc: string; price: string }> = {
-  start:    { label: 'Стартовая', short: 'Start',   color: '#7E8E6A', price: '0 ₸',      desc: 'Базовые блоки для простого приглашения' },
-  standard: { label: 'Стандарт',  short: 'Standard', color: '#C4A97D', price: '3 590 ₸', desc: 'Библиотека блоков и полный редактор' },
-  premium:  { label: 'Премиум',   short: 'Premium',  color: '#B8860B', price: '7 990 ₸', desc: 'Эксклюзивные премиум-блоки и анимации' },
+  start:    { label: 'Стартовая', short: 'Start',     color: '#8E4750', price: '0 ₸',      desc: 'Базовые блоки для простого приглашения' },
+  standard: { label: 'Стандарт',  short: 'Standard',  color: '#6E2B34', price: '2 990 ₸', desc: 'Библиотека блоков и полный редактор' },
+  premium:  { label: 'Эксклюзив', short: 'Exclusive', color: '#4A1A22', price: '6 990 ₸', desc: 'Эксклюзивные блоки и анимации' },
 }
 
 // Базовые блоки, доступные на стартовом тарифе.

@@ -24,7 +24,7 @@ export default function UpdatesSubscribe() {
   }
 
   return (
-    <section className="mrn-section--tight mrn-tone-blush">
+    <section className="mrn-section--tight mrn-tone-milk">
       <div className="mrn-container">
         <Reveal
           className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end"

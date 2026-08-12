@@ -94,7 +94,7 @@ export function SiteFooter() {
               target="_blank"
               rel="noopener noreferrer"
               className="mrn-link"
-              style={{ color: 'var(--color-champagne)' }}
+              style={{ color: 'rgba(255,255,255,.72)' }}
             >
               AlexWebStudio
             </a>

@@ -9,6 +9,9 @@ import type { Project, ProjectColors, BlockData, BlockType, SiteVariables } from
 import { deriveVariables, applyVariables } from '@/lib/siteVariables'
 import { ApplyStyleConfirm } from './ApplyStyleConfirm'
 import { libraryForPlan } from '@/lib/musicLibrary'
+import { uploadMedia } from '@/lib/projects'
+import { reportError } from '@/lib/errors'
+import toast from 'react-hot-toast'
 import {
   WEDDING_FONTS, fontFamilyValue, STYLE_PRESETS, COLOR_PRESETS, type StylePreset,
   hexToRgb, rgbToHex, normalizeHex, BUTTON_SHAPES, IMAGE_SHAPES,
@@ -59,7 +62,7 @@ type Tab = 'blocks' | 'data' | 'style' | 'colors' | 'fonts' | 'music'
 
 export function EditorSidebar({
   project, onUpdate, onBlockToggle, onBlockDuplicate, onBlockDelete, onBlockReorder, onAddBlock,
-  canAddBlocks = true, plan = 'standard',
+  canAddBlocks = true, plan = 'standard', userId, projectId,
 }: EditorSidebarProps) {
   // Смена стиля переписывает палитру и шрифты целиком — спрашиваем подтверждение
   const [pendingStyle, setPendingStyle] = useState<StylePreset | null>(null)
@@ -81,6 +84,36 @@ export function EditorSidebar({
   const setVar = (k: keyof SiteVariables, v: string) => setVars((prev) => ({ ...prev, [k]: v }))
   const commitVars = (next: SiteVariables) => onUpdate({ blocks: applyVariables(project.blocks, next) })
   const [musicPreview, setMusicPreview] = useState<string | null>(null)
+  const [musicUploading, setMusicUploading] = useState(false)
+
+  /**
+   * Загрузка своей музыки.
+   *
+   * Раньше файл превращался в blob:-ссылку через URL.createObjectURL и в таком
+   * виде сохранялся в проект. Такая ссылка живёт только до перезагрузки вкладки,
+   * поэтому у гостей музыка не играла никогда. Теперь файл кладётся в то же
+   * хранилище, что и фотографии, и в проект попадает постоянный адрес.
+   */
+  const handleMusicUpload = async (file: File) => {
+    if (!userId || !projectId) {
+      toast.error('Не удалось определить проект — обновите страницу')
+      return
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error('Файл больше 20 МБ. Выберите запись покороче или сожмите её.')
+      return
+    }
+    setMusicUploading(true)
+    try {
+      const url = await uploadMedia(file, userId, projectId)
+      onUpdate({ music: { ...project.music, url, title: file.name.replace(/\.[^.]+$/, '') } })
+      toast.success('Музыка загружена')
+    } catch (e) {
+      reportError(e, { action: 'upload-music' }, 'Не удалось загрузить музыку')
+    } finally {
+      setMusicUploading(false)
+    }
+  }
 
   const tabs: { key: Tab; icon: React.ReactNode; label: string }[] = [
     { key: 'blocks', icon: <Layers size={15} />, label: 'Блоки' },
@@ -365,14 +398,15 @@ export function EditorSidebar({
               ) : (
                 <label className="block border-2 border-dashed border-[#6E2B34]/30 rounded-xl p-6 text-center cursor-pointer hover:border-[#6E2B34] hover:bg-[#6E2B34]/5 transition-all">
                   <Upload size={22} className="text-[#6E2B34] mx-auto mb-2" />
-                  <p className="text-sm font-medium text-[#16130F]">Загрузить музыку</p>
-                  <p className="text-xs text-ink-400 mt-1">MP3, AAC до 20MB</p>
-                  <input type="file" accept="audio/*" className="hidden"
+                  <p className="text-sm font-medium text-[#16130F]">
+                    {musicUploading ? 'Загружаем…' : 'Загрузить музыку'}
+                  </p>
+                  <p className="text-xs text-ink-400 mt-1">MP3, AAC до 20 МБ</p>
+                  <input type="file" accept="audio/*" className="hidden" disabled={musicUploading}
                     onChange={(e) => {
                       const file = e.target.files?.[0]
-                      if (!file) return
-                      const url = URL.createObjectURL(file)
-                      onUpdate({ music: { url, autoplay: false, title: file.name.replace(/\.[^.]+$/, '') } })
+                      e.target.value = ''
+                      if (file) handleMusicUpload(file)
                     }}
                   />
                 </label>
@@ -412,9 +446,14 @@ export function EditorSidebar({
                               <p className="text-[12px] text-[#16130F] truncate">{tr.title}</p>
                               <p className="text-[10px] text-ink-400 truncate">{tr.artist}{tr.tier === 'premium' ? ' · 👑' : ''}</p>
                             </div>
+                            {/* Без файла выбор был бы обманом: менялось название,
+                                а звучал предыдущий трек */}
                             <button
-                              onClick={() => onUpdate({ music: { url: tr.url || project.music.url, autoplay: project.music.autoplay, title: `${tr.title} — ${tr.artist}` } })}
-                              className="text-[11px] px-2 py-1 rounded-md flex-shrink-0" style={{ background: active ? '#6E2B34' : '#EFEAE0', color: active ? '#fff' : '#4A1A22' }}>
+                              disabled={!tr.url}
+                              title={tr.url ? undefined : 'Файл трека ещё не загружен'}
+                              onClick={() => tr.url && onUpdate({ music: { ...project.music, url: tr.url, title: `${tr.title} — ${tr.artist}` } })}
+                              className="text-[11px] px-2 py-1 rounded-md flex-shrink-0 disabled:opacity-45 disabled:cursor-not-allowed"
+                              style={{ background: active ? '#6E2B34' : '#EFEAE0', color: active ? '#fff' : '#4A1A22' }}>
                               {active ? '✓' : 'Выбрать'}
                             </button>
                             {musicPreview === tr.id && tr.url && <audio src={tr.url} autoPlay onEnded={() => setMusicPreview(null)} className="hidden" />}

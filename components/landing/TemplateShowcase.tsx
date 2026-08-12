@@ -27,7 +27,7 @@ export function TemplateShowcase({
   showAllLink = false,
   background = 'var(--color-paper)',
   eyebrow = 'Шаблоны',
-  title = 'Шесть шаблонов под разные свадьбы',
+  title = 'Восемь шаблонов под разные свадьбы',
   description = 'Шаблоны отличаются композицией первого экрана, типографикой, палитрой и формой элементов. В карточке — настоящий экран, который увидят гости.',
 }: TemplateShowcaseProps) {
   const [demo, setDemo] = useState<TemplateEntry | null>(null)

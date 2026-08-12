@@ -9,7 +9,7 @@ interface MusicPlayerProps {
   accentColor?: string
 }
 
-export function MusicPlayer({ music, accentColor = '#C4A97D' }: MusicPlayerProps) {
+export function MusicPlayer({ music, accentColor = '#6E2B34' }: MusicPlayerProps) {
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
   const [interacted, setInteracted] = useState(false)
@@ -62,7 +62,11 @@ export function MusicPlayer({ music, accentColor = '#C4A97D' }: MusicPlayerProps
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1 }}
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-2"
+      className="fixed z-40 flex items-center gap-2"
+      style={{
+        right: 'max(16px, env(safe-area-inset-right))',
+        bottom: 'calc(16px + env(safe-area-inset-bottom))',
+      }}
     >
       {/* Title pill */}
       <AnimatePresence>
@@ -82,6 +86,7 @@ export function MusicPlayer({ music, accentColor = '#C4A97D' }: MusicPlayerProps
       {playing && (
         <button
           onClick={() => setMuted(!muted)}
+          aria-label={muted ? 'Включить звук' : 'Выключить звук'}
           className="w-10 h-10 rounded-full glass-dark flex items-center justify-center text-white/70 hover:text-white transition-colors"
         >
           {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -91,8 +96,12 @@ export function MusicPlayer({ music, accentColor = '#C4A97D' }: MusicPlayerProps
       {/* Play/Pause */}
       <button
         onClick={() => setPlaying(!playing)}
-        className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95"
-        style={{ background: `linear-gradient(135deg, ${accentColor}, #8B6F47)` }}
+        aria-label={playing ? 'Поставить музыку на паузу' : 'Включить музыку'}
+        aria-pressed={playing}
+        className="relative w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95"
+        // Градиент строится из акцента самого сайта: раньше сюда подмешивался
+        // золотой из ранней версии и кнопка выпадала из палитры приглашения
+        style={{ background: `linear-gradient(135deg, ${accentColor}, color-mix(in srgb, ${accentColor} 62%, #16130F))` }}
       >
         <AnimatePresence mode="wait">
           {playing ? (

@@ -321,14 +321,14 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                       return (
                         <motion.div key={it.id} layout onMouseEnter={() => setSelected(it)} onClick={() => setSelected(it)}
                           className="group relative rounded-2xl border bg-white overflow-hidden cursor-pointer transition-all"
-                          style={{ borderColor: it.premium ? '#D4AF37' : isSel ? '#6E2B34' : '#eee', boxShadow: isSel ? '0 8px 24px rgba(110, 43, 52,.18)' : it.premium ? '0 4px 16px rgba(212,175,55,.14)' : 'none' }} whileHover={{ y: -3 }}>
+                          style={{ borderColor: it.premium ? '#6E2B34' : isSel ? '#6E2B34' : '#eee', boxShadow: isSel ? '0 8px 24px rgba(110, 43, 52,.18)' : it.premium ? '0 4px 16px rgba(110,43,52,.14)' : 'none' }} whileHover={{ y: -3 }}>
                           {/* mini-mockup */}
                           <div className="relative" style={{ height: 128, background: '#f4f2ef' }}>
                             <div className="absolute inset-2 rounded-lg overflow-hidden shadow-sm" style={{ border: '1px solid rgba(0,0,0,.05)' }}>
                               <MiniMockup layout={it.layout} colors={colors} />
                             </div>
                             {it.premium && (
-                              <span className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-white" style={{ background: 'linear-gradient(135deg,#E0BC57,#B8860B)', boxShadow: '0 2px 6px rgba(184,134,11,.4)' }}>👑 Premium</span>
+                              <span className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-white" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)', boxShadow: '0 2px 6px rgba(74,26,34,.4)' }}>👑 Premium</span>
                             )}
                             {locked && <div className="absolute inset-2 rounded-lg flex items-center justify-center" style={{ background: 'rgba(28,24,18,.42)' }}><Lock size={20} className="text-white/90" /></div>}
                             <button onClick={(e) => { e.stopPropagation(); toggleFav(it.id) }} className="absolute top-2.5 right-2.5 w-7 h-7 rounded-lg flex items-center justify-center backdrop-blur-sm transition-colors" style={{ background: 'rgba(255,255,255,.85)' }} title={isFav ? 'Убрать из избранного' : 'В избранное'}>
@@ -339,7 +339,7 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                             <p className="text-[13px] font-medium text-[#16130F] truncate">{it.name}</p>
                             <p className="text-[11px] text-ink-400 leading-snug mt-0.5 line-clamp-2" style={{ minHeight: 28 }}>{it.desc}</p>
                             <button onClick={(e) => { e.stopPropagation(); tryAdd(it) }} className="mt-2 w-full py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all"
-                              style={{ background: locked ? '#EFEAE0' : it.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : '#6E2B34', color: locked ? '#6F655B' : '#fff' }}>
+                              style={{ background: locked ? '#EFEAE0' : it.premium ? 'linear-gradient(135deg,#6E2B34,#4A1A22)' : '#6E2B34', color: locked ? '#6F655B' : '#fff' }}>
                               {locked ? <><Lock size={12} /> Премиум</> : <><Plus size={13} /> Добавить</>}
                             </button>
                           </div>
@@ -367,12 +367,12 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                   </div>
                 </div>
                 <div className="p-3 border-t border-paper-3 flex-shrink-0">
-                  <p className="text-[13px] font-medium text-[#16130F] mb-0.5 flex items-center gap-1.5">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</p>
+                  <p className="text-[13px] font-medium text-[#16130F] mb-0.5 flex items-center gap-1.5">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}>Premium</span>}</p>
                   <p className="text-[11px] text-ink-400 mb-2.5 leading-snug">{selected.desc}</p>
                   {selected.premium && !premiumUnlocked ? (
                     <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#6F655B' }}><Lock size={14} /> Доступно на Премиум</button>
                   ) : (
-                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
+                    <button onClick={() => tryAdd(selected)} className="w-full py-2.5 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
                   )}
                 </div>
               </div>
@@ -388,7 +388,7 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
               {mobilePreview && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="lg:hidden absolute inset-0 z-40 bg-white flex flex-col">
                   <div className="flex items-center justify-between px-4 h-14 border-b border-paper-3 flex-shrink-0">
-                    <span className="text-sm font-medium text-[#16130F] flex items-center gap-2">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#D4AF37,#B8860B)' }}>Premium</span>}</span>
+                    <span className="text-sm font-medium text-[#16130F] flex items-center gap-2">{selected.name}{selected.premium && <span className="text-[9px] font-semibold text-white px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}>Premium</span>}</span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 bg-paper-2 rounded-lg p-0.5">
                         <button onClick={() => setDevice('desktop')} className={`p-1.5 rounded-md ${device === 'desktop' ? 'bg-white shadow-sm text-[#16130F]' : 'text-ink-400'}`}><Monitor size={13} /></button>
@@ -408,7 +408,7 @@ export function BlockLibraryModal({ open, colors, fonts, plan = 'standard', onCl
                     {selected.premium && !premiumUnlocked ? (
                       <button onClick={() => tryAdd(selected)} className="w-full py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2" style={{ background: '#EFEAE0', color: '#6F655B' }}><Lock size={14} /> Доступно на Премиум</button>
                     ) : (
-                      <button onClick={() => { tryAdd(selected); setMobilePreview(false) }} className="w-full py-3 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: selected.premium ? 'linear-gradient(135deg,#D4AF37,#B8860B)' : 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
+                      <button onClick={() => { tryAdd(selected); setMobilePreview(false) }} className="w-full py-3 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg,#6E2B34,#4A1A22)' }}><Plus size={15} /> Добавить на сайт</button>
                     )}
                   </div>
                 </motion.div>

@@ -67,7 +67,7 @@ export default function ExclusiveTemplatesPlate() {
         </div>
         <span
           className="inline-flex items-center gap-2"
-          style={{ color: 'var(--color-champagne)', fontSize: 15, fontWeight: 500 }}
+          style={{ color: 'var(--color-paper)', fontSize: 15, fontWeight: 500 }}
         >
           Что войдёт <ArrowRight size={16} />
         </span>
@@ -136,8 +136,8 @@ export default function ExclusiveTemplatesPlate() {
                         className="mrn-tag"
                         style={{
                           flexShrink: 0,
-                          color: inProgress ? 'var(--color-champagne)' : undefined,
-                          borderColor: inProgress ? 'rgba(217,195,165,0.35)' : undefined,
+                          color: inProgress ? 'var(--color-paper)' : undefined,
+                          borderColor: inProgress ? 'rgba(255,255,255,0.32)' : undefined,
                         }}
                       >
                         {item.status}

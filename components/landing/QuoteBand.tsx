@@ -3,7 +3,7 @@
 import { Reveal } from './Reveal'
 
 /**
- * Полноширинная цитата на шампани.
+ * Полноширинная цитата на бордовом.
  *
  * Единственная новая секция патча. Задача — пауза между двумя плотными
  * блоками (каталогом и списком возможностей) и место, где голос продукта
@@ -11,7 +11,7 @@ import { Reveal } from './Reveal'
  */
 export function QuoteBand() {
   return (
-    <section className="mrn-section--tight mrn-tone-champagne">
+    <section className="mrn-section--tight mrn-tone-wine mrn-dark">
       <div className="mrn-container mrn-container--narrow" style={{ textAlign: 'center' }}>
         <Reveal>
           <p
@@ -20,7 +20,8 @@ export function QuoteBand() {
           >
             Гости открывают приглашение один раз — и почти всегда с телефона.
             От этого экрана зависит, каким они запомнят{' '}
-            <span className="mrn-script" style={{ fontSize: '1.3em', color: 'var(--color-wine)' }}>
+            {/* На бордовом акцент держит почерк, а не второй цвет */}
+            <span className="mrn-script" style={{ fontSize: '1.3em' }}>
               ваш день
             </span>
           </p>

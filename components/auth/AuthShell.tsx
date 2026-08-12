@@ -39,7 +39,7 @@ export function AuthShell({ eyebrow, title, lead, children, footer }: AuthShellP
           className="mrn-container relative flex-1 flex flex-col justify-center"
           style={{ paddingBlock: 'clamp(28px, 6vh, 72px)' }}
         >
-          <p className="mrn-eyebrow" style={{ color: 'var(--color-champagne)' }}>{eyebrow}</p>
+          <p className="mrn-eyebrow" style={{ color: 'rgba(255,255,255,.72)' }}>{eyebrow}</p>
           <h1
             className="mrn-h1 hidden lg:block"
             style={{ marginTop: 16, maxWidth: '15ch', fontSize: 'clamp(1.9rem, 2.9vw, 2.7rem)' }}

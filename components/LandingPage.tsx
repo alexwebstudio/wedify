@@ -18,10 +18,14 @@ export const BRAND = 'Maruno'
 /**
  * Главная страница — композиция секций из components/landing.
  *
- * Порядок тонов задан здесь и намеренно чередуется, иначе страница
- * читается как одно сплошное белое полотно:
- *   бордовый → молочный → нейтральный → шампань → графит → молочный →
- *   графит → пудра → бордовый → графитовый футер.
+ * Порядок: сначала показываем, что получится (шаблоны и эксклюзивная
+ * линейка), и только потом объясняем, как это собрать. Человек решает
+ * по картинке, а не по описанию процесса.
+ *
+ * Тона чередуются, иначе страница читается как одно белое полотно, и
+ * держатся на трёх цветах — белый, бордовый, почти чёрный:
+ *   бордовый → белый → молочный → бордовый → графит → белый →
+ *   молочный → бордовый → графитовый футер.
  */
 export default function LandingPage() {
   const { user } = useAuth()
@@ -38,22 +42,22 @@ export default function LandingPage() {
       <main id="content">
         <Hero startHref={startHref} />
 
-        <HowItWorks startHref={startHref} />
-
         {/* Четыре карточки: ведущая на всю ширину, остальные три закрывают ряд */}
         <TemplateShowcase templateHref={templateHref} limit={4} showAllLink />
-
-        <QuoteBand />
-
-        <Capabilities />
-
-        <Reviews />
 
         <section className="mrn-section--tight mrn-tone-milk mrn-seam">
           <div className="mrn-container">
             <ExclusiveTemplatesPlate />
           </div>
         </section>
+
+        <HowItWorks startHref={startHref} />
+
+        <QuoteBand />
+
+        <Capabilities />
+
+        <Reviews />
 
         <UpdatesSubscribe />
 
